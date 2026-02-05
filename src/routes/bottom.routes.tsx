@@ -1,0 +1,61 @@
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Application from '../pages/Application';
+import Recomendacoes from '../pages/recommendation';
+import Report from '../pages/report';
+import Stock from '../pages/Stock';
+import Home from '../pages/Home';
+import CustomTabBar from '../components/ButtonBar';
+import { createStackNavigator } from '@react-navigation/stack';
+
+const Tab = createBottomTabNavigator();
+
+export type RootStackParamList = {
+  Application: undefined;
+  Recomendacoes: undefined;
+  Home: undefined;
+  Relatorios: undefined;
+  Estoque: undefined;
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
+
+ export default function BottomRoutes() {
+  return (
+    <Tab.Navigator
+      initialRouteName="Home"
+      screenOptions={{ 
+        headerShown: false 
+      }}
+      tabBar={props=><CustomTabBar {...props}/>}
+    >
+
+
+      <Tab.Screen 
+      name="Aplicacoes" 
+      component={Application} 
+      />
+
+      <Tab.Screen 
+      name="Recomendacoes" 
+      component={Recomendacoes} 
+      />
+
+      <Tab.Screen 
+      name="Home" 
+      component={Home} 
+      />
+
+      <Tab.Screen 
+      name="Relatorios" 
+      component={Report} 
+      />
+
+
+      <Tab.Screen 
+      name="Estoque" 
+      component={Stock} 
+      />
+
+    </Tab.Navigator>
+  );
+}
