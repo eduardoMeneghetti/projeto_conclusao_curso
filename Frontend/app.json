@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "client_khronos",
-    "slug": "client_khronos",
+    "name": "Khronos",
+    "slug": "Khronos",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

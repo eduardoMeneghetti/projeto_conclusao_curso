@@ -6,6 +6,7 @@ export const themes = {
         background_input: '#DAD7CD', 
         gray: '#959C94',
         black: '#000000',
-        menuBar: '#DAD7CD'
+        menuBar: '#DAD7CD',
+        white: '#FFFFFF',
     }
 }

@@ -34,8 +34,10 @@ export default function Login() {
       }
 
       if (usuario === 'admin' && senha === 'admin') {
-        Alert.alert('Sucesso', 'Login efetuado com sucesso!');
-        navigation.navigate('BottomRoutes');
+
+        //Alert.alert('Sucesso', 'Login efetuado com sucesso!');
+
+        navigation.reset({routes: [{ name: 'BottomRoutes' }]});
       } else {
         Alert.alert('Erro', 'Usuário ou senha inválidos!');
       }

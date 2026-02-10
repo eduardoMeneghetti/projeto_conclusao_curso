@@ -1,6 +1,5 @@
 import {StyleSheet} from 'react-native';
 import { themes } from "../../global/themes";
-import { opacity } from '@expo/ui/swift-ui/modifiers';
 
 export const styles = StyleSheet.create({
         tabArea: {
@@ -13,7 +12,6 @@ export const styles = StyleSheet.create({
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            
         },
         image: {
             width: 50,
