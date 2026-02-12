@@ -6,7 +6,7 @@ import { styles } from './sytles';
 import { stylesContainer } from './stylesContainer';
 
 
-type Property = {
+type Harvest = {
   id: string;
   title: string;
 };
@@ -14,7 +14,7 @@ type Property = {
 type AuthSelectionContextType = {
   onOpen: () => void;
   onClose: () => void;
-  selectedProperty: Property | null;
+  selectedHarvest: Harvest | null;
 };
 
 
@@ -26,7 +26,7 @@ export const AuthSelectionContext =
 
 export const AuthProviderContext = (props: any): any => {
   const [isVisible, setIsVisible] = useState(false);
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [selectedHarvest, setSelectedHarvest] = useState<Harvest | null>(null);
 
   const insets = useSafeAreaInsets();
 
@@ -52,13 +52,13 @@ export const AuthProviderContext = (props: any): any => {
     },
   ]
 
-  const renderItem = ({ item }: { item: Property }) => {
-    const isSelected = item.id === selectedProperty?.id;
+  const renderItem = ({ item }: { item: Harvest }) => {
+    const isSelected = item.id === selectedHarvest?.id;
 
     return (
       <TouchableOpacity
         onPress={() => {
-          setSelectedProperty(item);
+          setSelectedHarvest(item);
           onClose();
         }}
         style={[
@@ -98,7 +98,7 @@ export const AuthProviderContext = (props: any): any => {
       value={{
         onOpen,
         onClose,
-        selectedProperty,
+        selectedHarvest,
       }}
     >
       {props.children}

@@ -50,11 +50,14 @@ export default function Login() {
     <View style={styles.container}>
 
       <View style={styles.boxTop}>
+        
         <Text style={styles.title}>KHRONOS</Text>
         <Text style={styles.subTitle}>Acesse sua conta</Text>
+        
       </View>
 
       <View style={styles.boxMid}>
+
         <Input
           placeholder="Usuário"
           value={usuario}

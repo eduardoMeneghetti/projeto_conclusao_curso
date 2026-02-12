@@ -1,5 +1,10 @@
-import { StyleSheet } from 'react-native';
+import {
+    StyleSheet,
+    Dimensions
+} from 'react-native';
 import { themes } from "../../global/themes";
+
+const { width } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
     container: {
@@ -15,38 +20,39 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 60,
+        width: '100%',
     },
     boxMid: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    boxBottom: {   
+    boxBottom: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    title:{
-        fontSize: 60,
+    title: {
+         fontSize: width * 0.12, // 12% da largura da tela
         fontWeight: 'bold',
-        marginTop: 200,
+        marginTop: width * 0.4, // 10% da largura da tela
         color: themes.colors.secondary,
     },
-    subTitle:{
-        fontSize: 18,
+    subTitle: {
+        fontSize: width * 0.05, // 5% da largura da tela
         color: themes.colors.tertiary,
-        marginTop: 30,
+        marginTop: width * 0.02, // 2% da largura da tela
     },
-    button:{
+    button: {
         backgroundColor: themes.colors.secondary,
         borderRadius: 10,
         width: 180,
-        height: 50, 
+        height: 50,
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 40,
     },
-    buttonText:{
+    buttonText: {
         color: themes.colors.tertiary,
     }
 });

@@ -12,7 +12,7 @@ import { AuthSelectionContext, useAuthSelection } from "../../context/selectionC
 
 export default function Header() {
 
-  const { onOpen, selectedProperty  } = useContext<any>(AuthSelectionContext);
+  const { onOpen, selectedHarvest } = useAuthSelection();
 
   const insets = useSafeAreaInsets();
 
@@ -35,9 +35,9 @@ export default function Header() {
 
       <TouchableOpacity onPress={onOpen}>
         <Text>
-          {selectedProperty
-            ? selectedProperty.title
-            : 'Seleção de propriedade'}
+          {selectedHarvest
+            ? selectedHarvest.title
+            : 'Seleção da safra'}
         </Text>
       </TouchableOpacity>
 

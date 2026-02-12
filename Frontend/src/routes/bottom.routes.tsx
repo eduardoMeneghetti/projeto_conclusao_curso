@@ -9,6 +9,8 @@ import Header from '../components/Header';
 import { createStackNavigator } from '@react-navigation/stack';
 import { View } from 'react-native';
 import { AuthProviderContext } from '../context/selectionContext';
+import { FabProvider } from '../context/fabContext';
+import { GlobalButton } from '../components/GlobalButton';
 
 const Tab = createBottomTabNavigator();
 
@@ -24,46 +26,51 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function BottomRoutes() {
   return (
-    <AuthProviderContext>
-      <View style={{ flex: 1 }}>
-        <Header />
-        <Tab.Navigator
-          initialRouteName="Home"
-          screenOptions={{
-            headerShown: false
-          }}
-          tabBar={props => <CustomTabBar {...props} />}
-        >
+    <FabProvider>
+      <AuthProviderContext>
+        <View style={{ flex: 1 }}>
+          <Header />
+          <Tab.Navigator
+            initialRouteName="Home"
+            screenOptions={{
+              headerShown: false
+            }}
+            tabBar={props => <CustomTabBar {...props} />}
+          >
 
 
-          <Tab.Screen
-            name="Aplicacoes"
-            component={Application}
-          />
+            <Tab.Screen
+              name="Aplicacoes"
+              component={Application}
+            />
 
-          <Tab.Screen
-            name="Recomendacoes"
-            component={Recomendacoes}
-          />
+            <Tab.Screen
+              name="Recomendacoes"
+              component={Recomendacoes}
+            />
 
-          <Tab.Screen
-            name="Home"
-            component={Home}
-          />
+            <Tab.Screen
+              name="Home"
+              component={Home}
+            />
 
-          <Tab.Screen
-            name="Relatorios"
-            component={Report}
-          />
+            <Tab.Screen
+              name="Relatorios"
+              component={Report}
+            />
 
 
-          <Tab.Screen
-            name="Estoque"
-            component={Stock}
-          />
+            <Tab.Screen
+              name="Estoque"
+              component={Stock}
+            />
 
-        </Tab.Navigator>
-      </View>
-    </AuthProviderContext>
+          </Tab.Navigator>
+
+          <GlobalButton />
+
+        </View>
+      </AuthProviderContext>
+    </FabProvider>
   );
 }
