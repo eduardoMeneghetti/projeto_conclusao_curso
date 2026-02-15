@@ -37,17 +37,17 @@ export const AuthProviderContext = (props: any): any => {
   const data = [
     {
       id: '1',
-      title: 'Fazenda Teste 1',
+      title: 'Safra 2023/2024',
       done: false
     },
     {
       id: '2',
-      title: 'Fazenda Teste 2',
+      title: 'Safra 2024/2025',
       done: false
     },
     {
       id: '3',
-      title: 'Fazenda Teste 3',
+      title: 'Safra 2025/2026',
       done: false
     },
   ]

@@ -1,5 +1,4 @@
-// comando rfnc para criar um componente funcional com exportação padrão
-import React, { use, useContext } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -8,10 +7,15 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "./styles";
-import { AuthSelectionContext, useAuthSelection } from "../../context/selectionContext";
+import { useAuthSelection } from "../../context/selectionContext";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../routes/index.routes";
+
+type NavigationProps = StackNavigationProp<RootStackParamList, 'Config'>;
 
 export default function Header() {
-
+  const navigation = useNavigation<NavigationProps>();
   const { onOpen, selectedHarvest } = useAuthSelection();
 
   const insets = useSafeAreaInsets();
@@ -20,12 +24,12 @@ export default function Header() {
     <View style={[
       styles.container,
       {
-        paddingTop: insets.top + 10, // Respeita notch + padding adicional
+        paddingTop: insets.top + 10,
         paddingBottom: 10,
       }
     ]}>
       <TouchableOpacity
-        onPress={() => { }}
+        onPress={() => navigation.navigate('Config')}
       >
         <Image
           source={require('../../assets/icon/menu-aberto.png')}
@@ -41,7 +45,6 @@ export default function Header() {
         </Text>
       </TouchableOpacity>
 
-
       <TouchableOpacity
         onPress={() => { }}
       >
@@ -50,7 +53,6 @@ export default function Header() {
           style={styles.image}
         />
       </TouchableOpacity>
-
     </View>
   );
 }
