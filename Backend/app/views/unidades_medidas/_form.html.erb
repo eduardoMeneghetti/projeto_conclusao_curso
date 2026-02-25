@@ -1,0 +1,22 @@
+<%= form_with(model: unidades_medida) do |form| %>
+  <% if unidades_medida.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(unidades_medida.errors.count, "error") %> prohibited this unidades_medida from being saved:</h2>
+
+      <ul>
+        <% unidades_medida.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :descrcicao, style: "display: block" %>
+    <%= form.text_field :descrcicao %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

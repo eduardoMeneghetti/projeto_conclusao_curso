@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  propriedade: one
+  atividade: one
+  atividade_safra: one
+  atividade_gleba: one
+  usuario: one
+  maquina: one
+  operador: MyString
+  recomendacoes_agricola: one
+  area_aplic: 9.99
+  data_inicio: 2026-02-20 22:46:56
+  data_final: 2026-02-20 22:46:56
+
+two:
+  propriedade: two
+  atividade: two
+  atividade_safra: two
+  atividade_gleba: two
+  usuario: two
+  maquina: two
+  operador: MyString
+  recomendacoes_agricola: two
+  area_aplic: 9.99
+  data_inicio: 2026-02-20 22:46:56
+  data_final: 2026-02-20 22:46:56

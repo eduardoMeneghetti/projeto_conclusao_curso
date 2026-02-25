@@ -1,0 +1,42 @@
+<%= form_with(model: insumo) do |form| %>
+  <% if insumo.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(insumo.errors.count, "error") %> prohibited this insumo from being saved:</h2>
+
+      <ul>
+        <% insumo.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :descricao, style: "display: block" %>
+    <%= form.text_field :descricao %>
+  </div>
+
+  <div>
+    <%= form.label :semente, style: "display: block" %>
+    <%= form.checkbox :semente %>
+  </div>
+
+  <div>
+    <%= form.label :ativo, style: "display: block" %>
+    <%= form.checkbox :ativo %>
+  </div>
+
+  <div>
+    <%= form.label :unidades_medida_id, style: "display: block" %>
+    <%= form.text_field :unidades_medida_id %>
+  </div>
+
+  <div>
+    <%= form.label :principios_ativo_id, style: "display: block" %>
+    <%= form.text_field :principios_ativo_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

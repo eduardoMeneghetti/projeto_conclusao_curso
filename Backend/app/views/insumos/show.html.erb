@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @insumo %>
+
+<div>
+  <%= link_to "Edit this insumo", edit_insumo_path(@insumo) %> |
+  <%= link_to "Back to insumos", insumos_path %>
+
+  <%= button_to "Destroy this insumo", @insumo, method: :delete %>
+</div>

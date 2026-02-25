@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Principios ativos nutrientes" %>
+
+<h1>Principios ativos nutrientes</h1>
+
+<div id="principios_ativos_nutrientes">
+  <% @principios_ativos_nutrientes.each do |principios_ativos_nutriente| %>
+    <%= render principios_ativos_nutriente %>
+    <p>
+      <%= link_to "Show this principios ativos nutriente", principios_ativos_nutriente %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New principios ativos nutriente", new_principios_ativos_nutriente_path %>

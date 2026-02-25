@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  recomendacoes_agricola: one
+  principios_ativos: one
+  insumo: one
+  dose: 9.99
+  quantidade: 9.99
+
+two:
+  recomendacoes_agricola: two
+  principios_ativos: two
+  insumo: two
+  dose: 9.99
+  quantidade: 9.99

@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  safra: one
+  atividade: one
+  analises_solo: one
+  propriedade: one
+  atividade_gleba: one
+  atividade_safra: one
+  data_recomendacao: 2026-02-20 22:34:18
+  recomendante: MyString
+  operador: MyString
+
+two:
+  safra: two
+  atividade: two
+  analises_solo: two
+  propriedade: two
+  atividade_gleba: two
+  atividade_safra: two
+  data_recomendacao: 2026-02-20 22:34:18
+  recomendante: MyString
+  operador: MyString

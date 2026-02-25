@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @movimentacao_estoque_insumo %>
+
+<div>
+  <%= link_to "Edit this movimentacao estoque insumo", edit_movimentacao_estoque_insumo_path(@movimentacao_estoque_insumo) %> |
+  <%= link_to "Back to movimentacao estoque insumos", movimentacao_estoque_insumos_path %>
+
+  <%= button_to "Destroy this movimentacao estoque insumo", @movimentacao_estoque_insumo, method: :delete %>
+</div>

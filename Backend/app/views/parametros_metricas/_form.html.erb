@@ -1,0 +1,27 @@
+<%= form_with(model: parametros_metrica) do |form| %>
+  <% if parametros_metrica.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(parametros_metrica.errors.count, "error") %> prohibited this parametros_metrica from being saved:</h2>
+
+      <ul>
+        <% parametros_metrica.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :tipo, style: "display: block" %>
+    <%= form.text_field :tipo %>
+  </div>
+
+  <div>
+    <%= form.label :descricao, style: "display: block" %>
+    <%= form.text_field :descricao %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

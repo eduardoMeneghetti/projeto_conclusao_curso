@@ -1,0 +1,2 @@
+module MovimentacaoEstoqueInsumosHelper
+end

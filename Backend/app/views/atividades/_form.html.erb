@@ -1,0 +1,32 @@
+<%= form_with(model: atividade) do |form| %>
+  <% if atividade.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(atividade.errors.count, "error") %> prohibited this atividade from being saved:</h2>
+
+      <ul>
+        <% atividade.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :descricao, style: "display: block" %>
+    <%= form.text_field :descricao %>
+  </div>
+
+  <div>
+    <%= form.label :cor, style: "display: block" %>
+    <%= form.text_field :cor %>
+  </div>
+
+  <div>
+    <%= form.label :ativo, style: "display: block" %>
+    <%= form.checkbox :ativo %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

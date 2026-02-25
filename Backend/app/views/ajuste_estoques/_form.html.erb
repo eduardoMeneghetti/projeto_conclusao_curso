@@ -1,0 +1,42 @@
+<%= form_with(model: ajuste_estoque) do |form| %>
+  <% if ajuste_estoque.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(ajuste_estoque.errors.count, "error") %> prohibited this ajuste_estoque from being saved:</h2>
+
+      <ul>
+        <% ajuste_estoque.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :usuario_id, style: "display: block" %>
+    <%= form.text_field :usuario_id %>
+  </div>
+
+  <div>
+    <%= form.label :propriedade_id, style: "display: block" %>
+    <%= form.text_field :propriedade_id %>
+  </div>
+
+  <div>
+    <%= form.label :observacao, style: "display: block" %>
+    <%= form.text_field :observacao %>
+  </div>
+
+  <div>
+    <%= form.label :data, style: "display: block" %>
+    <%= form.date_field :data %>
+  </div>
+
+  <div>
+    <%= form.label :entrada_saida, style: "display: block" %>
+    <%= form.text_field :entrada_saida %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

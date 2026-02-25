@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @atividade_gleba %>
+
+<div>
+  <%= link_to "Edit this atividade gleba", edit_atividade_gleba_path(@atividade_gleba) %> |
+  <%= link_to "Back to atividade glebas", atividade_glebas_path %>
+
+  <%= button_to "Destroy this atividade gleba", @atividade_gleba, method: :delete %>
+</div>

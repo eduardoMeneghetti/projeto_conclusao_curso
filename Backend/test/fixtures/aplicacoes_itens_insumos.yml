@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  aplicacoes_insumo: one
+  principios_ativo: one
+  insumo: one
+  quantidade_aplic: 9.99
+  dose_aplic: 9.99
+
+two:
+  aplicacoes_insumo: two
+  principios_ativo: two
+  insumo: two
+  quantidade_aplic: 9.99
+  dose_aplic: 9.99

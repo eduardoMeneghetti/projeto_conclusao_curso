@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  descricao: MyString
+  cor: MyString
+  ativo: false
+
+two:
+  descricao: MyString
+  cor: MyString
+  ativo: false

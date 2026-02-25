@@ -1,0 +1,37 @@
+<%= form_with(model: movimentacao_estoque_insumo) do |form| %>
+  <% if movimentacao_estoque_insumo.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(movimentacao_estoque_insumo.errors.count, "error") %> prohibited this movimentacao_estoque_insumo from being saved:</h2>
+
+      <ul>
+        <% movimentacao_estoque_insumo.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :quantidade, style: "display: block" %>
+    <%= form.text_field :quantidade %>
+  </div>
+
+  <div>
+    <%= form.label :valor_unitario, style: "display: block" %>
+    <%= form.text_field :valor_unitario %>
+  </div>
+
+  <div>
+    <%= form.label :ajuste_estoque_id, style: "display: block" %>
+    <%= form.text_field :ajuste_estoque_id %>
+  </div>
+
+  <div>
+    <%= form.label :insumo_id, style: "display: block" %>
+    <%= form.text_field :insumo_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

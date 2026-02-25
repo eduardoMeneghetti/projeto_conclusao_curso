@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Safras" %>
+
+<h1>Safras</h1>
+
+<div id="safras">
+  <% @safras.each do |safra| %>
+    <%= render safra %>
+    <p>
+      <%= link_to "Show this safra", safra %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New safra", new_safra_path %>

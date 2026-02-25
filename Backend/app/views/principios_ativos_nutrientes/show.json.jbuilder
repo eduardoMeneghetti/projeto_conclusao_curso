@@ -1,0 +1,1 @@
+json.partial! "principios_ativos_nutrientes/principios_ativos_nutriente", principios_ativos_nutriente: @principios_ativos_nutriente

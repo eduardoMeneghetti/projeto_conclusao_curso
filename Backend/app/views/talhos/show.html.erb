@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @talho %>
+
+<div>
+  <%= link_to "Edit this talho", edit_talho_path(@talho) %> |
+  <%= link_to "Back to talhos", talhos_path %>
+
+  <%= button_to "Destroy this talho", @talho, method: :delete %>
+</div>

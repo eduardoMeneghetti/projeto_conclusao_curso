@@ -1,0 +1,2 @@
+class PrincipiosAtivo < ApplicationRecord
+end

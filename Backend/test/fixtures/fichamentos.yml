@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  parametro_metrica: one
+  classificacao: MyString
+  valor_min: 9.99
+  valor_max: 9.99
+
+two:
+  parametro_metrica: two
+  classificacao: MyString
+  valor_min: 9.99
+  valor_max: 9.99

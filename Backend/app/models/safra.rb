@@ -1,0 +1,2 @@
+class Safra < ApplicationRecord
+end

@@ -1,0 +1,2 @@
+module AnalisesSoloResultadosHelper
+end

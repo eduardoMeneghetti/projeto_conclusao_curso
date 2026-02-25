@@ -1,0 +1,1 @@
+json.partial! "movimentacao_estoque_insumos/movimentacao_estoque_insumo", movimentacao_estoque_insumo: @movimentacao_estoque_insumo

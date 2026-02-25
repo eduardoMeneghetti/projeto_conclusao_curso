@@ -1,0 +1,27 @@
+<%= form_with(model: principios_ativo) do |form| %>
+  <% if principios_ativo.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(principios_ativo.errors.count, "error") %> prohibited this principios_ativo from being saved:</h2>
+
+      <ul>
+        <% principios_ativo.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :descricao, style: "display: block" %>
+    <%= form.text_field :descricao %>
+  </div>
+
+  <div>
+    <%= form.label :ativo, style: "display: block" %>
+    <%= form.checkbox :ativo %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  atividade: one
+  safra: one
+  propriedade: one
+
+two:
+  atividade: two
+  safra: two
+  propriedade: two

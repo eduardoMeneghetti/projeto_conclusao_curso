@@ -1,0 +1,32 @@
+<%= form_with(model: safra) do |form| %>
+  <% if safra.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(safra.errors.count, "error") %> prohibited this safra from being saved:</h2>
+
+      <ul>
+        <% safra.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :descricao, style: "display: block" %>
+    <%= form.text_field :descricao %>
+  </div>
+
+  <div>
+    <%= form.label :data_inicio, style: "display: block" %>
+    <%= form.date_field :data_inicio %>
+  </div>
+
+  <div>
+    <%= form.label :data_final, style: "display: block" %>
+    <%= form.date_field :data_final %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
