@@ -1,0 +1,27 @@
+<%= form_with(model: maquina) do |form| %>
+  <% if maquina.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(maquina.errors.count, "error") %> prohibited this maquina from being saved:</h2>
+
+      <ul>
+        <% maquina.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :descricao, style: "display: block" %>
+    <%= form.text_field :descricao %>
+  </div>
+
+  <div>
+    <%= form.label :st_ativo, style: "display: block" %>
+    <%= form.checkbox :st_ativo %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

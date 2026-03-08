@@ -1,0 +1,27 @@
+<%= form_with(model: atividade_gleba) do |form| %>
+  <% if atividade_gleba.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(atividade_gleba.errors.count, "error") %> prohibited this atividade_gleba from being saved:</h2>
+
+      <ul>
+        <% atividade_gleba.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :gleba_id, style: "display: block" %>
+    <%= form.text_field :gleba_id %>
+  </div>
+
+  <div>
+    <%= form.label :atividade_safra_id, style: "display: block" %>
+    <%= form.text_field :atividade_safra_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

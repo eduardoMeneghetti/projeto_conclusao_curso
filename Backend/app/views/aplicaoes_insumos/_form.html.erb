@@ -1,0 +1,72 @@
+<%= form_with(model: aplicaoes_insumo) do |form| %>
+  <% if aplicaoes_insumo.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(aplicaoes_insumo.errors.count, "error") %> prohibited this aplicaoes_insumo from being saved:</h2>
+
+      <ul>
+        <% aplicaoes_insumo.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :propriedade_id, style: "display: block" %>
+    <%= form.text_field :propriedade_id %>
+  </div>
+
+  <div>
+    <%= form.label :atividade_id, style: "display: block" %>
+    <%= form.text_field :atividade_id %>
+  </div>
+
+  <div>
+    <%= form.label :atividade_safra_id, style: "display: block" %>
+    <%= form.text_field :atividade_safra_id %>
+  </div>
+
+  <div>
+    <%= form.label :atividade_gleba_id, style: "display: block" %>
+    <%= form.text_field :atividade_gleba_id %>
+  </div>
+
+  <div>
+    <%= form.label :usuario_id, style: "display: block" %>
+    <%= form.text_field :usuario_id %>
+  </div>
+
+  <div>
+    <%= form.label :maquina_id, style: "display: block" %>
+    <%= form.text_field :maquina_id %>
+  </div>
+
+  <div>
+    <%= form.label :operador, style: "display: block" %>
+    <%= form.text_field :operador %>
+  </div>
+
+  <div>
+    <%= form.label :recomendacoes_agricola_id, style: "display: block" %>
+    <%= form.text_field :recomendacoes_agricola_id %>
+  </div>
+
+  <div>
+    <%= form.label :area_aplic, style: "display: block" %>
+    <%= form.text_field :area_aplic %>
+  </div>
+
+  <div>
+    <%= form.label :data_inicio, style: "display: block" %>
+    <%= form.datetime_field :data_inicio %>
+  </div>
+
+  <div>
+    <%= form.label :data_final, style: "display: block" %>
+    <%= form.datetime_field :data_final %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

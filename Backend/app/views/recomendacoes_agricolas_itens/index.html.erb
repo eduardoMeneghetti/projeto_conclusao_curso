@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Recomendacoes agricolas itens" %>
+
+<h1>Recomendacoes agricolas itens</h1>
+
+<div id="recomendacoes_agricolas_itens">
+  <% @recomendacoes_agricolas_itens.each do |recomendacoes_agricolas_iten| %>
+    <%= render recomendacoes_agricolas_iten %>
+    <p>
+      <%= link_to "Show this recomendacoes agricolas iten", recomendacoes_agricolas_iten %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New recomendacoes agricolas iten", new_recomendacoes_agricolas_iten_path %>

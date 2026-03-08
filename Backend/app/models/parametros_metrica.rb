@@ -1,0 +1,2 @@
+class ParametrosMetrica < ApplicationRecord
+end

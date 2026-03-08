@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Nutrientes" %>
+
+<h1>Nutrientes</h1>
+
+<div id="nutrientes">
+  <% @nutrientes.each do |nutriente| %>
+    <%= render nutriente %>
+    <p>
+      <%= link_to "Show this nutriente", nutriente %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New nutriente", new_nutriente_path %>

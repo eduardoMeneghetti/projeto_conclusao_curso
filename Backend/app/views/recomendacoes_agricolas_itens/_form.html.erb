@@ -1,0 +1,42 @@
+<%= form_with(model: recomendacoes_agricolas_iten) do |form| %>
+  <% if recomendacoes_agricolas_iten.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(recomendacoes_agricolas_iten.errors.count, "error") %> prohibited this recomendacoes_agricolas_iten from being saved:</h2>
+
+      <ul>
+        <% recomendacoes_agricolas_iten.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :recomendacoes_agricola_id, style: "display: block" %>
+    <%= form.text_field :recomendacoes_agricola_id %>
+  </div>
+
+  <div>
+    <%= form.label :principios_ativos_id, style: "display: block" %>
+    <%= form.text_field :principios_ativos_id %>
+  </div>
+
+  <div>
+    <%= form.label :insumo_id, style: "display: block" %>
+    <%= form.text_field :insumo_id %>
+  </div>
+
+  <div>
+    <%= form.label :dose, style: "display: block" %>
+    <%= form.text_field :dose %>
+  </div>
+
+  <div>
+    <%= form.label :quantidade, style: "display: block" %>
+    <%= form.text_field :quantidade %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

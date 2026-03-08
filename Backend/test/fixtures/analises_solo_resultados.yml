@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  analises_solo: one
+  parametro_medido: MyString
+  parametro_medido_id: 1
+  valor: 9.99
+
+two:
+  analises_solo: two
+  parametro_medido: MyString
+  parametro_medido_id: 1
+  valor: 9.99

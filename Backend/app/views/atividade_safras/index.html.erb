@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Atividade safras" %>
+
+<h1>Atividade safras</h1>
+
+<div id="atividade_safras">
+  <% @atividade_safras.each do |atividade_safra| %>
+    <%= render atividade_safra %>
+    <p>
+      <%= link_to "Show this atividade safra", atividade_safra %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New atividade safra", new_atividade_safra_path %>

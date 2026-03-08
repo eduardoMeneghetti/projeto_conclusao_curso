@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Gleba pontos" %>
+
+<h1>Gleba pontos</h1>
+
+<div id="gleba_pontos">
+  <% @gleba_pontos.each do |gleba_ponto| %>
+    <%= render gleba_ponto %>
+    <p>
+      <%= link_to "Show this gleba ponto", gleba_ponto %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New gleba ponto", new_gleba_ponto_path %>

@@ -1,0 +1,2 @@
+module AplicacoesItensInsumosHelper
+end

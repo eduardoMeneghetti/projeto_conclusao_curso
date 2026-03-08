@@ -1,0 +1,32 @@
+<%= form_with(model: principios_ativos_nutriente) do |form| %>
+  <% if principios_ativos_nutriente.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(principios_ativos_nutriente.errors.count, "error") %> prohibited this principios_ativos_nutriente from being saved:</h2>
+
+      <ul>
+        <% principios_ativos_nutriente.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :principio_ativos_id, style: "display: block" %>
+    <%= form.text_field :principio_ativos_id %>
+  </div>
+
+  <div>
+    <%= form.label :nutriente_id, style: "display: block" %>
+    <%= form.text_field :nutriente_id %>
+  </div>
+
+  <div>
+    <%= form.label :percentual, style: "display: block" %>
+    <%= form.text_field :percentual %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

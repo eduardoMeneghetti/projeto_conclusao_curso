@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Movimentacao estoque insumos" %>
+
+<h1>Movimentacao estoque insumos</h1>
+
+<div id="movimentacao_estoque_insumos">
+  <% @movimentacao_estoque_insumos.each do |movimentacao_estoque_insumo| %>
+    <%= render movimentacao_estoque_insumo %>
+    <p>
+      <%= link_to "Show this movimentacao estoque insumo", movimentacao_estoque_insumo %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New movimentacao estoque insumo", new_movimentacao_estoque_insumo_path %>

@@ -1,0 +1,32 @@
+<%= form_with(model: propriedade) do |form| %>
+  <% if propriedade.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(propriedade.errors.count, "error") %> prohibited this propriedade from being saved:</h2>
+
+      <ul>
+        <% propriedade.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :descricao, style: "display: block" %>
+    <%= form.text_field :descricao %>
+  </div>
+
+  <div>
+    <%= form.label :hectare, style: "display: block" %>
+    <%= form.text_field :hectare %>
+  </div>
+
+  <div>
+    <%= form.label :cidade_id, style: "display: block" %>
+    <%= form.text_field :cidade_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

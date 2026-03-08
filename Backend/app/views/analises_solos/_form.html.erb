@@ -1,0 +1,47 @@
+<%= form_with(model: analises_solo) do |form| %>
+  <% if analises_solo.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(analises_solo.errors.count, "error") %> prohibited this analises_solo from being saved:</h2>
+
+      <ul>
+        <% analises_solo.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :propriedade_id, style: "display: block" %>
+    <%= form.text_field :propriedade_id %>
+  </div>
+
+  <div>
+    <%= form.label :safra_id, style: "display: block" %>
+    <%= form.text_field :safra_id %>
+  </div>
+
+  <div>
+    <%= form.label :atividade_id, style: "display: block" %>
+    <%= form.text_field :atividade_id %>
+  </div>
+
+  <div>
+    <%= form.label :aatividade_gleba_id, style: "display: block" %>
+    <%= form.text_field :aatividade_gleba_id %>
+  </div>
+
+  <div>
+    <%= form.label :atividade_safra_id, style: "display: block" %>
+    <%= form.text_field :atividade_safra_id %>
+  </div>
+
+  <div>
+    <%= form.label :data_coleta, style: "display: block" %>
+    <%= form.datetime_field :data_coleta %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

@@ -1,0 +1,37 @@
+<%= form_with(model: gleba) do |form| %>
+  <% if gleba.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(gleba.errors.count, "error") %> prohibited this gleba from being saved:</h2>
+
+      <ul>
+        <% gleba.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :descricao, style: "display: block" %>
+    <%= form.text_field :descricao %>
+  </div>
+
+  <div>
+    <%= form.label :ativo, style: "display: block" %>
+    <%= form.checkbox :ativo %>
+  </div>
+
+  <div>
+    <%= form.label :area_hectares, style: "display: block" %>
+    <%= form.text_field :area_hectares %>
+  </div>
+
+  <div>
+    <%= form.label :propriedade_id, style: "display: block" %>
+    <%= form.text_field :propriedade_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

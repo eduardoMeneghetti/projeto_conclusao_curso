@@ -1,0 +1,37 @@
+<%= form_with(model: fichamento) do |form| %>
+  <% if fichamento.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(fichamento.errors.count, "error") %> prohibited this fichamento from being saved:</h2>
+
+      <ul>
+        <% fichamento.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :parametro_metrica_id, style: "display: block" %>
+    <%= form.text_field :parametro_metrica_id %>
+  </div>
+
+  <div>
+    <%= form.label :classificacao, style: "display: block" %>
+    <%= form.text_field :classificacao %>
+  </div>
+
+  <div>
+    <%= form.label :valor_min, style: "display: block" %>
+    <%= form.text_field :valor_min %>
+  </div>
+
+  <div>
+    <%= form.label :valor_max, style: "display: block" %>
+    <%= form.text_field :valor_max %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Parametros metricas" %>
+
+<h1>Parametros metricas</h1>
+
+<div id="parametros_metricas">
+  <% @parametros_metricas.each do |parametros_metrica| %>
+    <%= render parametros_metrica %>
+    <p>
+      <%= link_to "Show this parametros metrica", parametros_metrica %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New parametros metrica", new_parametros_metrica_path %>

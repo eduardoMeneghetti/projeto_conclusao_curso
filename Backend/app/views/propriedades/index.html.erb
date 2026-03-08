@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Propriedades" %>
+
+<h1>Propriedades</h1>
+
+<div id="propriedades">
+  <% @propriedades.each do |propriedade| %>
+    <%= render propriedade %>
+    <p>
+      <%= link_to "Show this propriedade", propriedade %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New propriedade", new_propriedade_path %>

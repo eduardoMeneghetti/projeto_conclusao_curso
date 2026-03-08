@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @safra %>
+
+<div>
+  <%= link_to "Edit this safra", edit_safra_path(@safra) %> |
+  <%= link_to "Back to safras", safras_path %>
+
+  <%= button_to "Destroy this safra", @safra, method: :delete %>
+</div>

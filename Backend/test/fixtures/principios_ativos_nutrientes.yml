@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  principio_ativos: one
+  nutriente: one
+  percentual: 9.99
+
+two:
+  principio_ativos: two
+  nutriente: two
+  percentual: 9.99

@@ -1,0 +1,42 @@
+<%= form_with(model: aplicacoes_itens_insumo) do |form| %>
+  <% if aplicacoes_itens_insumo.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(aplicacoes_itens_insumo.errors.count, "error") %> prohibited this aplicacoes_itens_insumo from being saved:</h2>
+
+      <ul>
+        <% aplicacoes_itens_insumo.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :aplicacoes_insumo_id, style: "display: block" %>
+    <%= form.text_field :aplicacoes_insumo_id %>
+  </div>
+
+  <div>
+    <%= form.label :principios_ativo_id, style: "display: block" %>
+    <%= form.text_field :principios_ativo_id %>
+  </div>
+
+  <div>
+    <%= form.label :insumo_id, style: "display: block" %>
+    <%= form.text_field :insumo_id %>
+  </div>
+
+  <div>
+    <%= form.label :quantidade_aplic, style: "display: block" %>
+    <%= form.text_field :quantidade_aplic %>
+  </div>
+
+  <div>
+    <%= form.label :dose_aplic, style: "display: block" %>
+    <%= form.text_field :dose_aplic %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

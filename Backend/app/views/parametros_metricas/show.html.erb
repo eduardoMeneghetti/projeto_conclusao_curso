@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @parametros_metrica %>
+
+<div>
+  <%= link_to "Edit this parametros metrica", edit_parametros_metrica_path(@parametros_metrica) %> |
+  <%= link_to "Back to parametros metricas", parametros_metricas_path %>
+
+  <%= button_to "Destroy this parametros metrica", @parametros_metrica, method: :delete %>
+</div>

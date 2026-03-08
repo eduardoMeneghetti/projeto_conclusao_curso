@@ -1,0 +1,1 @@
+json.partial! "recomendacoes_agricolas_itens/recomendacoes_agricolas_iten", recomendacoes_agricolas_iten: @recomendacoes_agricolas_iten

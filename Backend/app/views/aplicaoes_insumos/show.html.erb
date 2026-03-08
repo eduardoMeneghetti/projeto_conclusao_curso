@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @aplicaoes_insumo %>
+
+<div>
+  <%= link_to "Edit this aplicaoes insumo", edit_aplicaoes_insumo_path(@aplicaoes_insumo) %> |
+  <%= link_to "Back to aplicaoes insumos", aplicaoes_insumos_path %>
+
+  <%= button_to "Destroy this aplicaoes insumo", @aplicaoes_insumo, method: :delete %>
+</div>

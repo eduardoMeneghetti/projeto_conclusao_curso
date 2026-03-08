@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @gleba %>
+
+<div>
+  <%= link_to "Edit this gleba", edit_gleba_path(@gleba) %> |
+  <%= link_to "Back to glebas", glebas_path %>
+
+  <%= button_to "Destroy this gleba", @gleba, method: :delete %>
+</div>

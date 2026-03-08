@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @fichamento %>
+
+<div>
+  <%= link_to "Edit this fichamento", edit_fichamento_path(@fichamento) %> |
+  <%= link_to "Back to fichamentos", fichamentos_path %>
+
+  <%= button_to "Destroy this fichamento", @fichamento, method: :delete %>
+</div>

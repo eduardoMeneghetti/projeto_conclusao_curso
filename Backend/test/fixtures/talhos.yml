@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  descricao: MyString
+  ativo: false
+  area_hectares: 9.99
+  propriedade: one
+
+two:
+  descricao: MyString
+  ativo: false
+  area_hectares: 9.99
+  propriedade: two

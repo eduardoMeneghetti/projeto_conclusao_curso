@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @recomendacoes_agricola %>
+
+<div>
+  <%= link_to "Edit this recomendacoes agricola", edit_recomendacoes_agricola_path(@recomendacoes_agricola) %> |
+  <%= link_to "Back to recomendacoes agricolas", recomendacoes_agricolas_path %>
+
+  <%= button_to "Destroy this recomendacoes agricola", @recomendacoes_agricola, method: :delete %>
+</div>
