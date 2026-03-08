@@ -11,12 +11,16 @@ import { useAuthSelection } from "../../context/selectionContext";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../routes/index.routes";
+import { usePropriety } from "../../context/PropContext";
 
-type NavigationProps = StackNavigationProp<RootStackParamList, 'Config'>;
+type NavigationProps = StackNavigationProp<RootStackParamList,
+  'Config'
+>;
 
 export default function Header() {
   const navigation = useNavigation<NavigationProps>();
   const { onOpen, selectedHarvest } = useAuthSelection();
+  const { selectedPropriety } = usePropriety();
 
   const insets = useSafeAreaInsets();
 
@@ -37,13 +41,26 @@ export default function Header() {
         />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={onOpen}>
+      <View style={styles.context}>
+        <TouchableOpacity
+          onPress={onOpen}
+        >
+          <Text
+            style={styles.tilteHarvest}
+          >
+            {selectedHarvest
+              ? selectedHarvest.title
+              : 'Seleção da safra'}
+          </Text>
+        </TouchableOpacity>
         <Text>
-          {selectedHarvest
-            ? selectedHarvest.title
-            : 'Seleção da safra'}
+          {selectedPropriety
+            ? selectedPropriety.descricao
+            : ''}
         </Text>
-      </TouchableOpacity>
+      </View>
+
+
 
       <TouchableOpacity
         onPress={() => { }}

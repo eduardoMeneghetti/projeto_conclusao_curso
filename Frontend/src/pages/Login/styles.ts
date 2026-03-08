@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#3A7D44',
+        backgroundColor: themes.colors.primary,
     },
     boxTop: {
         flex: 1,
@@ -33,15 +33,15 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-         fontSize: width * 0.12, // 12% da largura da tela
+        fontSize: width * 0.12, 
         fontWeight: 'bold',
-        marginTop: width * 0.4, // 10% da largura da tela
+        marginTop: width * 0.4, 
         color: themes.colors.secondary,
     },
     subTitle: {
-        fontSize: width * 0.05, // 5% da largura da tela
+        fontSize: width * 0.05, 
         color: themes.colors.tertiary,
-        marginTop: width * 0.02, // 2% da largura da tela
+        marginTop: width * 0.02, 
     },
     button: {
         backgroundColor: themes.colors.secondary,

@@ -16,6 +16,8 @@ export const styles = StyleSheet.create({
         paddingBottom: paddingVertical,
     },
     text: {
-        fontWeight: 'normal'
+        fontWeight: 'normal',
+        alignItems: 'flex-start',
+        alignContent: 'flex-start'
     }
 });

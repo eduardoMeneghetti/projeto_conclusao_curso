@@ -11,6 +11,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../routes/index.routes';
+import { useUserDatabase } from  '../../database/useUserDatabase'
 
 type NavigationProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -25,24 +26,22 @@ export default function Login() {
   const navigation = useNavigation<NavigationProps>();
   const [usuario, setUsuario] = React.useState('');
   const [senha, setSenha] = React.useState('');
+  const { getByCrendentials } = useUserDatabase();
 
-
-  function getlogin() {
+  async function getlogin() {
     try {
       if (!usuario || !senha) {
         return Alert.alert('Atenção', 'Preencha todos os campos!');
       }
 
-      if (usuario === 'admin' && senha === 'admin') {
-
-        //Alert.alert('Sucesso', 'Login efetuado com sucesso!');
-
-        navigation.reset({routes: [{ name: 'BottomRoutes' }]});
+      const user = await getByCrendentials(usuario, senha);
+      if (user) {
+        navigation.reset({ routes: [{ name: 'BottomRoutes' }] });
       } else {
         Alert.alert('Erro', 'Usuário ou senha inválidos!');
       }
     } catch (error) {
-      alert(error + " Erro ao efetuar login!");
+      Alert.alert('Erro', String(error));
     }
   }
 

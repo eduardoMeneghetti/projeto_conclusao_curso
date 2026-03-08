@@ -13,5 +13,10 @@ export const styles = StyleSheet.create({
         },
         buttonText:{
             color: themes.colors.tertiary,
+        },
+        buttonImage: {
+            width: 24,
+            height: 24,
+            resizeMode: 'contain',
         }
 });

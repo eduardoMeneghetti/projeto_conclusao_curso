@@ -5,16 +5,11 @@ export const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'stretch',
         justifyContent: 'space-between',
-        padding: 20,
-    },
-    text:{
-
+        marginTop: 20,
+        marginBottom: 20
     },
     titleContainer: {
         justifyContent: 'space-around',
-    },
-    title:{
-        fontWeight: 'bold'
     },
     asterisk: {
         color: 'red',
@@ -26,7 +21,7 @@ export const styles = StyleSheet.create({
         marginTop: 15,
     },
     image: {
-            width: 15,
-            height: 15
+        width: 15,
+        height: 15
     },
 });

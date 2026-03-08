@@ -17,40 +17,40 @@ export default function BottomRoutes() {
     <FabProvider>
       <AuthProviderContext>
         <Tab.Navigator
-          initialRouteName="Home"
-          screenOptions={{
-            header: () => <Header />, 
-          }}
-          tabBar={(props) => <CustomTabBar {...props} />}
-        >
-          <Tab.Screen
-            name="Aplicacoes"
-            component={Application}
-          />
+            initialRouteName="Home"
+            screenOptions={{
+              header: () => <Header />,
+            }}
+            tabBar={(props) => <CustomTabBar {...props} />}
+          >
+            <Tab.Screen
+              name="Aplicacoes"
+              component={Application}
+            />
 
-          <Tab.Screen
-            name="Recomendacoes"
-            component={Recomendacoes}
-          />
+            <Tab.Screen
+              name="Recomendacoes"
+              component={Recomendacoes}
+            />
 
-          <Tab.Screen
-            name="Home"
-            component={Home}
-          />
+            <Tab.Screen
+              name="Home"
+              component={Home}
+            />
 
-          <Tab.Screen
-            name="Relatorios"
-            component={Report}
-          />
+            <Tab.Screen
+              name="Relatorios"
+              component={Report}
+            />
 
-          <Tab.Screen
-            name="Estoque"
-            component={Stock}
-          />
-        </Tab.Navigator>
+            <Tab.Screen
+              name="Estoque"
+              component={Stock}
+            />
+          </Tab.Navigator>
 
-        <GlobalButton />
-      </AuthProviderContext>
-    </FabProvider>
-  );
+          <GlobalButton />
+        </AuthProviderContext>
+      </FabProvider>
+    );
 }

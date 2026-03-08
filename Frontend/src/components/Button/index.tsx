@@ -1,24 +1,37 @@
 import React from 'react';
 import {
   Text,
-  TouchableHighlightProps,
+  Image,
+  ImageSourcePropType,
   TouchableOpacity,
+  TouchableOpacityProps,
 } from 'react-native';
 
 import { styles } from './styles';
 
-type Props = TouchableHighlightProps & {
-  title: string;
+// the image prop can be either a URI string or a local require/import (ImageSourcePropType)
+// this lets callers pass `require('../assets/my.png')` directly
+
+type Props = TouchableOpacityProps & {
+  title?: string;
+  image?: ImageSourcePropType;
+  children?: React.ReactNode;
 };
 
-export function Button({...rest}: Props) {
+export function Button({ title, image, children, ...rest }: Props) {
   return (
-    <TouchableOpacity 
-        style={styles.button}
-        {...rest}
-        activeOpacity={0.6}
+    <TouchableOpacity
+      style={styles.button}
+      activeOpacity={0.6}
+      {...rest}
     >
-        <Text style={styles.buttonText}>{rest.title}</Text>
+      {image ? (
+        <Image source={image} style={styles.buttonImage} />
+      ) : children ? (
+        <>{children}</>
+      ) : (
+        <Text style={styles.buttonText}>{title}</Text>
+      )}
     </TouchableOpacity>
   );
 }

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Dimensions, Text, FlatList, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Modal from 'react-native-modal';
-import { styles } from './sytles';
-import { stylesContainer } from './stylesContainer';
+import { styles } from './styleSelectionContext/sytles';
+import { stylesContainer } from './styleSelectionContext/stylesContainer';
 
 
 type Harvest = {

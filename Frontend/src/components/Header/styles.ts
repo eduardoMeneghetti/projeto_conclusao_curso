@@ -23,8 +23,11 @@ export default StyleSheet.create({
         width: 35, 
         height: 35
     },
-    selectedButton: {
-        
+    context: {
+        alignItems: 'center'
     },
+    tilteHarvest: {
+        fontSize: 18
+    }
 })
 
