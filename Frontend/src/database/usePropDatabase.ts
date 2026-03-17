@@ -42,6 +42,20 @@ export function usePropDatabase() {
         }
     }
 
+
+    async function getPropretyById(id: string) {
+        try {
+            const row = await database.getFirstAsync<PropDatabaseRaw>(
+                `SELECT * FROM propriedades WHERE id = $id`,
+                { $id: id }
+            );
+            return row ? mapProp(row) : null;
+        } catch (error) {
+            console.log("erro ao buscar propriedade", error);
+            return null;
+        }
+    }
+
     async function getPropretyAll() {
         try {
             const rows = await database.getAllAsync<PropDatabaseRaw>(
@@ -68,16 +82,41 @@ export function usePropDatabase() {
 
             const insertedRowId = result.lastInsertRowId.toLocaleString()
 
-            return {insertedRowId}
+            return { insertedRowId }
         } catch (error) {
             console.log("erro ao cadastrar usuario", error)
-        }finally{
+        } finally {
             await insert.finalizeAsync();
         }
 
-        
+
+    }
+
+    async function update(data: Pick<PropDatabase, "id" | "descricao" | "cidade_id" | "ativo" | "updated_at">) {
+
+        const insert = await database.prepareAsync(`
+            UPDATE propriedades SET descricao = $descricao, cidade_id = $cidade_id, ativo = $ativo, updated_at = datetime('now')
+            WHERE id = $id
+        `)
+
+        try {
+            await insert.executeAsync({
+                $id: data.id,
+                $descricao: data.descricao,
+                $cidade_id: data.cidade_id,
+                $ativo: data.ativo ? 1 : 0,
+            })
+
+        } catch (error) {
+            console.log("erro ao cadastrar usuario", error)
+        } finally {
+            await insert.finalizeAsync();
+        }
+
+
     }
     
 
-    return { getProprety, createProprety, getPropretyAll }
+
+    return { getProprety, createProprety, getPropretyAll, getPropretyById, update }
 }

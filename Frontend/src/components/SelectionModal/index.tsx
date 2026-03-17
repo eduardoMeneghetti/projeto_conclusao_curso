@@ -14,6 +14,7 @@ import { Button } from '../Button';
 type SelectionItem = {
   id: string;
   title: string;
+  inactive?: boolean;
 };
 
 type SelectionModalProps = {
@@ -26,6 +27,7 @@ type SelectionModalProps = {
   onAdd?: () => void;
   showInactiveToggle?: boolean;
   onToggleInactive?: (show: boolean) => void;
+  onEdit?: (item: SelectionItem) => void;
 };
 
 export default function SelectionModal({
@@ -38,6 +40,7 @@ export default function SelectionModal({
   onAdd,
   showInactiveToggle,
   onToggleInactive,
+  onEdit,
 }: SelectionModalProps) {
 
   const [showInactive, setShowInactive] = useState(false);
@@ -47,14 +50,37 @@ export default function SelectionModal({
     return (
       <TouchableOpacity
         onPress={() => {
+          if (item.inactive) return;
           onSelect(item);
           onClose();
         }}
-        style={[styles.item, isSelected && styles.itemSelected]}
+        style={[
+          styles.item,
+          isSelected && styles.itemSelected,
+          item.inactive && styles.itemInactive
+        ]}
       >
-        <Text style={[styles.itemText, isSelected && styles.itemTextSelected]}>
+
+        <Text style={[
+          styles.itemText, 
+          isSelected && styles.itemTextSelected,
+          item.inactive && styles.itemTextInactive, 
+          { flex: 1 }]}>
           {item.title}
         </Text>
+
+        {onEdit && (
+          <TouchableOpacity
+            onPress={() => onEdit(item)}
+            style={styles.itemEdit}
+          >
+            <Image
+              source={isSelected ? require('../../assets/icon/edit_item_select.png') : require('../../assets/icon/edit_item.png')}
+              style={styles.imageEdit}
+            />
+          </TouchableOpacity>
+        )}
+
       </TouchableOpacity>
     );
   };
@@ -102,7 +128,7 @@ export default function SelectionModal({
 
         {onAdd && (
           <View style={styles.button}>
-            <Button title='+' onPress={onAdd}/>
+            <Button title='+' onPress={onAdd} />
           </View>
         )}
       </View>

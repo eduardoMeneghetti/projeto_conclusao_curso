@@ -6,22 +6,28 @@ import {
 } from 'react-native'
 import { styles } from './styles'
 import ButtonPages from "../../components/ButtonPages";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Line from "../../components/Line";
 import { InputText } from "../../components/TextInput";
 import ButtonSelect from "../../components/ButtonSelect";
 import { Button } from "../../components/Button";
-import { usePropDatabase } from "../../database/propDatabse";
+import { usePropDatabase } from "../../database/usePropDatabase";
 import { useCidadeDatabase, CidadeDatabase, seedEstadosCidades } from "../../database/cityStateDatabase";
 import SelectionModal from "../../components/SelectionModal";
+import { TopButton } from "../../components/TopButton";
 
 export default function Proprieties() {
     const navigation = useNavigation<any>();
-    const { createProprety } = usePropDatabase();
+    const route = useRoute<any>();
+    const { createProprety, getPropretyById, update } = usePropDatabase();
     const { getCitiesStates } = useCidadeDatabase();
 
+    const id = route.params?.id;
+    const isEditing = !!id;
+    const [ativo, setAtivo] = useState(true);
+
     const [descricao, setDescricao] = useState('');
-    const [ selectedCidade, setSelectedCidade ] = useState<CidadeDatabase | null>(null);
+    const [selectedCidade, setSelectedCidade] = useState<CidadeDatabase | null>(null);
     const [cidades, setCidades] = useState<CidadeDatabase[]>([]);
     const [isCidadeModalVisible, setIsCidadeModalVisible] = useState(false);
 
@@ -29,14 +35,40 @@ export default function Proprieties() {
         getCitiesStates().then(setCidades)
     }, []);
 
+    useEffect(() => {
+        if (isEditing) {
+            getPropretyById(id).then((prop) => {
+                if (prop) {
+                    setDescricao(prop.descricao);
+                    setAtivo(prop.ativo);
+
+                    getCitiesStates().then((cidades) => {
+                        const cidade = cidades.find(c => c.id === prop.cidade_id);
+                        if (cidade) setSelectedCidade(cidade);
+                    });
+                }
+            });
+        }
+    }, [id]);
+
     async function handleSalvar() {
         if (!descricao) return alert('Descrição obrigatória');
         if (!selectedCidade) return alert('Cidade obrigatória');
 
-        await createProprety({
-            descricao,
-            cidade_id: selectedCidade.id,
-        });
+        if (isEditing) {
+            await update({
+                id: Number(id),
+                descricao,
+                cidade_id: selectedCidade.id,
+                ativo,
+                updated_at: ""
+            });
+        } else {
+            await createProprety({
+                descricao,
+                cidade_id: selectedCidade.id,
+            });
+        }
 
         navigation.navigate('Config');
     }
@@ -44,17 +76,12 @@ export default function Proprieties() {
     return (
         <View style={styles.container}>
 
-            <View style={styles.top}>
-                <ButtonPages title="Voltar"
-                    onPress={() => {
-                        navigation.navigate('Config');
-                    }}
-                />
-
-                <Line />
-
-                <Text style={styles.title}>Cadastro de propriedades</Text>
-            </View>
+            <TopButton
+            title={isEditing? 'Edição de Propriedade' : 'Cadastro de Propriedade'}
+            onPress={
+                () => {navigation.navigate('Config')}
+            }
+            />
 
             <View style={styles.form}>
 
@@ -69,7 +96,7 @@ export default function Proprieties() {
                     isRequired={true}
                     title="Cidade:"
                     text={selectedCidade
-                        ? `${selectedCidade.descricao} - ${selectedCidade.descricao}`
+                        ? `${selectedCidade.descricao} - ${selectedCidade.sigla}`
                         : "Selecione uma cidade"
                     }
                     onPress={() => setIsCidadeModalVisible(true)}
@@ -78,7 +105,8 @@ export default function Proprieties() {
                 <ButtonSelect
                     isRequired={false}
                     title="Cadastro ativo:"
-                    text="Sim"
+                    text={isEditing ? (ativo ? 'Sim' : 'Não') : 'Sim'}
+                    onPress={isEditing ? () => setAtivo(! ativo) : undefined}
                 />
 
             </View>
@@ -86,7 +114,7 @@ export default function Proprieties() {
             <View style={styles.salve}>
                 <Button
                     title="Salvar"
-                    onPress={handleSalvar} 
+                    onPress={handleSalvar}
                 />
             </View>
 

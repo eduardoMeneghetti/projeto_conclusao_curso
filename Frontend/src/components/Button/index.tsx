@@ -9,9 +9,6 @@ import {
 
 import { styles } from './styles';
 
-// the image prop can be either a URI string or a local require/import (ImageSourcePropType)
-// this lets callers pass `require('../assets/my.png')` directly
-
 type Props = TouchableOpacityProps & {
   title?: string;
   image?: ImageSourcePropType;

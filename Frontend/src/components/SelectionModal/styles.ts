@@ -50,12 +50,15 @@ export const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   item: {
-    padding: 16,
+    padding: 10,
     borderRadius: 8,
     backgroundColor: themes.colors.background_input,
     marginBottom: 8,
     borderWidth: 2,
     borderColor: 'transparent',
+    flexDirection: 'row',        
+    alignItems: 'center',        
+    justifyContent: 'space-between' 
   },
   itemSelected: {
     backgroundColor: themes.colors.secondary
@@ -68,12 +71,25 @@ export const styles = StyleSheet.create({
     color: themes.colors.white,
     fontWeight: 'bold',
   },
-  button:{
+  button: {
     justifyContent: 'center',
     alignItems: 'center',
   },
-  imageActiveInative:{
+  imageActiveInative: {
     width: 50,
     height: 50
+  },
+  itemEdit:{
+    padding: 8
+  },
+  imageEdit: {
+    width: 20,
+    height: 20,
+  },
+  itemInactive: {
+    opacity: 0.4
+  },
+  itemTextInactive: {
+    color: themes.colors.gray
   }
 });

@@ -1,6 +1,6 @@
 import React, { useState, createContext, useContext, useEffect } from 'react';
-import { usePropDatabase } from '../database/propDatabse';
-import { PropDatabase } from '../database/propDatabse';
+import { usePropDatabase } from '../database/usePropDatabase';
+import { PropDatabase } from '../database/usePropDatabase';
 
 type ProprietyContextType = {
   isModalVisible: boolean;
@@ -9,7 +9,7 @@ type ProprietyContextType = {
   selectedPropriety: PropDatabase | null;
   setSelectedPropriety: (propriety: PropDatabase) => void;
   proprieties: PropDatabase[];
-  loadProprieties: (withInactive?: boolean) => void;  // 👈 adicionado
+  loadProprieties: (withInactive?: boolean) => void;  
 };
 
 export const ProprietyContext = createContext<ProprietyContextType>(
@@ -22,7 +22,11 @@ export const ProprietyProvider = ({ children }: any) => {
   const [proprieties, setProprieties] = useState<PropDatabase[]>([]);
   const { getProprety, getPropretyAll } = usePropDatabase();
 
-  const onOpen = () => setIsModalVisible(true);
+  const onOpen = () => {
+    setIsModalVisible(true);
+    loadProprieties();
+  }
+  
   const onClose = () => setIsModalVisible(false);
 
   const loadProprieties = (withInactive: boolean = false) => {
@@ -33,7 +37,7 @@ export const ProprietyProvider = ({ children }: any) => {
   };
 
   useEffect(() => {
-    loadProprieties();  
+    loadProprieties();
   }, []);
 
   return (
@@ -41,7 +45,7 @@ export const ProprietyProvider = ({ children }: any) => {
       value={{
         isModalVisible,
         onOpen,
-        onClose,
+        onClose,  
         selectedPropriety,
         setSelectedPropriety,
         proprieties,

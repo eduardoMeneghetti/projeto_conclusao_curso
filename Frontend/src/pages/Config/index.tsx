@@ -14,7 +14,7 @@ import { usePropriety } from "../../context/PropContext";
 import SelectionModal from "../../components/SelectionModal";
 
 export default function Config() {
-    const navigation =  useNavigation<any>();
+    const navigation = useNavigation<any>();
     const {
         isModalVisible,
         onOpen,
@@ -60,15 +60,32 @@ export default function Config() {
                         isRequired={false}
                     />
 
+                    <ButtonSelect
+                        title="Atividades"
+                        text="Cadastro de atividade"
+                        isRequired={false}
+                        onPress={
+                            () => {navigation.navigate('Activity')}
+                        }
+                    />
+
                 </View>
 
             </View>
 
             <SelectionModal
+                onEdit={(item) => {
+                    onClose();
+                    navigation.navigate('Proprieties', { id: item.id });
+                }}
                 isVisible={isModalVisible}
                 onClose={onClose}
                 showInactiveToggle={true}
-                data={proprieties.map(p => ({ id: String(p.id), title: p.descricao }))}
+                data={proprieties.map(p => ({
+                    id: String(p.id),
+                    title: p.descricao,
+                    inactive: !p.ativo
+                }))}
                 selectedId={selectedPropriety ? String(selectedPropriety.id) : null}
                 onSelect={(item) => {
                     const prop = proprieties.find(p => String(p.id) === item.id);
@@ -83,6 +100,7 @@ export default function Config() {
                     loadProprieties(showInactive);
                 }}
             />
+
         </View>
     );
 }
