@@ -77,10 +77,10 @@ export default function Proprieties() {
         <View style={styles.container}>
 
             <TopButton
-            title={isEditing? 'Edição de Propriedade' : 'Cadastro de Propriedade'}
-            onPress={
-                () => {navigation.navigate('Config')}
-            }
+                title={isEditing ? 'Edição de Propriedade' : 'Cadastro de Propriedade'}
+                onVoltar={
+                    () => { navigation.navigate('Config') }
+                }
             />
 
             <View style={styles.form}>
@@ -106,7 +106,7 @@ export default function Proprieties() {
                     isRequired={false}
                     title="Cadastro ativo:"
                     text={isEditing ? (ativo ? 'Sim' : 'Não') : 'Sim'}
-                    onPress={isEditing ? () => setAtivo(! ativo) : undefined}
+                    onPress={isEditing ? () => setAtivo(!ativo) : undefined}
                 />
 
             </View>

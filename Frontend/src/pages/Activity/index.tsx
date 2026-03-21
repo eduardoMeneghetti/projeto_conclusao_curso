@@ -28,7 +28,7 @@ export default function Activity() {
         <View style={styles.container}>
             <TopButton
                 title="ATIVIDADES"
-                onPress={
+                onVoltar={
                     () => { navigation.navigate('Config') }
                 }
             />

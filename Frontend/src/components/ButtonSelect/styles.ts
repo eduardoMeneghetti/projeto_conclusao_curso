@@ -5,8 +5,8 @@ export const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'stretch',
         justifyContent: 'space-between',
-        marginTop: 20,
-        marginBottom: 20
+        marginTop: 15,
+        marginBottom: 15
     },
     titleContainer: {
         justifyContent: 'space-around',

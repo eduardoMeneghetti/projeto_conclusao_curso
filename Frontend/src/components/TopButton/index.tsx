@@ -11,14 +11,31 @@ import { styles } from "./styles";
 
 type Props = TouchableOpacityProps & {
     title?: string;
+    onVoltar?: () => void;
+    onCancelar?: () => void;
 };
 
-export  function TopButton({title, ...rest}: Props) {
+export function TopButton({ title, onVoltar, onCancelar, ...rest }: Props) {
     return (
         <View style={styles.top}>
-            <ButtonPages title="Voltar"
-             {...rest}
-            />
+            <View style={styles.botoes}>
+                <ButtonPages
+                    title="Voltar"
+                    tipo="v"
+                    {...rest}
+                    onPress={onVoltar}
+                />
+
+                {onCancelar && (
+                    <ButtonPages
+                        title="Cancelar"
+                        tipo="c"
+                        {...rest}
+                        onPress={onCancelar}
+                    />
+                )}
+
+            </View>
 
             <Line />
 

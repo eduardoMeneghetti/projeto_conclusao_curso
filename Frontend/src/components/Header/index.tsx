@@ -46,7 +46,7 @@ export default function Header() {
       </View>
 
       <TouchableOpacity onPress={() => { }}>
-        <Image source={require('../../assets/icon/aprovar_audit.png')} style={styles.image} />
+        <Image source={require('../../assets/icon/sincronizar.png')} style={styles.image} />
       </TouchableOpacity>
 
       <SelectionModal

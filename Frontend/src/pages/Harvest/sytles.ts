@@ -26,5 +26,9 @@ export const styles = StyleSheet.create({
         height: '20%',
         alignItems: 'center',
         alignContent: 'center'
+    },
+    InLine:{
+        flexDirection: `row`,
+        gap: 40
     }
 });

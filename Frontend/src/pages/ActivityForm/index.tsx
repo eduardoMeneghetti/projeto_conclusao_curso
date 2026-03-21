@@ -70,7 +70,7 @@ export default function ActivityForm() {
         <View style={styles.container}>
             <TopButton
                 title={isEditing? 'Edição de Atividade' : 'Cadastro de Atividade'}
-                onPress={
+                onVoltar={
                     () => { navigation.navigate('Activity') }
                 }
             />

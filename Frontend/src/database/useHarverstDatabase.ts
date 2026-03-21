@@ -55,10 +55,16 @@ export function useHarverstDatabase() {
 
     }
 
-    async function getHarvest() {
+    async function getHarvest(propriedade_id: number) {
         try {
             const rows = await database.getAllAsync<UseHarvestRaw>(
-                `SELECT * FROM safras WHERE ativo = 1 AND deleted_at IS NULL`
+                `SELECT s.* 
+                 FROM safras s
+                 INNER JOIN atividade_safras ats ON ats.safra_id  = s.id
+                 INNER JOIN propriedades p ON ats.propriedade_id = p.id
+                 WHERE ats.propriedade_id = $propriedade_id 
+                 AND s.ativo = 1`,
+                { $propriedade_id: propriedade_id } 
             )
             return rows.map(mapHarvest)
         } catch (error) {
@@ -67,21 +73,30 @@ export function useHarverstDatabase() {
         }
     }
 
-    async function getHarvestAll() {
+    async function getHarvestAll(propriedade_id: number) {
         try {
             const rows = await database.getAllAsync<UseHarvestRaw>(
-                `SELECT * FROM safras`
+                `SELECT s.* 
+                 FROM safras s
+                 INNER JOIN atividade_safras ats ON ats.safra_id  = s.id
+                 INNER JOIN propriedades p ON ats.propriedade_id = p.id
+                 WHERE ats.propriedade_id = $propriedade_id `,
+                 { $propriedade_id: propriedade_id } 
             )
             return rows.map(mapHarvest)
         } catch (error) {
             console.error("Erro ao buscar safra: ", error)
+            return [ ]
         }
     }
 
     async function getHarvestById(id: string) {
         try {
             const row = await database.getFirstAsync<UseHarvestRaw>(
-                `SELECT * FROM safras WHERE id = $id`,
+                `SELECT *
+                FROM safras s
+                INNER JOIN atividade_safras ats ON ats.safra_id = s.id 
+                WHERE s.id = $id`,
                 { $id: id }
             )
 

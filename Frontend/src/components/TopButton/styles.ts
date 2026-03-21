@@ -19,5 +19,9 @@ export const styles = StyleSheet.create({
             textTransform: 'uppercase',
             fontSize: 16,
             textAlign: 'center'
-        }
+        },
+        botoes:{
+            flexDirection: 'row',
+            gap: 230
+        },
 })

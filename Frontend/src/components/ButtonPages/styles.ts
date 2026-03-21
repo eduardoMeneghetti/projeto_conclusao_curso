@@ -19,5 +19,9 @@ export const styles = StyleSheet.create({
         fontWeight: 'normal',
         alignItems: 'flex-start',
         alignContent: 'flex-start'
+    },
+    cancel:{
+        color: themes.colors.red,
+        backgroundColor: themes.colors.red
     }
 });
