@@ -1,7 +1,15 @@
-class ApplicationController < ActionController::Base
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
-  allow_browser versions: :modern
+# app/controllers/application_controller.rb
+class ApplicationController < ActionController::API
+    before_action :authenticate_request
 
-  # Changes to the importmap will invalidate the etag for HTML responses
-  stale_when_importmap_changes
+    private
+
+    def authenticate_request
+        token = request.headers['Authorization']&.split(' ')&.last
+        decoded = JsonWebToken.decode(token)
+
+        unless decoded
+            render json: { error: "Token inválido" }, status: :unauthorized
+        end
+    end
 end

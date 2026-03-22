@@ -19,7 +19,7 @@ class UsuariosController < ApplicationController
   def edit
   end
 
-  # POST /usuarios or /usuarios.json
+ 
   def create
     @usuario = Usuario.new(usuario_params)
 
@@ -65,6 +65,6 @@ class UsuariosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def usuario_params
-      params.expect(usuario: [ :nome, :usuario, :senha, :email, :operador ])
+      params.expect(usuario: [ :nome, :usuario, :senha, :email, :operador, :recomendate])
     end
 end
