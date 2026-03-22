@@ -17,16 +17,16 @@ export default function ButtonSelect({...rest}: Props) {
     return (
         <View style={styles.container}>
             <View style={styles.titleContainer}>
-                <Text style={styles.title}>
+                <Text>
                     {rest.title}
                     {rest.isRequired && <Text style={styles.asterisk}> *</Text>}
                 </Text>
             </View>
             <TouchableOpacity {...rest} style={styles.button}>
-                <Image style={styles.image}
+                <Image style={styles.image} 
                     source={require('../../assets/icon/menu_select_verde.png')}
-                />
-                <Text style={styles.text}>
+                /> 
+                <Text>
                     {rest.text}
                 </Text>
             </TouchableOpacity>

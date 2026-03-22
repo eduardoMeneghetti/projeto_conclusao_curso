@@ -7,33 +7,40 @@ import {
 } from "react-native";
 import styles from "./styles";
 import { useAuthSelection } from "../../context/selectionContext";
-
+import { usePropriety } from "../../context/PropContext";
 
 export const GlobalButton = () => {
     const { action } = useFab();
     const { selectedHarvest } = useAuthSelection();
+    const { selectedPropriety } = usePropriety();
 
     if (!action) return null;
 
     const handlePress = () => {
-        // 🚨 validação
+        
         if (!selectedHarvest) {
             Alert.alert(
                 "Atenção",
                 "Selecione uma safra antes de continuar."
             );
-            return;
+            return; 
         }
 
-        action(); // executa se estiver tudo certo
+
+        if (!selectedPropriety) {
+            Alert.alert(
+                "Atenção",
+                "Selecione a propriedade nas configurações."
+            );
+            return; 
+        }
+
+        action();
     };
 
     return (
         <TouchableOpacity onPress={handlePress} style={styles.fab}>
-            <Text style={styles.fabText}>
-                +
-            </Text>
+            <Text style={styles.fabText}>+</Text>
         </TouchableOpacity>
-    )
-
-}
+    );
+};

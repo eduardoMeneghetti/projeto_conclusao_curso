@@ -1,120 +1,93 @@
-import React, { useState } from 'react';
-import { View, Dimensions, Text, FlatList, TouchableOpacity } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Modal from 'react-native-modal';
-import { styles } from './sytles';
-import { stylesContainer } from './stylesContainer';
-
-
-type Harvest = {
-  id: string;
-  title: string;
-};
+import React, { useState, useEffect } from 'react';
+import { useHarverstDatabase, UseHarverst } from '../database/useHarverstDatabase';
+import { usePropriety } from './PropContext';
+import { Alert } from 'react-native';
+import { UseActivityHarvestDatabase } from '../database/useActivityHarvestDatabase';
 
 type AuthSelectionContextType = {
   onOpen: () => void;
   onClose: () => void;
-  selectedHarvest: Harvest | null;
+  isVisible: boolean;
+  selectedHarvest: UseHarverst | null;
+  harvests: UseHarverst[];
+  loadHarvests: (withInactive?: boolean) => void;
+  setSelectedHarvest: (harvest: UseHarverst | null) => void;
+  selectedAtividadeSafraId: number | null;
 };
-
 
 export const AuthSelectionContext =
   React.createContext<AuthSelectionContextType>(
     {} as AuthSelectionContextType
   );
 
-
-export const AuthProviderContext = (props: any): any => {
+export const AuthProviderContext = (props: any) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [selectedHarvest, setSelectedHarvest] = useState<Harvest | null>(null);
+  const [selectedHarvest, setSelectedHarvest] = useState<UseHarverst | null>(null);
+  const [selectedAtividadeSafraId, setSelectedAtividadeSafraId] = useState<number | null>(null);
+  const { getActivityHarvestById } = UseActivityHarvestDatabase();
+  const [harvests, setHarvests] = useState<UseHarverst[]>([]);
+  const { getHarvest, getHarvestAll } = useHarverstDatabase();
+  const { selectedPropriety } = usePropriety();
 
-  const insets = useSafeAreaInsets();
+  const onOpen = () => {
 
-  const onOpen = () => setIsVisible(true);
+    if (!selectedPropriety) {
+      Alert.alert(
+        "Anteção",
+        "Selecione uma propriedade antes de continuar"
+      );
+      return
+    }
+
+    setIsVisible(true);
+    loadHarvests();
+  };
   const onClose = () => setIsVisible(false);
 
+  const handleSelectHarvest = (harvest: UseHarverst | null) => {
+    setSelectedHarvest(harvest);
 
-  const data = [
-    {
-      id: '1',
-      title: 'Safra 2023/2024',
-      done: false
-    },
-    {
-      id: '2',
-      title: 'Safra 2024/2025',
-      done: false
-    },
-    {
-      id: '3',
-      title: 'Safra 2025/2026',
-      done: false
-    },
-  ]
+    if (!harvest) {
+      setSelectedAtividadeSafraId(null);
+      return;
+    }
 
-  const renderItem = ({ item }: { item: Harvest }) => {
-    const isSelected = item.id === selectedHarvest?.id;
-
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          setSelectedHarvest(item);
-          onClose();
-        }}
-        style={[
-          stylesContainer.item,
-          isSelected && stylesContainer.itemSelected
-        ]}
-      >
-        <Text
-          style={[
-            stylesContainer.itemText,
-            isSelected && stylesContainer.itemTextSelected
-          ]}
-        >
-          {item.title}
-        </Text>
-      </TouchableOpacity>
-    );
+    getActivityHarvestById(harvest.id).then((activityHarvest) => {
+      if (activityHarvest) {
+        setSelectedAtividadeSafraId(activityHarvest.id);
+      }
+    });
   };
 
+  const loadHarvests = (withInactive: boolean = false) => {
+    if (!selectedPropriety) return;
 
-  const _container = () => {
-    return (
-      <View style={stylesContainer.container}>
-        <FlatList
-          data={data}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
-    );
+    const fetch = withInactive ? getHarvestAll : getHarvest;
+    fetch(selectedPropriety.id).then((result) => {
+      if (result) setHarvests(result);
+    });
   };
 
+  useEffect(() => {
+    setSelectedHarvest(null);
+    setSelectedAtividadeSafraId(null);
+    loadHarvests();
+  }, [selectedPropriety]);
 
   return (
-      <AuthSelectionContext.Provider
+    <AuthSelectionContext.Provider
       value={{
         onOpen,
         onClose,
+        isVisible,
         selectedHarvest,
+        harvests,
+        loadHarvests,
+        setSelectedHarvest: handleSelectHarvest,
+        selectedAtividadeSafraId,
       }}
     >
       {props.children}
-
-      <Modal
-        isVisible={isVisible}
-        animationIn="slideInDown"
-        animationOut="slideOutUp"
-        onBackdropPress={onClose}
-        style={{ margin: 0, justifyContent: 'flex-start' }}
-        propagateSwipe
-      >
-        <View style={styles.container}>
-          {_container()}
-        </View>
-      </Modal>
     </AuthSelectionContext.Provider>
   );
 };

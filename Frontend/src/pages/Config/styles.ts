@@ -41,5 +41,8 @@ export const styles = StyleSheet.create({
         borderColor: themes.colors.primary,
         borderWidth: 4,
         marginBottom: 10,
+    },
+    menus:{
+        paddingLeft: 10
     }
 });

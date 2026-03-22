@@ -38,7 +38,7 @@ export default function App() {
   return (
     <FabProvider>
       <NavigationContainer>
-        <Routes />
+          <Routes />
       </NavigationContainer>
     </FabProvider>
   );

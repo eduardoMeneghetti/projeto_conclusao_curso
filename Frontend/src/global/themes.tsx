@@ -8,6 +8,7 @@ export const themes = {
         black: '#000000',
         menuBar: '#DAD7CD',
         white: '#FFFFFF',
-        page: '#D9D9D9'
+        page: '#D9D9D9',
+        red: '#fc2403'
     }
 }

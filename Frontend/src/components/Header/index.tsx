@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,48 +11,98 @@ import { useAuthSelection } from "../../context/selectionContext";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../routes/index.routes";
+import { usePropriety } from "../../context/PropContext";
+import SelectionModal from "../../components/SelectionModal";
+import NetInfo from '@react-native-community/netinfo';
+import { useSQLiteContext } from 'expo-sqlite';
+import { syncAll } from '../../services/sync';
 
-type NavigationProps = StackNavigationProp<RootStackParamList, 'Config'>;
+type NavigationProps = StackNavigationProp<RootStackParamList,
+  'Config',
+  'Harvest'
+>;
+
 
 export default function Header() {
-  const navigation = useNavigation<NavigationProps>();
-  const { onOpen, selectedHarvest } = useAuthSelection();
+  const navigation = useNavigation<any>();
+  const { onOpen, onClose, isVisible, selectedHarvest, harvests, loadHarvests, setSelectedHarvest } = useAuthSelection();
+  const { selectedPropriety } = usePropriety();
+  const [isConnected, setIsConnected] = useState(false);
+  const database = useSQLiteContext();
+
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(!!state.isConnected);
+    });
+    return unsubscribe;
+  }, []);
+
+
+  async function handleSync() {
+    try {
+      await syncAll(database);
+      alert('Sincronizado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao sincronizar:', error);
+      alert('Erro ao sincronizar');
+    }
+  }
 
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[
-      styles.container,
-      {
-        paddingTop: insets.top + 10,
-        paddingBottom: 10,
-      }
-    ]}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('Config')}
-      >
-        <Image
-          source={require('../../assets/icon/menu-aberto.png')}
-          style={styles.image}
-        />
+    <View style={[styles.container, { paddingTop: insets.top + 10, paddingBottom: 10 }]}>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Config')}>
+        <Image source={require('../../assets/icon/menu-aberto.png')} style={styles.image} />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={onOpen}>
+      <View style={styles.context}>
+        <TouchableOpacity onPress={onOpen}>
+          <Text style={styles.tilteHarvest}>
+            {selectedHarvest ? selectedHarvest.descricao : 'Seleção da safra'}
+          </Text>
+        </TouchableOpacity>
         <Text>
-          {selectedHarvest
-            ? selectedHarvest.title
-            : 'Seleção da safra'}
+          {selectedPropriety ? selectedPropriety.descricao : ''}
         </Text>
-      </TouchableOpacity>
+      </View>
 
       <TouchableOpacity
-        onPress={() => { }}
+        disabled={!isConnected}
+        style={{ opacity: isConnected ? 1 : 0.4 }}
+        onPress={handleSync}
       >
-        <Image
-          source={require('../../assets/icon/aprovar_audit.png')}
-          style={styles.image}
-        />
+        <Image source={require('../../assets/icon/sincronizar.png')} style={styles.image} />
       </TouchableOpacity>
+
+      <SelectionModal
+        isVisible={isVisible}
+        onClose={onClose}
+        title="Selecione a Safra"
+        data={harvests.map(h => ({
+          id: String(h.id),
+          title: h.descricao,
+          inactive: !h.ativo
+        }))}
+        selectedId={selectedHarvest ? String(selectedHarvest.id) : null}
+        onSelect={(item) => {
+          const harvest = harvests.find(h => String(h.id) === item.id);
+          if (harvest) setSelectedHarvest(harvest);
+        }}
+        showInactiveToggle={true}
+        onToggleInactive={(show) => loadHarvests(show)}
+        onAdd={() => {
+          onClose();
+          navigation.navigate('Harvest' as never);
+        }}
+        onEdit={(item) => {
+          onClose();
+          navigation.navigate('Harvest', { id: item.id })
+        }}
+      />
+
     </View>
   );
 }

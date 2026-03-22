@@ -1,25 +1,38 @@
 import React from 'react';
 import {
   Text,
-  TouchableHighlightProps,
+  Image,
+  ImageSourcePropType,
   TouchableOpacity,
+  TouchableOpacityProps,
+  View,
 } from 'react-native';
 
 import { styles } from './styles';
 
-type Props = TouchableHighlightProps & {
-  title: string;
+type Props = TouchableOpacityProps & {
+  title?: string;
+  image?: ImageSourcePropType;
+  children?: React.ReactNode;
 };
 
-export function Button({...rest}: Props) {
+export function Button({ title, image, children, ...rest }: Props) {
   return (
-    <TouchableOpacity 
+    <View style={styles.salvar}>
+      <TouchableOpacity
         style={styles.button}
-        {...rest}
         activeOpacity={0.6}
-    >
-        <Text style={styles.buttonText}>{rest.title}</Text>
-    </TouchableOpacity>
+        {...rest}
+      >
+        {image ? (
+          <Image source={image} style={styles.buttonImage} />
+        ) : children ? (
+          <>{children}</>
+        ) : (
+          <Text style={styles.buttonText}>{title}</Text>
+        )}
+      </TouchableOpacity>
+    </View>
   );
 }
 
