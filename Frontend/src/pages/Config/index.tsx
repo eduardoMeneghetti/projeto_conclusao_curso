@@ -58,6 +58,9 @@ export default function Config() {
                         title="Usuários"
                         text="Cadastro de usuários"
                         isRequired={false}
+                        onPress={
+                            () => {navigation.navigate('User')}
+                        }
                     />
 
                     <ButtonSelect

@@ -5,6 +5,7 @@ import {
   ImageSourcePropType,
   TouchableOpacity,
   TouchableOpacityProps,
+  View,
 } from 'react-native';
 
 import { styles } from './styles';
@@ -17,19 +18,21 @@ type Props = TouchableOpacityProps & {
 
 export function Button({ title, image, children, ...rest }: Props) {
   return (
-    <TouchableOpacity
-      style={styles.button}
-      activeOpacity={0.6}
-      {...rest}
-    >
-      {image ? (
-        <Image source={image} style={styles.buttonImage} />
-      ) : children ? (
-        <>{children}</>
-      ) : (
-        <Text style={styles.buttonText}>{title}</Text>
-      )}
-    </TouchableOpacity>
+    <View style={styles.salvar}>
+      <TouchableOpacity
+        style={styles.button}
+        activeOpacity={0.6}
+        {...rest}
+      >
+        {image ? (
+          <Image source={image} style={styles.buttonImage} />
+        ) : children ? (
+          <>{children}</>
+        ) : (
+          <Text style={styles.buttonText}>{title}</Text>
+        )}
+      </TouchableOpacity>
+    </View>
   );
 }
 

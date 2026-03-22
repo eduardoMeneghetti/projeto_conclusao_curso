@@ -69,7 +69,7 @@ export default function ActivityForm() {
     return (
         <View style={styles.container}>
             <TopButton
-                title={isEditing? 'Edição de Atividade' : 'Cadastro de Atividade'}
+                title={isEditing ? 'Edição de Atividade' : 'Cadastro de Atividade'}
                 onVoltar={
                     () => { navigation.navigate('Activity') }
                 }
@@ -97,12 +97,12 @@ export default function ActivityForm() {
 
             </View>
 
-            <View style={styles.salvar}>
-                <Button
-                    title="Salvar"
-                    onPress={handleSave}
-                />
-            </View>
+
+            <Button
+                title="Salvar"
+                onPress={handleSave}
+            />
+
 
         </View>
     )

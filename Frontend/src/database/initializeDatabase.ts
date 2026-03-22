@@ -72,17 +72,18 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       id, nome, usuario, senha, email, operador, recomendate, ativo,
       created_at, updated_at, synced_at, is_dirty, server_id, deleted_at
     ) VALUES (
-      1, 'Administrador', 'admin', 'admin', NULL, 0, 0, 1,
-      datetime('now'), datetime('now'), NULL, 0, NULL, NULL
+      1, 'Administrador', 'admin', 'admin', 'admin@admin', 1, 1, 1,
+      datetime('now'), datetime('now'), NULL, 1, NULL, NULL
     );
 
      INSERT OR IGNORE INTO usuarios (
       id, nome, usuario, senha, email, operador, recomendate, ativo,
       created_at, updated_at, synced_at, is_dirty, server_id, deleted_at
     ) VALUES (
-      2, 'Eduardo Gerente', 'eduardo', 'eduardo', NULL, 0, 0, 1,
-      datetime('now'), datetime('now'), NULL, 0, NULL, NULL
+      2, 'Eduardo Gerente', 'eduardo', 'eduardo', 'eduardo@dudu.com.br', 1, 0, 1,
+      datetime('now'), datetime('now'), NULL, 1, NULL, NULL
     );
+
 
     CREATE TABLE IF NOT EXISTS safras (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

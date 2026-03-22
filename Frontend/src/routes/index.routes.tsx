@@ -10,6 +10,8 @@ import Proprieties from "../pages/proprieties";
 import Harvest from "../pages/Harvest";
 import Activity from "../pages/Activity";
 import ActivityForm from "../pages/ActivityForm";
+import User from "../pages/User";
+import UserForm from "../pages/UserForm";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -19,6 +21,8 @@ export type RootStackParamList = {
   Harvest: undefined;
   Activity: undefined;
   ActivityForm: undefined;
+  User: undefined;
+  UserForm: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -64,6 +68,16 @@ export default function Routes() {
           <Stack.Screen
             name="ActivityForm"
             component={ActivityForm}
+          />
+
+          <Stack.Screen
+            name="User"
+            component={User}
+          />
+
+          <Stack.Screen
+            name="UserForm"
+            component={UserForm}
           />
 
         </Stack.Navigator>

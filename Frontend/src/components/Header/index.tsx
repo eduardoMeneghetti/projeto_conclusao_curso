@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,17 +13,41 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../routes/index.routes";
 import { usePropriety } from "../../context/PropContext";
 import SelectionModal from "../../components/SelectionModal";
-
+import NetInfo from '@react-native-community/netinfo';
+import { useSQLiteContext } from 'expo-sqlite';
+import { syncAll } from '../../services/sync';
 
 type NavigationProps = StackNavigationProp<RootStackParamList,
   'Config',
   'Harvest'
 >;
 
+
 export default function Header() {
   const navigation = useNavigation<any>();
   const { onOpen, onClose, isVisible, selectedHarvest, harvests, loadHarvests, setSelectedHarvest } = useAuthSelection();
   const { selectedPropriety } = usePropriety();
+  const [isConnected, setIsConnected] = useState(false);
+  const database = useSQLiteContext();
+
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(!!state.isConnected);
+    });
+    return unsubscribe;
+  }, []);
+
+
+  async function handleSync() {
+    try {
+      await syncAll(database);
+      alert('Sincronizado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao sincronizar:', error);
+      alert('Erro ao sincronizar');
+    }
+  }
 
   const insets = useSafeAreaInsets();
 
@@ -45,7 +69,11 @@ export default function Header() {
         </Text>
       </View>
 
-      <TouchableOpacity onPress={() => { }}>
+      <TouchableOpacity
+        disabled={!isConnected}
+        style={{ opacity: isConnected ? 1 : 0.4 }}
+        onPress={handleSync}
+      >
         <Image source={require('../../assets/icon/sincronizar.png')} style={styles.image} />
       </TouchableOpacity>
 
@@ -71,7 +99,7 @@ export default function Header() {
         }}
         onEdit={(item) => {
           onClose();
-          navigation.navigate('Harvest', {id: item.id})
+          navigation.navigate('Harvest', { id: item.id })
         }}
       />
 
