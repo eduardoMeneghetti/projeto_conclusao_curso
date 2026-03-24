@@ -15,7 +15,7 @@ class AuthController < ApplicationController
                 senha: usuario[:senha],
                 email: usuario[:email],
                 ativo: usuario[:ativo],
-                recomendate: usuario[:recomendate],
+                recomendante: usuario[:recomendante],
                 operador: usuario[:operador]
             )
             # 👇 retorna o id do servidor e o id local
@@ -27,7 +27,7 @@ class AuthController < ApplicationController
                 senha: usuario[:senha],
                 email: usuario[:email],
                 ativo: usuario[:ativo],
-                recomendate: usuario[:recomendate],
+                recomendante: usuario[:recomendante],
                 operador: usuario[:operador]
             )
             resultado << { id: novo.id, local_id: usuario[:id] }
