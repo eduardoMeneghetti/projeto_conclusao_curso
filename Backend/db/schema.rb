@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_21_015728) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_22_042822) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -230,6 +230,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_21_015728) do
   end
 
   create_table "propriedades", force: :cascade do |t|
+    t.boolean "ativo", default: true, null: false
     t.bigint "cidade_id", null: false
     t.datetime "created_at", null: false
     t.string "descricao"
@@ -283,7 +284,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_21_015728) do
 
   create_table "unidades_medidas", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "descrcicao"
+    t.string "descricao"
     t.datetime "updated_at", null: false
   end
 
@@ -295,6 +296,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_21_015728) do
     t.boolean "operador"
     t.boolean "recomendate"
     t.string "senha"
+    t.integer "server_id"
     t.datetime "updated_at", null: false
     t.string "usuario"
   end
