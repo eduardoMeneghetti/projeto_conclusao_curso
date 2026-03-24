@@ -21,12 +21,14 @@ type NavigationProps = NativeStackNavigationProp<
 import { styles } from "../Login/styles";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
   const navigation = useNavigation<NavigationProps>();
   const [usuario, setUsuario] = React.useState('');
   const [senha, setSenha] = React.useState('');
   const { getByCrendentials } = useUserDatabase();
+  const { signIn  } = useAuth();
 
   async function getlogin() {
     try {
@@ -36,6 +38,7 @@ export default function Login() {
 
       const user = await getByCrendentials(usuario, senha);
       if (user) {
+        signIn(user);
         navigation.reset({ routes: [{ name: 'BottomRoutes' }] });
       } else {
         Alert.alert('Erro', 'Usuário ou senha inválidos!');
@@ -60,7 +63,7 @@ export default function Login() {
         <Input
           placeholder="Usuário"
           value={usuario}
-          onChangeText={setUsuario}
+          onChangeText={(text) => setUsuario(text.toLowerCase())}
         />
 
         <Input
@@ -87,3 +90,4 @@ export default function Login() {
     </View>
   );
 } 
+

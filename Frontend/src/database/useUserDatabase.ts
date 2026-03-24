@@ -1,4 +1,5 @@
 import { useSQLiteContext } from "expo-sqlite";
+import { setEnabled } from "react-native/Libraries/Performance/Systrace";
 
 export type UserDatabase = {
     id: number;
@@ -7,7 +8,7 @@ export type UserDatabase = {
     senha: string;
     email: string;
     operador: boolean;
-    recomendate: boolean;
+    recomendante: boolean;
     ativo: boolean;
     created_at: string;
     updated_at: string;
@@ -16,9 +17,9 @@ export type UserDatabase = {
     server_id: number | null;
 }
 
-type UserDatabaseRaw = Omit<UserDatabase, "operador" | "recomendate" | "ativo" | "is_dirty"> & {
+type UserDatabaseRaw = Omit<UserDatabase, "operador" | "recomendante" | "ativo" | "is_dirty"> & {
     operador: number;
-    recomendate: number;
+    recomendante: number;
     ativo: number;
     is_dirty: number;
 };
@@ -27,7 +28,7 @@ function mapUser(row: UserDatabaseRaw): UserDatabase {
     return {
         ...row,
         operador: row.operador === 1,
-        recomendate: row.recomendate === 1,
+        recomendante: row.recomendante === 1,
         ativo: row.ativo === 1,
         is_dirty: row.is_dirty === 1,
     };
@@ -50,14 +51,14 @@ export function useUserDatabase() {
                 $senha: data.senha,
                 $email: data.email,
                 $operador: data.operador ? 1 : 0,
-                $recomendante: data.recomendate ? 1 : 0,
+                $recomendante: data.recomendante ? 1 : 0,
             })
 
             const insertedRowId = result.lastInsertRowId.toLocaleString()
 
             return { insertedRowId }
         } catch (error) {
-            throw error
+            console.log('Erro ao criar usuário: ', error)
         } finally {
             await statement.finalizeAsync();
         }
@@ -74,7 +75,20 @@ export function useUserDatabase() {
         }
     }
 
-     async function getUsersActive() {
+    async function getUsersById(id: number) {
+        try {
+            const row = await database.getFirstAsync<UserDatabaseRaw>(
+                `SELECT * FROM usuarios WHERE id = $id `,
+                { $id: id }
+            );
+            return row ? mapUser(row) : null;
+        } catch (error) {
+            console.error('erro ao buscar usuários ', error)
+        }
+    }
+
+
+    async function getUsersActive() {
         try {
             const rows = await database.getAllAsync<UserDatabaseRaw>(`
              SELECT * FROM usuarios WHERE deleted_at IS NULL AND ativo = 1
@@ -131,7 +145,55 @@ export function useUserDatabase() {
         }
     }
 
+    async function updateUsuarios(data: Pick<UserDatabase, "id" | "nome" | "usuario" | "senha" | "email" | "operador" | "recomendante" | "ativo">) {
+        const sentece = await database.prepareAsync(`
+            UPDATE usuarios 
+            SET nome = $nome, usuario = $usuario, senha = $senha, email = $email, operador = $operador, recomendante = $recomendante, ativo = $ativo, updated_at = datetime('now')
+            WHERE id = $id
+         `)
 
+        try {
+            await sentece.executeAsync({
+                $id: data.id,
+                $nome: data.nome,
+                $usuario: data.usuario,
+                $senha: data.senha,
+                $email: data.email,
+                $operador: data.operador ? 1 : 0,
+                $recomendante: data.recomendante ? 1 : 0,
+                $ativo: data.ativo ? 1 : 0
+            })
+            console.log('Update realizado com Sucesso!')
+        } catch (error) {
+            console.error("Erro ao atualizar registro: ", error)
+        } finally {
+            await sentece.finalizeAsync();
+        }
+    }
 
-    return { create, getByCrendentials, getUsersAll,  getUsersActive, getUsuariosDirty, updateSyncedUsuario }
+    async function checkUsuarioExists(usuario: string): Promise<boolean> {
+        try {
+            const row = await database.getFirstAsync(
+                `SELECT id FROM usuarios WHERE usuario = $usuario`,
+                { $usuario: usuario }
+            );
+            return !!row;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async function checkEmailExists(email: string): Promise<boolean> {
+        try {
+            const row = await database.getFirstAsync(
+                `SELECT id FROM usuarios WHERE email = $email`,
+                { $email: email }
+            );
+            return !!row;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    return { create, getByCrendentials, getUsersAll, getUsersActive, getUsuariosDirty, updateSyncedUsuario, updateUsuarios, getUsersById, checkUsuarioExists, checkEmailExists }
 }

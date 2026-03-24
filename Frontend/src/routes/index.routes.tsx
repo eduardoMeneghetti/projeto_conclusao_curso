@@ -12,6 +12,7 @@ import Activity from "../pages/Activity";
 import ActivityForm from "../pages/ActivityForm";
 import User from "../pages/User";
 import UserForm from "../pages/UserForm";
+import { AuthProvider } from "../context/AuthContext";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -22,66 +23,68 @@ export type RootStackParamList = {
   Activity: undefined;
   ActivityForm: undefined;
   User: undefined;
-  UserForm: undefined;
+  UserForm: { id?: string } | undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function Routes() {
   return (
-    <SQLiteProvider databaseName="khronos.db" onInit={initializeDatabase}>
-      <ProprietyProvider>
-        <Stack.Navigator
-          initialRouteName="Login"
-          screenOptions={{ headerShown: false }}
-        >
-          <Stack.Screen
-            name="Login"
-            component={Login}
-          />
+    <AuthProvider>
+      <SQLiteProvider databaseName="khronos.db" onInit={initializeDatabase}>
+        <ProprietyProvider>
+          <Stack.Navigator
+            initialRouteName="Login"
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen
+              name="Login"
+              component={Login}
+            />
 
-          <Stack.Screen
-            name="BottomRoutes"
-            component={BottomRoutes}
-          />
+            <Stack.Screen
+              name="BottomRoutes"
+              component={BottomRoutes}
+            />
 
-          <Stack.Screen
-            name="Config"
-            component={Config}
-          />
+            <Stack.Screen
+              name="Config"
+              component={Config}
+            />
 
-          <Stack.Screen
-            name="Proprieties"
-            component={Proprieties}
-          />
+            <Stack.Screen
+              name="Proprieties"
+              component={Proprieties}
+            />
 
-          <Stack.Screen
-            name="Harvest"
-            component={Harvest}
-          />
+            <Stack.Screen
+              name="Harvest"
+              component={Harvest}
+            />
 
-          <Stack.Screen
-            name="Activity"
-            component={Activity}
-          />
+            <Stack.Screen
+              name="Activity"
+              component={Activity}
+            />
 
-          <Stack.Screen
-            name="ActivityForm"
-            component={ActivityForm}
-          />
+            <Stack.Screen
+              name="ActivityForm"
+              component={ActivityForm}
+            />
 
-          <Stack.Screen
-            name="User"
-            component={User}
-          />
+            <Stack.Screen
+              name="User"
+              component={User}
+            />
 
-          <Stack.Screen
-            name="UserForm"
-            component={UserForm}
-          />
+            <Stack.Screen
+              name="UserForm"
+              component={UserForm}
+            />
 
-        </Stack.Navigator>
-      </ProprietyProvider>
-    </SQLiteProvider>
+          </Stack.Navigator>
+        </ProprietyProvider>
+      </SQLiteProvider>
+    </AuthProvider>
   );
 }

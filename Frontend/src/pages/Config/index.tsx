@@ -2,7 +2,9 @@ import React from "react";
 import {
     View,
     Text,
-    Image
+    Image,
+    Alert,
+    TouchableOpacity
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "./styles";
@@ -12,6 +14,7 @@ import ButtonSelect from "../../components/ButtonSelect";
 import LineArround from "../../components/lineArround";
 import { usePropriety } from "../../context/PropContext";
 import SelectionModal from "../../components/SelectionModal";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Config() {
     const navigation = useNavigation<any>();
@@ -24,6 +27,28 @@ export default function Config() {
         proprieties,
         loadProprieties
     } = usePropriety();
+    const { user, signOut  } = useAuth();
+
+
+    function handleLogout() {
+        Alert.alert(
+            "Sair",
+            "Deseja realmente sair?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                {
+                    text: "Sair",
+                    onPress: () => {
+                        signOut();
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'Login' }]  
+                        });
+                    }
+                }
+            ]
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -37,12 +62,9 @@ export default function Config() {
                 <Line />
 
                 <View style={styles.userContainer}>
-                    <Image
-                        style={styles.userImage}
-                        source={require('../../assets/icon/usuario.png')}
-                    />
-                    <Text>João Silva</Text>
-                    <Text>joao.silva@email.com</Text>
+                    <Text style={styles.bemVindo}>Seja bem vindo!</Text>
+                    <Text style={styles.subTitulo}>{user?.nome}</Text>
+                    <Text style={styles.subTitulo}>{user?.email}</Text>
                 </View>
 
                 <View style={styles.menus}>
@@ -59,7 +81,7 @@ export default function Config() {
                         text="Cadastro de usuários"
                         isRequired={false}
                         onPress={
-                            () => {navigation.navigate('User')}
+                            () => { navigation.navigate('User') }
                         }
                     />
 
@@ -68,9 +90,18 @@ export default function Config() {
                         text="Cadastro de atividade"
                         isRequired={false}
                         onPress={
-                            () => {navigation.navigate('Activity')}
+                            () => { navigation.navigate('Activity') }
                         }
                     />
+
+                    <TouchableOpacity
+                        style={styles.sair}
+                        onPress={handleLogout}>
+                        <Image
+                            style={styles.iconSair}
+                            source={require('../../assets/icon/lognOut.png')}
+                        />
+                    </TouchableOpacity>
 
                 </View>
 
@@ -107,3 +138,4 @@ export default function Config() {
         </View>
     );
 }
+

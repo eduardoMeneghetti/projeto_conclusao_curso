@@ -11,7 +11,7 @@ export async function syncUsuarios(database: SQLiteDatabase) {
         senha: string;
         email: string;
         operador: number;
-        recomendate: number;
+        recomendante: number;
         ativo: number;
         is_dirty: number;
         server_id: number | null;

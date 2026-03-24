@@ -58,7 +58,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       senha TEXT,
       email TEXT,
       operador INTEGER,
-      recomendate INTEGER,
+      recomendante INTEGER,
       ativo INTEGER DEFAULT 1,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
@@ -69,7 +69,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
     );
 
     INSERT OR IGNORE INTO usuarios (
-      id, nome, usuario, senha, email, operador, recomendate, ativo,
+      id, nome, usuario, senha, email, operador, recomendante, ativo,
       created_at, updated_at, synced_at, is_dirty, server_id, deleted_at
     ) VALUES (
       1, 'Administrador', 'admin', 'admin', 'admin@admin', 1, 1, 1,
@@ -77,7 +77,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
     );
 
      INSERT OR IGNORE INTO usuarios (
-      id, nome, usuario, senha, email, operador, recomendate, ativo,
+      id, nome, usuario, senha, email, operador, recomendante, ativo,
       created_at, updated_at, synced_at, is_dirty, server_id, deleted_at
     ) VALUES (
       2, 'Eduardo Gerente', 'eduardo', 'eduardo', 'eduardo@dudu.com.br', 1, 0, 1,
