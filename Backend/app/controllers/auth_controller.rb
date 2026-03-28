@@ -1,6 +1,5 @@
-# app/controllers/auth_controller.rb
 class AuthController < ApplicationController
-    skip_before_action :authenticate_request, only: [:sync_usuarios]  
+    skip_before_action :authenticate_request, only: [:sync_usuarios, :login]  
 
   def sync_usuarios
     usuarios = params[:usuarios]
@@ -18,7 +17,6 @@ class AuthController < ApplicationController
                 recomendante: usuario[:recomendante],
                 operador: usuario[:operador]
             )
-            # 👇 retorna o id do servidor e o id local
             resultado << { id: existing.id, local_id: usuario[:id] }
         else
             novo = Usuario.create(
@@ -36,4 +34,27 @@ class AuthController < ApplicationController
 
     render json: { message: 'Usuários sincronizados', usuarios: resultado }, status: :ok
     end
+
+
+    def login
+    usuario = Usuario.find_by(usuario: params[:usuario])
+    senha_hash = Digest::SHA256.hexdigest(params[:senha])
+
+    if usuario && usuario.senha == senha_hash
+        token = JsonWebToken.encode(user_id: usuario.id)
+        render json: { 
+            token: token,
+            usuario: {
+                id: usuario.id,
+                nome: usuario.nome,
+                usuario: usuario.usuario,
+                email: usuario.email,
+                operador: usuario.operador,
+                recomendante: usuario.recomendante
+            }
+        }, status: :ok
+    else
+        render json: { error: 'Usuário ou senha inválidos' }, status: :unauthorized
+    end
+end
 end
