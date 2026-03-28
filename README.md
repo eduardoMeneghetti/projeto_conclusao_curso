@@ -24,3 +24,8 @@ Acesse no navegador do celular (mesma rede Wi-Fi):
 http://SEU_IP_WINDOWS:3000/up
 ```
 Deve retornar `OK`.
+
+### Verificar proxy atual 
+```bash
+netsh interface portproxy show all
+```

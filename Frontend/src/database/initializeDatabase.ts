@@ -68,19 +68,12 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       deleted_at TEXT
     );
 
+    
     INSERT OR IGNORE INTO usuarios (
       id, nome, usuario, senha, email, operador, recomendante, ativo,
       created_at, updated_at, synced_at, is_dirty, server_id, deleted_at
     ) VALUES (
-      1, 'Administrador', 'admin', 'admin', 'admin@admin', 1, 1, 1,
-      datetime('now'), datetime('now'), NULL, 1, NULL, NULL
-    );
-
-     INSERT OR IGNORE INTO usuarios (
-      id, nome, usuario, senha, email, operador, recomendante, ativo,
-      created_at, updated_at, synced_at, is_dirty, server_id, deleted_at
-    ) VALUES (
-      2, 'Eduardo Gerente', 'eduardo', 'eduardo', 'eduardo@dudu.com.br', 1, 0, 1,
+      10, 'khronos_adm', 'khronos_adm', '749b6911bf2bbd920781343120d2d4603db44d5958555cbea16e241a8098639a', 'admin@admin', 1, 1, 1,
       datetime('now'), datetime('now'), NULL, 1, NULL, NULL
     );
 

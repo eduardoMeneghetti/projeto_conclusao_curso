@@ -1,5 +1,6 @@
 import React, { useState, createContext, useContext } from 'react';
 import { UserDatabase } from '../database/useUserDatabase';
+import { removeToken } from '../services/auth';
 
 type AuthContextType = {
     user: UserDatabase | null;
@@ -17,8 +18,9 @@ export const AuthProvider = ({ children }: any) => {
         setUser(user);
     };
 
-    const signOut = () => {
+    const signOut = async () => {
         setUser(null); 
+        await removeToken();
     };
 
     return (

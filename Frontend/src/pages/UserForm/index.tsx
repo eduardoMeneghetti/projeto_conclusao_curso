@@ -10,6 +10,7 @@ import ButtonSelect from "../../components/ButtonSelect";
 import { Button } from "../../components/Button";
 import { useUserDatabase } from "../../database/useUserDatabase";
 import { isStrongPassword, isValidEmail } from "../../util/validation";
+import * as Crypto from 'expo-crypto';
 
 export default function UserForm() {
     const navigation = useNavigation<any>();
@@ -38,7 +39,7 @@ export default function UserForm() {
                 if (usuario) {
                     setNomeCompleto(usuario.nome);
                     setUsuario(usuario.usuario);
-                    setSenha(usuario.senha);
+                    setSenha('');
                     setEmail(usuario.email);
                     setOperador(usuario.operador);
                     setRecomendante(usuario.recomendante);
@@ -60,61 +61,101 @@ export default function UserForm() {
     }
 
 
-    async function hendleSalvar() {
+    async function handleSalvar() {
+        console.log("handleSalvar foi chamado");
         if (!nome) return alert("Nome completo obrigatório");
         if (!usuario) return alert("Usuário obrigatório");
-        if (!senha) return alert("Senha completo obrigatório");
-        if (!email) return alert("E-mail completo obrigatório");
-        if (!confirmarSenha) return alert('Confirmação de senha obrigatória');
+        if (!email) return alert("E-mail obrigatório");
 
-        if (email && !isValidEmail(email)) {
-            return alert('Email inválido');
+        if (!isValidEmail(email)) {
+            return alert("Email inválido");
         }
 
-        const senhaValidation = isStrongPassword(senha);
-        if (!senhaValidation.valid) {
-            return alert(senhaValidation.message);
+        if (!isEditing) {
+            console.log("Criando registro");
+            if (!senha) return alert("Senha obrigatória");
+
+            const senhaValidation = isStrongPassword(senha);
+            if (!senhaValidation.valid) {
+                return alert(senhaValidation.message);
+            }
+
+            if (!confirmarSenha) return alert("Confirmação de senha obrigatória");
+
+            if (senha !== confirmarSenha) {
+                return alert("Senhas não conferem");
+            }
+
+            const usuarioExiste = await checkUsuarioExists(usuario);
+            if (usuarioExiste) return alert("Usuário já cadastrado");
+
+            const emailExiste = await checkEmailExists(email);
+            if (emailExiste) return alert("Email já cadastrado");
+
+            const senhaHash = await Crypto.digestStringAsync(
+                Crypto.CryptoDigestAlgorithm.SHA256,
+                senha
+            );
+
+            try {
+                console.log("ANTES DO CREATE");
+
+                const result = await create({
+                    nome,
+                    usuario,
+                    senha: senhaHash,
+                    email,
+                    operador,
+                    recomendante
+                });
+
+                console.log("DEPOIS DO CREATE", result);
+
+            } catch (error) {
+                console.log("ERRO NO CREATE:", error);
+                return;
+            }
         }
 
-        if (senha !== confirmarSenha) {
-            return alert('Senhas não conferem');
-        }
+        else {
+            console.log("Editando registro");
+            let senhaFinal = "";
 
-        const usuarioExiste = await checkUsuarioExists(usuario);
-        if (usuarioExiste) return alert('Usuário já cadastrado');
+            if (senha) {
+                const senhaValidation = isStrongPassword(senha);
+                if (!senhaValidation.valid) {
+                    return alert(senhaValidation.message);
+                }
 
-        const emailExiste = await checkEmailExists(email);
-        if (emailExiste) return alert('Email já cadastrado');
+                if (senha !== confirmarSenha) {
+                    return alert("Senhas não conferem");
+                }
 
 
-        if (isEditing) {
-            console.log("Estamos em uma edicao")
+                senhaFinal = await Crypto.digestStringAsync(
+                    Crypto.CryptoDigestAlgorithm.SHA256,
+                    senha
+                );
+            } else {
+                const usuarioAtual = await getUsersById(id);
+                senhaFinal = usuarioAtual?.senha ?? "";
+            }
+
             await updateUsuarios({
                 id: Number(id),
                 nome,
                 usuario,
-                senha,
+                senha: senhaFinal,
                 email,
                 operador,
                 recomendante,
                 ativo
-            })
-            console.log("update realizado");
-        } else {
-            console.log('criando novo user');
-            await create({
-                nome,
-                usuario,
-                senha,
-                email,
-                operador,
-                recomendante
-            })
-            console.log('Usuario criado com sucesso!');
+            });
+
+            console.log("Usuário atualizado com sucesso!");
         }
 
-        navigation.navigate('User')
-
+        navigation.navigate("User");
     }
 
     return (
@@ -138,7 +179,7 @@ export default function UserForm() {
                     title="Usuário:"
                     isRequired={true}
                     value={usuario}
-                    onChangeText={(text) => setUsuario(text.toLowerCase())} 
+                    onChangeText={(text) => setUsuario(text.toLowerCase())}
                 />
 
                 <InputText
@@ -154,7 +195,7 @@ export default function UserForm() {
                     value={senha}
                     onChangeText={handleSenhaChange}
                     secureTextEntry={true}
-                    errorMessage={senhaError}  
+                    errorMessage={senhaError}
                 />
 
                 <InputText
@@ -163,7 +204,7 @@ export default function UserForm() {
                     value={confirmarSenha}
                     onChangeText={handleConfirmarSenhaChange}
                     secureTextEntry={true}
-                    errorMessage={confirmarSenhaError} 
+                    errorMessage={confirmarSenhaError}
                 />
 
                 <View style={styles.opcoes}>
@@ -198,7 +239,7 @@ export default function UserForm() {
 
             <Button
                 title="Salvar"
-                onPress={hendleSalvar}
+                onPress={handleSalvar}
             />
 
         </View>

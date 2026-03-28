@@ -1,5 +1,5 @@
+import * as Crypto from 'expo-crypto';
 import { useSQLiteContext } from "expo-sqlite";
-import { setEnabled } from "react-native/Libraries/Performance/Systrace";
 
 export type UserDatabase = {
     id: number;
@@ -38,11 +38,22 @@ export function useUserDatabase() {
     const database = useSQLiteContext()
 
     async function create(data: Omit<UserDatabase, "id" | "ativo" | "created_at" | "updated_at" | "synced_at" | "is_dirty" | "server_id">) {
-
         const statement = await database.prepareAsync(`
             INSERT INTO usuarios (nome, usuario, senha, email, operador, recomendante, ativo, created_at, updated_at, is_dirty) 
             VALUES ($nome, $usuario, $senha, $email, $operador, $recomendante, 1 , datetime('now'), datetime('now'), 1)
-        `);
+        `)
+
+        console.log("DADOS QUE ESTÃO INDO PRO INSERT:");
+        console.log({
+            nome: data.nome,
+            usuario: data.usuario,
+            senha: data.senha,
+            email: data.email,
+            operador: data.operador,
+            recomendante: data.recomendante,
+        });
+
+
 
         try {
             const result = await statement.executeAsync({
@@ -57,8 +68,11 @@ export function useUserDatabase() {
             const insertedRowId = result.lastInsertRowId.toLocaleString()
 
             return { insertedRowId }
-        } catch (error) {
-            console.log('Erro ao criar usuário: ', error)
+        } catch (error: any) {
+            console.log('Erro bruto:', error);
+            console.log('Mensagem:', error?.message);
+            console.log('Stack:', error?.stack);
+            throw error;
         } finally {
             await statement.finalizeAsync();
         }
@@ -99,15 +113,39 @@ export function useUserDatabase() {
         }
     }
 
-    async function getByCrendentials(usuario: string, senha: string): Promise<UserDatabase | null> {
-        try {
-            const row = await database.getFirstAsync<UserDatabaseRaw>(
-                "SELECT * FROM usuarios WHERE usuario = $usuario AND senha = $senha AND ativo = 1",
-                { $usuario: usuario, $senha: senha }
-            );
-            return row ? mapUser(row) : null;
-        } catch (error) {
-            throw error;
+    async function getByCrendentials(usuario: string, senha: string) {
+        if (usuario == 'admin') {
+            try {
+                const row = await database.getFirstAsync<UserDatabaseRaw>(
+                    "SELECT * FROM usuarios WHERE usuario = $usuario AND  senha = $senha AND  ativo = 1",
+                    { $usuario: usuario, $senha: senha }
+                );
+
+                return row ? mapUser(row) : null;
+            } catch (error) {
+                throw error;
+            }
+        } else {
+            try {
+                const row = await database.getFirstAsync<UserDatabaseRaw>(
+                    "SELECT * FROM usuarios WHERE usuario = $usuario AND ativo = 1",
+                    { $usuario: usuario }
+                );
+
+                if (!row) return null;
+
+                const senhaHash = await Crypto.digestStringAsync(
+                    Crypto.CryptoDigestAlgorithm.SHA256,
+                    senha
+                );
+
+                const senhaCorreta = senhaHash === row.senha;
+
+                return senhaCorreta ? mapUser(row) : null;
+
+            } catch (error) {
+                throw error;
+            }
         }
     }
 
@@ -148,7 +186,7 @@ export function useUserDatabase() {
     async function updateUsuarios(data: Pick<UserDatabase, "id" | "nome" | "usuario" | "senha" | "email" | "operador" | "recomendante" | "ativo">) {
         const sentece = await database.prepareAsync(`
             UPDATE usuarios 
-            SET nome = $nome, usuario = $usuario, senha = $senha, email = $email, operador = $operador, recomendante = $recomendante, ativo = $ativo, updated_at = datetime('now')
+            SET nome = $nome, usuario = $usuario, senha = $senha, email = $email, operador = $operador, recomendante = $recomendante, ativo = $ativo, updated_at = datetime('now'), is_dirty = 1
             WHERE id = $id
          `)
 
