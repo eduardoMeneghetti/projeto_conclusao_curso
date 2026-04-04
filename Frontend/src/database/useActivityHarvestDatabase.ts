@@ -96,7 +96,9 @@ export function UseActivityHarvestDatabase() {
 
         const sentece = await database.prepareAsync(`
             UPDATE atividade_safras
-            SET atividade_id = $atividade_id
+            SET 
+            atividade_id = $atividade_id,
+            is_dirty = 1
             WHERE safra_id = $safra_id
         `)
 

@@ -57,36 +57,50 @@ export function useHarverstDatabase() {
 
     async function getHarvest(propriedade_id: number) {
         try {
+            console.log('buscando safras para propriedade_id:', propriedade_id);
+
+            // 👇 debug temporário
+            const debug = await database.getAllAsync(
+                `SELECT * FROM atividade_safras`
+            );
+            console.log('atividade_safras local:', JSON.stringify(debug));
+
             const rows = await database.getAllAsync<UseHarvestRaw>(
                 `SELECT s.* 
-                 FROM safras s
-                 INNER JOIN atividade_safras ats ON ats.safra_id  = s.id
-                 INNER JOIN propriedades p ON ats.propriedade_id = p.id
-                 WHERE ats.propriedade_id = $propriedade_id 
-                 AND s.ativo = 1`,
-                { $propriedade_id: propriedade_id } 
-            )
-            return rows.map(mapHarvest)
+             FROM safras s
+             INNER JOIN atividade_safras ats ON ats.safra_id = s.id
+             WHERE ats.propriedade_id = $propriedade_id 
+             AND s.ativo = 1`,
+                { $propriedade_id: propriedade_id }
+            );
+
+            console.log('safras encontradas:', rows.length);
+
+            return rows.map(mapHarvest);
         } catch (error) {
-            console.error("Erro ao buscar safras: ", error)
-            return []
+            console.error("Erro ao buscar safras:", error);
+            return [];
         }
     }
 
     async function getHarvestAll(propriedade_id: number) {
         try {
+            console.log('buscando safras para propriedade_id:', propriedade_id)
+
             const rows = await database.getAllAsync<UseHarvestRaw>(
                 `SELECT s.* 
                  FROM safras s
                  INNER JOIN atividade_safras ats ON ats.safra_id  = s.id
-                 INNER JOIN propriedades p ON ats.propriedade_id = p.id
                  WHERE ats.propriedade_id = $propriedade_id `,
-                 { $propriedade_id: propriedade_id } 
+                { $propriedade_id: propriedade_id }
             )
+
+            console.log('safras encontradas:', rows.length);
+
             return rows.map(mapHarvest)
         } catch (error) {
             console.error("Erro ao buscar safra: ", error)
-            return [ ]
+            return []
         }
     }
 
@@ -113,7 +127,8 @@ export function useHarverstDatabase() {
             data_inicio = $data_inicio, 
             data_final = $data_final, 
             ativo = $ativo, 
-            updated_at = datetime('now')
+            updated_at = datetime('now'),
+            is_dirty = 1
         WHERE id = $id
     `);
 

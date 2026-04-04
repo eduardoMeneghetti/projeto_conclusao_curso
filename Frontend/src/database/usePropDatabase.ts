@@ -95,7 +95,7 @@ export function usePropDatabase() {
     async function update(data: Pick<PropDatabase, "id" | "descricao" | "cidade_id" | "ativo" | "updated_at">) {
 
         const insert = await database.prepareAsync(`
-            UPDATE propriedades SET descricao = $descricao, cidade_id = $cidade_id, ativo = $ativo, updated_at = datetime('now')
+            UPDATE propriedades SET descricao = $descricao, cidade_id = $cidade_id, ativo = $ativo, updated_at = datetime('now'), is_dirty = 1
             WHERE id = $id
         `)
 

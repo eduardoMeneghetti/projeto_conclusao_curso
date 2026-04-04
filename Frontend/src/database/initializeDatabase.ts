@@ -8,7 +8,6 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS estados (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-
       descricao TEXT,
       codigo_ibge INTEGER,
       sigla TEXT,

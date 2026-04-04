@@ -1,4 +1,3 @@
-// services/syncUsuarios.ts
 import { SQLiteDatabase } from 'expo-sqlite';
 import { API_URL } from './api';
 import { getToken } from './auth';
@@ -112,7 +111,6 @@ export async function syncUsuarios(database: SQLiteDatabase) {
     console.log('Usuários recebidos do servidor:', usuariosServidor?.length);
 
     for (const u of usuariosServidor ?? []) {
-        // verifica se já existe localmente pelo server_id
         const existeLocal = await database.getFirstAsync(
             `SELECT id FROM usuarios WHERE server_id = $server_id`,
             { $server_id: u.id }

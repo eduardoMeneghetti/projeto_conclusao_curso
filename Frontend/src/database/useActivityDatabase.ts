@@ -103,7 +103,7 @@ export function useActivityDatabase() {
     async function updateActivity(data: Pick<UseActivity, "id" | "descricao" | "cor" | "ativo">) {
 
         const sentece = await database.prepareAsync(`
-            UPDATE atividades SET descricao = $descricao, cor = $cor, ativo = $ativo, updated_at = datetime('now')
+            UPDATE atividades SET descricao = $descricao, cor = $cor, ativo = $ativo, updated_at = datetime('now'), is_dirty = 1
             WHERE id = $id
         `)
 
