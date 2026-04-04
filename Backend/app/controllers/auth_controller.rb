@@ -1,6 +1,14 @@
 class AuthController < ApplicationController
     skip_before_action :authenticate_request, only: [:sync_usuarios, :login]  
 
+ def update 
+    if @usuario.update(usuario_params)
+        render json: @usuario, status: :ok 
+    else
+       render json: @usuario.errors, status: :unprocessable_entity
+    end
+ end
+
   def sync_usuarios
     usuarios = params[:usuarios]
     resultado = []

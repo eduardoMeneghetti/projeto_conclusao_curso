@@ -2,6 +2,13 @@ Rails.application.routes.draw do
   # rotas públicas de autenticação
   post '/auth/sync_usuarios', to: 'auth#sync_usuarios'
   post '/auth/login', to: 'auth#login'
+  post '/propriedades/sync', to: 'propriedades#sync_propriedades'
+  post '/estados/sync', to: 'estados#sync_estados'
+  post '/cidades/sync', to: 'cidades#sync_cidades'
+  post '/safras/sync', to: 'safras#sync_safras'
+  post '/atividades/sync', to: 'atividades#sync_atividades'
+  post '/atividade_safras/sync', to: 'atividade_safras#sync_atividade_safras'
+
 
   # recursos
   resources :aplicacoes_itens_insumos

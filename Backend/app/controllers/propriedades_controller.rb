@@ -1,70 +1,60 @@
 class PropriedadesController < ApplicationController
-  before_action :set_propriedade, only: %i[ show edit update destroy ]
+  before_action :set_propriedade, only: [:update] 
 
-  # GET /propriedades or /propriedades.json
+  def sync_propriedades 
+    propriedades = params[:propriedades]
+    resultado = []
+
+    propriedades.each do |propriedade|
+      existing = Propriedade.find_by(id: propriedade[:server_id])
+
+      if existing
+        existing.update(
+          descricao: propriedade[:descricao],
+          hectare: propriedade[:hectare],
+          cidade_id: propriedade[:cidade_id],
+          ativo: propriedade[:ativo]
+        )
+        resultado << { id: existing.id, local_id: propriedade[:id] }
+      else
+        novo = Propriedade.create(
+          descricao: propriedade[:descricao],
+          hectare: propriedade[:hectare],
+          cidade_id: propriedade[:cidade_id],
+          ativo: propriedade[:ativo]
+        )
+        resultado << { id: novo.id, local_id: propriedade[:id] }
+      end
+    end
+
+    render json: { message: 'Propriedades sincronizadas', propriedades: resultado }, status: :ok
+  end
+
+  def update  
+    if @propriedade.update(propriedade_params)
+      render json: @propriedade, status: :ok
+    else
+      render json: @propriedade.errors, status: :unprocessable_entity
+    end
+  end
+
   def index
-    @propriedades = Propriedade.all
-  end
-
-  # GET /propriedades/1 or /propriedades/1.json
-  def show
-  end
-
-  # GET /propriedades/new
-  def new
-    @propriedade = Propriedade.new
-  end
-
-  # GET /propriedades/1/edit
-  def edit
-  end
-
-  # POST /propriedades or /propriedades.json
-  def create
-    @propriedade = Propriedade.new(propriedade_params)
-
-    respond_to do |format|
-      if @propriedade.save
-        format.html { redirect_to @propriedade, notice: "Propriedade was successfully created." }
-        format.json { render :show, status: :created, location: @propriedade }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @propriedade.errors, status: :unprocessable_entity }
-      end
+    if params[:updated_after]
+      @propriedades = Propriedade.where('updated_at > ?', params[:updated_after])
+    else
+      @propriedades = Propriedade.all
     end
+      render json: @propriedades
   end
 
-  # PATCH/PUT /propriedades/1 or /propriedades/1.json
-  def update
-    respond_to do |format|
-      if @propriedade.update(propriedade_params)
-        format.html { redirect_to @propriedade, notice: "Propriedade was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @propriedade }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @propriedade.errors, status: :unprocessable_entity }
-      end
-    end
+
+ private
+
+  def set_propriedade
+    @propriedade = Propriedade.find(params.expect(:id))
   end
 
-  # DELETE /propriedades/1 or /propriedades/1.json
-  def destroy
-    @propriedade.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to propriedades_path, notice: "Propriedade was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
+  def propriedade_params
+    params.expect(propriedade: [:descricao, :hectare, :cidade_id, :ativo])
   end
-
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_propriedade
-      @propriedade = Propriedade.find(params.expect(:id))
-    end
-
-    # Only allow a list of trusted parameters through.
-    def propriedade_params
-      params.expect(propriedade: [ :descricao, :hectare, :cidade_id ])
-    end
 end
