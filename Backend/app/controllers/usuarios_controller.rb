@@ -3,7 +3,12 @@ class UsuariosController < ApplicationController
 
   # GET /usuarios or /usuarios.json
   def index
-    @usuarios = Usuario.all
+    if params[:updated_after]
+        @usuarios = Usuario.where('updated_at > ?', params[:updated_after])
+    else
+        @usuarios = Usuario.all
+    end
+    render json: @usuarios
   end
 
   # GET /usuarios/1 or /usuarios/1.json
@@ -23,27 +28,18 @@ class UsuariosController < ApplicationController
   def create
     @usuario = Usuario.new(usuario_params)
 
-    respond_to do |format|
-      if @usuario.save
-        format.html { redirect_to @usuario, notice: "Usuario was successfully created." }
-        format.json { render :show, status: :created, location: @usuario }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @usuario.errors, status: :unprocessable_entity }
-      end
+    if @usuario.save
+        render json: @usuario, status: :created  # 👈 retorna JSON direto
+    else
+        render json: @usuario.errors, status: :unprocessable_entity
     end
-  end
+ end
 
-  # PATCH/PUT /usuarios/1 or /usuarios/1.json
   def update
-    respond_to do |format|
-      if @usuario.update(usuario_params)
-        format.html { redirect_to @usuario, notice: "Usuario was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @usuario }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @usuario.errors, status: :unprocessable_entity }
-      end
+    if @usuario.update(usuario_params)
+        render json: @usuario, status: :ok  # 👈 retorna JSON direto
+    else
+        render json: @usuario.errors, status: :unprocessable_entity
     end
   end
 
@@ -58,13 +54,11 @@ class UsuariosController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_usuario
       @usuario = Usuario.find(params.expect(:id))
     end
 
-    # Only allow a list of trusted parameters through.
     def usuario_params
-      params.expect(usuario: [ :nome, :usuario, :senha, :email, :operador, :recomendante])
+    params.expect(usuario: [:nome, :usuario, :senha, :email, :operador, :recomendante, :ativo])  # 👈 adiciona ativo
     end
 end
