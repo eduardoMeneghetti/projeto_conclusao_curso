@@ -1,59 +1,46 @@
 class AtividadesController < ApplicationController
-  before_action :set_atividade, only: %i[ show edit update destroy ]
+  before_action :set_atividade, only:[ :update ]
 
-  # GET /atividades or /atividades.json
-  def index
-    @atividades = Atividade.all
+  def index 
+    if params[:updated_after]
+      @atividades = Atividade.where('updated_at > ?', params[:updated_after])
+    else
+      @atividades = Atividade.all
+    end
+      render json: @atividades
   end
 
-  # GET /atividades/1 or /atividades/1.json
-  def show
-  end
+  def sync_atividades
+    atividades = params[:atividades]
+    resultado = []
 
-  # GET /atividades/new
-  def new
-    @atividade = Atividade.new
-  end
+    atividades.each do |atividade|
+      existing = Atividade.find_by(id: atividade[:server_id])
 
-  # GET /atividades/1/edit
-  def edit
-  end
-
-  # POST /atividades or /atividades.json
-  def create
-    @atividade = Atividade.new(atividade_params)
-
-    respond_to do |format|
-      if @atividade.save
-        format.html { redirect_to @atividade, notice: "Atividade was successfully created." }
-        format.json { render :show, status: :created, location: @atividade }
+      if existing 
+        existing.update(
+          descricao: atividade[:descricao],
+          cor: atividade[:cor],
+          ativo: atividade[:ativo]
+        )
+        resultado << { id: existing.id, local_id: atividade[:id]}
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @atividade.errors, status: :unprocessable_entity }
+        novo = Atividade.create(
+          descricao: atividade[:descricao],
+          cor: atividade[:cor],
+          ativo: atividade[:ativo]
+        )
+        resultado << { id: novo.id, local_id: atividade[:id]}
       end
     end
+    render json: { message: 'Atividades sincronizadas ', atividades: resultado}, status: :ok
   end
 
-  # PATCH/PUT /atividades/1 or /atividades/1.json
-  def update
-    respond_to do |format|
-      if @atividade.update(atividade_params)
-        format.html { redirect_to @atividade, notice: "Atividade was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @atividade }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @atividade.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /atividades/1 or /atividades/1.json
-  def destroy
-    @atividade.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to atividades_path, notice: "Atividade was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+  def update 
+    if @atividade.update(atividade_params)
+      render json: @atividade, status: :ok
+    else
+      render json: @atividade.errors, status: :unprocessable_entity
     end
   end
 

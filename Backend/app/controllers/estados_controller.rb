@@ -1,69 +1,44 @@
 class EstadosController < ApplicationController
-  before_action :set_estado, only: %i[ show edit update destroy ]
 
-  # GET /estados or /estados.json
-  def index
-    @estados = Estado.all
-  end
+  def sync_estados
+    estados = params[:estados]
+    resultado = []
 
-  # GET /estados/1 or /estados/1.json
-  def show
-  end
+    estados.each do |estado|
+       
+        existing = Estado.find_by(sigla: estado[:sigla]) || 
+                   Estado.find_by(codigo_ibge: estado[:codigo_ibge])
 
-  # GET /estados/new
-  def new
-    @estado = Estado.new
-  end
-
-  # GET /estados/1/edit
-  def edit
-  end
-
-  # POST /estados or /estados.json
-  def create
-    @estado = Estado.new(estado_params)
-
-    respond_to do |format|
-      if @estado.save
-        format.html { redirect_to @estado, notice: "Estado was successfully created." }
-        format.json { render :show, status: :created, location: @estado }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @estado.errors, status: :unprocessable_entity }
-      end
+        if existing
+            resultado << { id: existing.id, local_id: estado[:id] }
+        else
+            novo = Estado.create(
+                descricao: estado[:descricao],
+                codigo_ibge: estado[:codigo_ibge],
+                sigla: estado[:sigla]
+            )
+            resultado << { id: novo.id, local_id: estado[:id] }
+        end
     end
-  end
 
-  # PATCH/PUT /estados/1 or /estados/1.json
-  def update
-    respond_to do |format|
-      if @estado.update(estado_params)
-        format.html { redirect_to @estado, notice: "Estado was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @estado }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @estado.errors, status: :unprocessable_entity }
-      end
+    render json: { message: 'Estados sincronizados', estados: resultado }, status: :ok
+end
+
+def index
+    if params[:updated_after]
+        @estados = Estado.where('updated_at > ?', params[:updated_after])
+    else
+        @estados = Estado.all
     end
-  end
+    render json: @estados
+end
 
-  # DELETE /estados/1 or /estados/1.json
-  def destroy
-    @estado.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to estados_path, notice: "Estado was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
-  end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_estado
       @estado = Estado.find(params.expect(:id))
     end
 
-    # Only allow a list of trusted parameters through.
     def estado_params
       params.expect(estado: [ :descricao, :codigo_ibge, :sigla ])
     end
