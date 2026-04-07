@@ -84,7 +84,7 @@ export function usePropDatabase() {
 
             return { insertedRowId }
         } catch (error) {
-            console.log("erro ao cadastrar usuario", error)
+            console.log("erro ao cadastrar propriedade", error)
         } finally {
             await insert.finalizeAsync();
         }
@@ -108,15 +108,33 @@ export function usePropDatabase() {
             })
 
         } catch (error) {
-            console.log("erro ao cadastrar usuario", error)
+            console.log("erro ao atualizar propriedade", error)
         } finally {
             await insert.finalizeAsync();
         }
 
 
     }
-    
+
+    async function updateAreaPropriety(propriedade_id: number) {
+        const sentece = await database.prepareAsync(
+            `UPDATE propriedades p1
+            SET hectare = (SELECT SUM(g.area_hectares)
+            FROM propriedades p 
+            INNER JOIN glebas g ON p.id = g.propriedade_id
+            WHERE p.id = $id AND p.ativo = 1), is_dirty = 1, updated_at = datetime('now')
+            WHERE p1.id = $id `,
+        )
+        try {
+            await sentece.executeAsync({ $id: propriedade_id })
+        } catch (error) {
+            console.log("Erro ao atualizar área da propriedade", error)
+        } finally {
+            await sentece.finalizeAsync();
+        }
+    }
 
 
-    return { getProprety, createProprety, getPropretyAll, getPropretyById, update }
+
+    return { getProprety, createProprety, getPropretyAll, getPropretyById, update, updateAreaPropriety}
 }
