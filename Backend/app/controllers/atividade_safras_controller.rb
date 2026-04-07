@@ -9,7 +9,7 @@ class AtividadeSafrasController < ApplicationController
     end
     render json: @atividade_safras
   end
-
+ 
   def update
     if @atividade_safra.update(atividade_safra_params)
       render json: @atividade_safra, status: :ok
