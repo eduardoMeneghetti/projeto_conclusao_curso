@@ -8,6 +8,9 @@ Rails.application.routes.draw do
   post '/safras/sync', to: 'safras#sync_safras'
   post '/atividades/sync', to: 'atividades#sync_atividades'
   post '/atividade_safras/sync', to: 'atividade_safras#sync_atividade_safras'
+  post '/glebas/sync', to: 'glebas#sync_glebas'
+  post '/gleba_pontos/sync', to: 'gleba_pontos#sync_gleba_pontos'
+  post '/atividade_glebas/sync', to: 'atividade_glebas#sync_atividade_glebas'
 
 
   # recursos

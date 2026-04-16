@@ -1,61 +1,51 @@
 class GlebasController < ApplicationController
-  before_action :set_gleba, only: %i[ show edit update destroy ]
+  before_action :set_gleba, only: [ :update  ]
 
-  # GET /glebas or /glebas.json
   def index
-    @glebas = Gleba.all
-  end
-
-  # GET /glebas/1 or /glebas/1.json
-  def show
-  end
-
-  # GET /glebas/new
-  def new
-    @gleba = Gleba.new
-  end
-
-  # GET /glebas/1/edit
-  def edit
-  end
-
-  # POST /glebas or /glebas.json
-  def create
-    @gleba = Gleba.new(gleba_params)
-
-    respond_to do |format|
-      if @gleba.save
-        format.html { redirect_to @gleba, notice: "Gleba was successfully created." }
-        format.json { render :show, status: :created, location: @gleba }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @gleba.errors, status: :unprocessable_entity }
-      end
+    if params[:updated_after]
+      @glebas = Gleba.where('updated_at > ?', params[:updated_after])
+    else
+      @glebas = Gleba.all  
     end
+    render json: @glebas
   end
 
-  # PATCH/PUT /glebas/1 or /glebas/1.json
   def update
-    respond_to do |format|
-      if @gleba.update(gleba_params)
-        format.html { redirect_to @gleba, notice: "Gleba was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @gleba }
+    if @gleba.update(gleba_params)
+      render json: @gleba, status: :ok
+    else
+      render json: @gleba.errors, status: :unprocessable_entity
+    end
+  end
+
+  def sync_glebas
+    glebas = params[:glebas]
+    resultado = []
+
+    glebas.each do |gleba|
+      existing = Gleba.find_by(id: gleba[:server_id])
+
+    if existing
+        existing.update(
+          descricao: gleba[:descricao],
+          ativo: gleba[:ativo],
+          area_hectares: gleba[:area_hectares],
+          propriedade_id: gleba[:propriedade_id]
+        )
+        resultado << { id: existing.id, local_id: gleba[:id] }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @gleba.errors, status: :unprocessable_entity }
+        novo = Gleba.create(
+          descricao: gleba[:descricao],
+          ativo: gleba[:ativo],
+          area_hectares: gleba[:area_hectares],
+          propriedade_id: gleba[:propriedade_id]
+        )
+        resultado << { id: novo.id, local_id: gleba[:id] }
       end
-    end
+    end 
+    render json: { message: 'Glebas sincronizadas', glebas: resultado }, status: :ok  
   end
-
-  # DELETE /glebas/1 or /glebas/1.json
-  def destroy
-    @gleba.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to glebas_path, notice: "Gleba was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
-  end
+  
 
   private
     # Use callbacks to share common setup or constraints between actions.
