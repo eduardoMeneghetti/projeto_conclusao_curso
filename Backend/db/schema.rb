@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_23_232611) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_12_042725) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -283,8 +283,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_232611) do
   end
 
   create_table "unidades_medidas", force: :cascade do |t|
+    t.boolean "ativo", default: true, null: false
     t.datetime "created_at", null: false
     t.string "descricao"
+    t.string "sigla"
     t.datetime "updated_at", null: false
   end
 
