@@ -51,6 +51,8 @@ export type CidadeDatabase = {
     id: number;
     descricao: string;
     sigla: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 export function useCidadeDatabase() {
@@ -71,5 +73,17 @@ export function useCidadeDatabase() {
         }
     }
 
-    return { getCitiesStates };
+    async function getCityStateById(id: number) {
+        try {
+            const row = await database.getFirstAsync<CidadeDatabase>(
+                `SELECT latitude, longitude FROM cidades WHERE id = $id`, { $id: id }
+            );
+            return row;
+        } catch (error) {
+            console.log("erro ao buscar cidade | estado por id", error);
+            return null;
+        }           
+    }
+
+    return { getCitiesStates, getCityStateById };
 }

@@ -54,6 +54,23 @@ export function useActivityGlebaDatabase() {
         }
 
     }
+    
+    async function deleteActivityGleba(id: number, atividade_safra_id: number) {
+        const sentence = await database.prepareAsync(
+            `DELETE FROM atividade_glebas 
+         WHERE gleba_id = $gleba_id AND atividade_safra_id = $atividade_safra_id`
+        );
+
+        try {
+            await sentence.executeAsync({ $gleba_id: id, $atividade_safra_id: atividade_safra_id });
+            console.log("Sucesso Atividade_Glebas excluído");
+        } catch (error) {
+            console.error("Erro ao excluir atividade_glebas", error);
+            throw error;
+        } finally {
+            sentence.finalizeAsync();
+        }
+    }
 
     async function getAtividadeGlebaAll() {
         try {
@@ -100,5 +117,5 @@ export function useActivityGlebaDatabase() {
     }
 
 
-    return { createActivityGleba, getAtividadeGlebaAll, getAtividadeGlebaById, getColorGlebaById }
+    return { createActivityGleba, getAtividadeGlebaAll, getAtividadeGlebaById, getColorGlebaById, deleteActivityGleba }
 }

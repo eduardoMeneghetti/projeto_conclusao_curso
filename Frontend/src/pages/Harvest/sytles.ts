@@ -27,8 +27,55 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: 'center'
     },
-    InLine:{
+    InLine: {
         flexDirection: `row`,
         gap: 40
-    }
+    },
+    glebasList: {
+        width: '100%',
+        gap: 8,
+    },
+    glebasTitle: {
+        fontWeight: 'bold',
+        fontSize: 14,
+        marginBottom: 4,
+    },
+    glebaItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 8,
+        borderBottomWidth: 0.5,
+        borderBottomColor: 'rgba(0,0,0,0.1)',
+    },
+    glebaInfo: {
+        flex: 1,
+    },
+    glebaDescricao: {
+        fontSize: 14,
+    },
+    glebaArea: {
+        fontSize: 12,
+        color: 'gray',
+    },
+    glebaButton: {
+       padding: 8
+    },
+    glebaButtonAdd: {
+        backgroundColor: 'green',
+    },
+    glebaButtonRemove: {
+        backgroundColor: 'red',
+    },
+    glebaButtonText: {
+        color: themes.colors.white,
+        fontSize: 12,
+    },
+    scroll: {
+        paddingBottom: 20
+    },
+    glebaButtonIcon: {
+        width: 24,
+        height: 24,
+    },
 });

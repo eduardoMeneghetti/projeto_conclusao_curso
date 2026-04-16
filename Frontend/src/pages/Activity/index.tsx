@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
     View,
-    Text
+    Text,
+    ScrollView
 } from 'react-native'
 import { styles } from "./styles";
 import { TopButton } from "../../components/TopButton";
@@ -19,7 +20,7 @@ export default function Activity() {
     useEffect(() => {
         getActivityAll().then((result) => {
             console.log("atividades localizadas: ", result, "   ")
-            if (result) setAtividades(result); 
+            if (result) setAtividades(result);
         });
     }, []);
 
@@ -44,7 +45,7 @@ export default function Activity() {
 
             <ButtonLow
                 onPress={
-                    () => {navigation.navigate('ActivityForm')}
+                    () => { navigation.navigate('ActivityForm') }
                 }
             />
         </View>

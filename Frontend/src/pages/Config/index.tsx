@@ -4,7 +4,8 @@ import {
     Text,
     Image,
     Alert,
-    TouchableOpacity
+    TouchableOpacity,
+    ScrollView
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "./styles";
@@ -27,7 +28,7 @@ export default function Config() {
         proprieties,
         loadProprieties
     } = usePropriety();
-    const { user, signOut  } = useAuth();
+    const { user, signOut } = useAuth();
 
 
     function handleLogout() {
@@ -42,12 +43,19 @@ export default function Config() {
                         signOut();
                         navigation.reset({
                             index: 0,
-                            routes: [{ name: 'Login' }]  
+                            routes: [{ name: 'Login' }]
                         });
                     }
                 }
             ]
         );
+    }
+
+    function propriedadeSelecionada() {
+        if (!selectedPropriety) return Alert.alert('Atenção', 'Selecione uma propriedade')
+        else {
+            navigation.navigate('Gleba')
+        }
     }
 
     return (
@@ -67,43 +75,79 @@ export default function Config() {
                     <Text style={styles.subTitulo}>{user?.email}</Text>
                 </View>
 
-                <View style={styles.menus}>
+                <ScrollView style={styles.scroll}>
+                    <View style={styles.menus}>
 
-                    <ButtonSelect
-                        title="Seleção de propriedade"
-                        text={selectedPropriety ? selectedPropriety.descricao : "Selecione uma propriedade"}
-                        isRequired={false}
-                        onPress={onOpen}
-                    />
-
-                    <ButtonSelect
-                        title="Usuários"
-                        text="Cadastro de usuários"
-                        isRequired={false}
-                        onPress={
-                            () => { navigation.navigate('User') }
-                        }
-                    />
-
-                    <ButtonSelect
-                        title="Atividades"
-                        text="Cadastro de atividade"
-                        isRequired={false}
-                        onPress={
-                            () => { navigation.navigate('Activity') }
-                        }
-                    />
-
-                    <TouchableOpacity
-                        style={styles.sair}
-                        onPress={handleLogout}>
-                        <Image
-                            style={styles.iconSair}
-                            source={require('../../assets/icon/lognOut.png')}
+                        <ButtonSelect
+                            title="Seleção de propriedade"
+                            text={selectedPropriety ? selectedPropriety.descricao : "Selecione uma propriedade"}
+                            isRequired={false}
+                            onPress={onOpen}
                         />
-                    </TouchableOpacity>
 
-                </View>
+                        <ButtonSelect
+                            title="Usuários"
+                            text="Cadastro de usuários"
+                            isRequired={false}
+                            onPress={
+                                () => { navigation.navigate('User') }
+                            }
+                        />
+
+                        <ButtonSelect
+                            title="Atividades"
+                            text="Cadastro de atividade"
+                            isRequired={false}
+                            onPress={
+                                () => { navigation.navigate('Activity') }
+                            }
+                        />
+
+                        <ButtonSelect
+                            title="Áreas"
+                            text="Cadastro de glebas"
+                            isRequired={false}
+                            onPress={(propriedadeSelecionada)}
+                        />
+
+                        <ButtonSelect
+                            title="Unidades de medida"
+                            text="Cadastro de unidades de medida"
+                            isRequired={false}
+                            onPress={
+                                () => {navigation.navigate('UnidadesMedida')}
+                            }
+                        />
+
+                        <ButtonSelect
+                            title="Princípios ativos"
+                            text="Cadastro de princípios ativos"
+                            isRequired={false}
+                            onPress={
+                                () => {navigation.navigate('PrincipioAtivo')}
+                            }
+                        />
+
+                        <ButtonSelect
+                            title="Máquinas"
+                            text="Cadastro de máquinas"
+                            isRequired={false}
+                            onPress={
+                                () => { }
+                            }
+                        />
+
+
+                        <TouchableOpacity
+                            style={styles.sair}
+                            onPress={handleLogout}>
+                            <Image
+                                style={styles.iconSair}
+                                source={require('../../assets/icon/lognOut.png')}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
 
             </View>
 

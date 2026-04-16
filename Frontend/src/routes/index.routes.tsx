@@ -13,6 +13,13 @@ import ActivityForm from "../pages/ActivityForm";
 import User from "../pages/User";
 import UserForm from "../pages/UserForm";
 import { AuthProvider } from "../context/AuthContext";
+import Gleba from "../pages/Gleba";
+import PrincipioAtivo from "../pages/PrincipioAtivo";
+import UnidadesMedida from "../pages/unidadesMedida";
+import { PrincipioAtivoForm } from "../pages/PrincipioAtivoForm";
+import { UnidadesMedidaForm } from "../pages/unidadesMedidaForm";
+import StockItemForm from "../pages/StockItemForm";
+import StockItemMov from "../pages/StockItemMov";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -24,6 +31,13 @@ export type RootStackParamList = {
   ActivityForm: undefined;
   User: undefined;
   UserForm: { id?: string } | undefined;
+  Gleba: undefined;
+  PrincipioAtivo: undefined;
+  PrincipioAtivoForm: undefined;
+  UnidadesMedida: undefined;
+  UnidadesMedidaForm: undefined;
+  StockItemForm: undefined;
+  StockItemMov: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -80,6 +94,41 @@ export default function Routes() {
             <Stack.Screen
               name="UserForm"
               component={UserForm}
+            />
+
+            <Stack.Screen
+              name="Gleba"
+              component={Gleba}
+            />
+
+            <Stack.Screen
+              name="PrincipioAtivo"
+              component={PrincipioAtivo}
+            />
+
+            <Stack.Screen
+              name="PrincipioAtivoForm"
+              component={PrincipioAtivoForm}
+            />
+
+            <Stack.Screen
+              name="UnidadesMedida"
+              component={UnidadesMedida}
+            />
+
+            <Stack.Screen
+              name="UnidadesMedidaForm"
+              component={UnidadesMedidaForm}
+            />
+
+            <Stack.Screen
+              name="StockItemForm"
+              component={StockItemForm}
+            />
+
+            <Stack.Screen
+              name="StockItemMov"
+              component={StockItemMov}
             />
 
           </Stack.Navigator>

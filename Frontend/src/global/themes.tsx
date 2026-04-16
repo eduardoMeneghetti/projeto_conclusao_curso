@@ -9,6 +9,7 @@ export const themes = {
         menuBar: '#DAD7CD',
         white: '#FFFFFF',
         page: '#D9D9D9',
-        red: '#fc2403'
+        red: '#fc2403',
+        background_page: '#ADB5BD'
     }
 }

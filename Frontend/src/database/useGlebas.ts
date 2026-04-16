@@ -31,8 +31,8 @@ type GlebaComPontos = {
     latitude: number;
     longitude: number;
     ordem: number;
+    area_hectares: number;  
 }
-
 
 
 function mapGleba(row: UseGlebaRaw): UseGleba {
@@ -133,11 +133,12 @@ export function useGlebaDatabase() {
     async function getGlebasInActivity(atividade_safra_id: number) {
         try {
             const rows = await database.getAllAsync<GlebaComPontos>(
-                `SELECT g.id, g.descricao, gp.latitude, gp.longitude, gp.ordem 
+                `SELECT g.id, g.descricao, gp.latitude, gp.longitude, gp.ordem, g.area_hectares
                 FROM glebas g
-                INNER JOIN gleba_pontos gp ON g.id = gp.gleba_id
+                INNER JOIN gleba_pontos gp ON g.id = gp.gleba_id 
                 INNER JOIN atividade_glebas ag ON g.id = ag.gleba_id
                 WHERE ag.atividade_safra_id = $id
+                AND g.deleted_at IS NULL
                 ORDER BY g.id, gp.ordem ASC`,
                 { $id: atividade_safra_id }
             );
@@ -148,11 +149,48 @@ export function useGlebaDatabase() {
         }
     }
 
+    async function getGlebaInPropriety(propriedade_id: number) {
+        try {
+            const rows = await database.getAllAsync<GlebaComPontos>(`
+                SELECT g.id, g.descricao, gp.latitude, gp.longitude, gp.ordem, g.area_hectares
+                FROM glebas g 
+                INNER JOIN gleba_pontos gp ON gp.gleba_id = g.id
+                INNER JOIN propriedades p ON p.id = g.propriedade_id
+                WHERE p.id = $propriedade_id
+                AND g.deleted_at IS NULL`,
+                { $propriedade_id: propriedade_id }
+            );
+
+            return rows;
+        } catch (error) {
+            console.error("Erro ao localizar glebas da propriedade", error);
+            throw error;
+        }
+    }
+
+    async function deleteGleba(id: number) {
+        try {
+            await database.runAsync(
+                `UPDATE glebas SET deleted_at = datetime('now'), ativo = 0, is_dirty = 1 WHERE id = $id`,
+                { $id: id }
+            );
+            await database.runAsync(
+                `DELETE FROM gleba_pontos WHERE gleba_id = $id`,
+                { $id: id }
+            );
+        } catch (error) {
+            console.error("Erro ao deletar gleba", error);
+            throw error;
+        }
+    }
+
     return {
         create,
         createPontos,
         createGlebaWithPontos,
         getGlebasWithLatLong,
-        getGlebasInActivity
+        getGlebasInActivity,
+        getGlebaInPropriety,
+        deleteGleba
     };
 }

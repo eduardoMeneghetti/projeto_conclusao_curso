@@ -8,6 +8,6 @@ export const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#3A7D44',
+        backgroundColor: themes.colors.background_page,
     }
 });

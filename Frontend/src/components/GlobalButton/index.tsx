@@ -10,7 +10,7 @@ import { useAuthSelection } from "../../context/selectionContext";
 import { usePropriety } from "../../context/PropContext";
 
 export const GlobalButton = () => {
-    const { action } = useFab();
+    const { action , requiresHarvest} = useFab();
     const { selectedHarvest } = useAuthSelection();
     const { selectedPropriety } = usePropriety();
 
@@ -18,7 +18,7 @@ export const GlobalButton = () => {
 
     const handlePress = () => {
         
-        if (!selectedHarvest) {
+        if (requiresHarvest && !selectedHarvest) {
             Alert.alert(
                 "Atenção",
                 "Selecione uma safra antes de continuar."

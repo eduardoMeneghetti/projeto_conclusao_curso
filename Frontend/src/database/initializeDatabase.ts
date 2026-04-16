@@ -52,10 +52,10 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS usuarios (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nome TEXT,
-      usuario TEXT,
+      nome TEXT UNIQUE,
+      usuario TEXT UNIQUE,
       senha TEXT,
-      email TEXT,
+      email TEXT UNIQUE,
       operador INTEGER,
       recomendante INTEGER,
       ativo INTEGER DEFAULT 1,
@@ -79,7 +79,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS safras (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      descricao TEXT,
+      descricao TEXT UNIQUE,
       data_inicio TEXT,
       data_final TEXT,
       ativo INTEGER,
@@ -93,7 +93,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS atividades (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      descricao TEXT,
+      descricao TEXT UNIQUE,
       cor TEXT,
       ativo INTEGER,
       created_at TEXT NOT NULL,
@@ -106,7 +106,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS maquinas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      descricao TEXT,
+      descricao TEXT UNIQUE,
       ativo INTEGER,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
@@ -118,8 +118,8 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS nutrientes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      descricao TEXT,
-      sigla TEXT,
+      descricao TEXT UNIQUE,
+      sigla TEXT UNIQUE,
       unidade TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
@@ -131,7 +131,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS principios_ativos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      descricao TEXT,
+      descricao TEXT UNIQUE,
       ativo INTEGER,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
@@ -158,7 +158,9 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS unidades_medidas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      descrcicao TEXT,
+      descricao TEXT UNIQUE,
+      sigla TEXT UNIQUE,
+      ativo INTEGER,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
       synced_at TEXT,
@@ -167,9 +169,17 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       deleted_at TEXT
     );
 
+    INSERT OR IGNORE INTO unidades_medidas (
+      id, descricao, sigla, ativo, created_at, updated_at, synced_at, is_dirty, server_id, deleted_at
+    ) VALUES 
+      (1, 'Litros', 'L', 1, datetime('now'), datetime('now'), NULL, 1, NULL, NULL),
+      (2, 'Quilos', 'Kg', 1, datetime('now'), datetime('now'), NULL, 1, NULL, NULL),
+      (3, 'Unidades', 'Un', 1, datetime('now'), datetime('now'), NULL, 1, NULL, NULL);
+
+
     CREATE TABLE IF NOT EXISTS insumos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      descricao TEXT,
+      descricao TEXT UNIQUE,
       semente INTEGER,
       ativo INTEGER,
       unidades_medida_id INTEGER NOT NULL,
@@ -186,7 +196,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS glebas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      descricao TEXT,
+      descricao TEXT UNIQUE,
       ativo INTEGER,
       area_hectares REAL,
       propriedade_id INTEGER NOT NULL,

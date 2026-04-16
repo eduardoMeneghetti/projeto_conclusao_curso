@@ -187,11 +187,6 @@ export default function Home() {
 
             console.log(`Gleba ${nomeGleba} criada com ${pontos.length} pontos e ${areaHectares.toFixed(2)} hectares!`);
 
-            if(selectedPropriety.id) {
-                await updateAreaPropriety(selectedPropriety.id);
-                console.log(`Área da propriedade ${selectedPropriety.descricao} atualizada!`);
-            }
-
             setNomeGleba('');
             setPontos([]);
             setModoDesenho(false);

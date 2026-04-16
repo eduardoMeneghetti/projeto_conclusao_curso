@@ -53,5 +53,8 @@ export const styles = StyleSheet.create({
     subTitulo:{
         fontSize: 16,
         padding: 2
+    },
+    scroll: {
+        paddingBottom: 16 
     }
 });

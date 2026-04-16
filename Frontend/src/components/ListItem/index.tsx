@@ -49,6 +49,7 @@ export function ListItems({ data, onEdit, emptyMessage = "Nenhum registro encont
             data={data}
             keyExtractor={(item) => item.id}
             renderItem={renderItem}
+            contentContainerStyle={{ paddingBottom: 120 }}
             ListEmptyComponent={
                 <Text style={styles.emptyText}>{emptyMessage}</Text>
             }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+    ScrollView,
     View,
 } from 'react-native'
 import { styles } from "./styles";
@@ -38,13 +39,13 @@ export default function User() {
                     inactive: !a.ativo
                 }))}
                 onEdit={
-                    (item) => {navigation.navigate('UserForm', { id: item.id })}
+                    (item) => { navigation.navigate('UserForm', { id: item.id }) }
                 }
             />
 
             <ButtonLow
                 onPress={
-                    () => {navigation.navigate('UserForm')}
+                    () => { navigation.navigate('UserForm') }
                 }
             />
         </View>
