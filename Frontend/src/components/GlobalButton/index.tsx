@@ -10,7 +10,7 @@ import { useAuthSelection } from "../../context/selectionContext";
 import { usePropriety } from "../../context/PropContext";
 
 export const GlobalButton = () => {
-    const { action , requiresHarvest} = useFab();
+    const { action , requiresHarvest, requiresPropriety} = useFab();
     const { selectedHarvest } = useAuthSelection();
     const { selectedPropriety } = usePropriety();
 
@@ -26,8 +26,7 @@ export const GlobalButton = () => {
             return; 
         }
 
-
-        if (!selectedPropriety) {
+        if (requiresPropriety !== false && !selectedPropriety) {
             Alert.alert(
                 "Atenção",
                 "Selecione a propriedade nas configurações."

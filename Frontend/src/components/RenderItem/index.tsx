@@ -30,31 +30,36 @@ export default function RenderItem({ data, onEdit, emptyMessage }: Props) {
         return (
             <View style={[styles.componetContainer, item.inactive && styles.itemInactive]}>
 
-                <View>
-                    <Text style={styles.itemContainer}>{item.title}</Text>
-                    <Text style={styles.ItemsubTitle}>{item.subTitle}</Text>
-                </View>
-
-                <View style={styles.groupSaldoEdit}>
+                <View style={styles.GroupItem}>
                     <View>
-                        <Text style={styles.ItemSaldo}>Saldo</Text>
-                        <Text style={styles.itemContainer}>{item.saldo} {item.unidade}</Text>
+                        <Text style={styles.title}>{item.title}</Text>
                     </View>
 
-                    {onEdit && (
-                        <TouchableOpacity
-                            onPress={() => onEdit(item)}
-                            style={styles.editButton}
-                        >
-                            <Image
-                                source={require('../../assets/icon/edit_item.png')}
-                                style={styles.editIcon}
-                            />
-                        </TouchableOpacity>
-
-                    )}
+                    <View>
+                        <Text style={styles.subTitle}>{item.subTitle}</Text>
+                    </View>
                 </View>
 
+                <View style={styles.GroupEditSaldo}>
+                    <View style={styles.GroupEdit}>
+                        <Text style={styles.ItemSaldo}>Saldo</Text>
+                        <Text style={styles.saldoValue}>{item.saldo?.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}  {item.unidade}</Text>
+                    </View>
+                    <View style={styles.lineSaldoEdit}>
+                        {onEdit && (
+                            <TouchableOpacity
+                                onPress={() => onEdit(item)}
+                            >
+                                <Image
+                                    source={require('../../assets/icon/edit_item.png')}
+                                    style={styles.editIcon}
+                                />
+                            </TouchableOpacity>
+
+                        )}
+                    </View>
+
+                </View>
 
             </View>
         )

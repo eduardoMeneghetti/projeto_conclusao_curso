@@ -36,14 +36,11 @@ export default function Login() {
     if (!usuario || !senha) {
       return Alert.alert('Atenção', 'Preencha todos os campos!');
     }
-
-    // 1. autentica localmente
     const user = await getByCrendentials(usuario, senha);
     if (!user) {
       return Alert.alert('Erro', 'Usuário ou senha inválidos!');
     }
 
-    // 2. se tiver conexão, autentica na API
     const { isConnected } = await NetInfo.fetch();
     if (isConnected) {
       const result = await loginApi(usuario, senha);

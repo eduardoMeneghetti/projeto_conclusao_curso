@@ -43,7 +43,8 @@ export const InputText = forwardRef<TextInput, Props>((
                     ]}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    secureTextEntry={isPassword && !isVisible}  
+                    secureTextEntry={isPassword && !isVisible}
+                    keyboardAppearance="light"
                     {...props}
                 />
 

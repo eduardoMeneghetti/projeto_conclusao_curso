@@ -13,9 +13,10 @@ type Props = TouchableOpacityProps & {
     title?: string;
     onVoltar?: () => void;
     onCancelar?: () => void;
+    onDeletar?: () => void;
 };
 
-export function TopButton({ title, onVoltar, onCancelar, ...rest }: Props) {
+export function TopButton({ title, onVoltar, onCancelar, onDeletar, ...rest }: Props) {
     return (
         <View style={styles.top}>
             <View style={styles.botoes}>
@@ -33,6 +34,14 @@ export function TopButton({ title, onVoltar, onCancelar, ...rest }: Props) {
                         {...rest}
                         onPress={onCancelar}
                     />
+                )}
+
+                {onDeletar && (
+                    <TouchableOpacity
+                        onPress={onDeletar}
+                    >
+                        <Text style={styles.deleteRegistry}>Deletar</Text>
+                    </TouchableOpacity>
                 )}
 
             </View>

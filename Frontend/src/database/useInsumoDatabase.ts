@@ -15,6 +15,13 @@ export type UseInsumo = {
     deleted_at: string | null,
 }
 
+export type Insumo = {
+    id: number;
+    descricao: string;
+    unidade_sigla: string;
+};
+
+
 export type UseInsumoListItem = {
     id: number,
     descricao: string,
@@ -91,27 +98,58 @@ export function useInsumoDatabase() {
             return null
         }
     }
+    
+    async function getInsumoAtivo() {
+        try {
+            const rows = await database.getAllAsync<Insumo>(`
+                SELECT i.id, i.descricao, um.sigla AS unidade_sigla
+                FROM insumos i  
+                INNER JOIN unidades_medidas um ON um.id = i.unidades_medida_id
+                WHERE i.ativo = 1 AND i.deleted_at IS NULL     
+            `)
 
-    async function getInsumoAll() {
+            console.log('Insumos localizados com Sucesso: ', rows)
+            return rows || []
+        } catch (error) {
+            console.error('Erro ao buscar insumos', error)
+            throw error
+        }
+    }
+
+    async function getInsumoAll(propriedade_id?: number) {
         try {
             const rows = await database.getAllAsync<{
                 id: number,
                 descricao: string,
                 principio_ativo_descricao: string,
                 unidade_sigla: string,
-                ativo: boolean
+                ativo: number,
+                saldo: number,
             }>(`
-                SELECT i.id, i.descricao, i.ativo, pa.descricao as principio_ativo_descricao, um.sigla as unidade_sigla
-                FROM insumos i
-                INNER JOIN unidades_medidas um ON um.id = i.unidades_medida_id
-                INNER JOIN principios_ativos pa ON pa.id = i.principios_ativos_id
-                WHERE i.deleted_at IS NULL
-            `)
+            SELECT 
+                i.id, 
+                i.descricao, 
+                i.ativo,
+                pa.descricao as principio_ativo_descricao, 
+                um.sigla as unidade_sigla,
+                COALESCE((
+                    SELECT SUM(mei.quantidade)
+                    FROM movimentacao_estoque_insumos mei
+                    INNER JOIN ajuste_estoques ae ON ae.id = mei.ajuste_estoque_id
+                    WHERE mei.insumo_id = i.id
+                    AND ae.propriedade_id = $propriedade_id
+                    AND ae.deleted_at IS NULL
+                ), 0) as saldo
+            FROM insumos i
+            INNER JOIN unidades_medidas um ON um.id = i.unidades_medida_id
+            INNER JOIN principios_ativos pa ON pa.id = i.principios_ativos_id
+            WHERE i.deleted_at IS NULL 
+        `, { $propriedade_id: propriedade_id ?? 0 })
 
-            return rows.map(row => ({
+           return rows.map(row => ({
                 ...row,
-                saldo: 0
-            }))
+                ativo: row.ativo === 1
+           }))
         } catch (error) {
             console.error("Erro ao localizar insumos: ", error)
             return null
@@ -169,5 +207,5 @@ export function useInsumoDatabase() {
         }
     }
 
-    return { createInsumo, getInsumoById, getInsumoAll, updateInsumo, getInsumoByDescricao }
+    return { getInsumoAtivo, createInsumo, getInsumoById, getInsumoAll, updateInsumo, getInsumoByDescricao }
 }

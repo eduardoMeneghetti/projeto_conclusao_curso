@@ -6,5 +6,16 @@ export const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         backgroundColor: themes.colors.page
+    },
+    form: {
+        flex: 1,
+        alignItems: 'flex-start',
+        paddingLeft: '5%',
+        gap: 16,
+        width: '100%'
+    },
+    topoForm: {
+        flexDirection: 'row',
+        gap: 60
     }
 })

@@ -20,6 +20,7 @@ import { PrincipioAtivoForm } from "../pages/PrincipioAtivoForm";
 import { UnidadesMedidaForm } from "../pages/unidadesMedidaForm";
 import StockItemForm from "../pages/StockItemForm";
 import StockItemMov from "../pages/StockItemMov";
+import StockItemMovItens from "../pages/StockItemMovItens";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -38,6 +39,7 @@ export type RootStackParamList = {
   UnidadesMedidaForm: undefined;
   StockItemForm: undefined;
   StockItemMov: undefined;
+  StockItemMovItens: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -129,6 +131,11 @@ export default function Routes() {
             <Stack.Screen
               name="StockItemMov"
               component={StockItemMov}
+            />
+
+            <Stack.Screen
+              name="StockItemMovItens"
+              component={StockItemMovItens}
             />
 
           </Stack.Navigator>

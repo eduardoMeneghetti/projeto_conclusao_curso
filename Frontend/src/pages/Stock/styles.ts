@@ -15,11 +15,11 @@ export const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
-    componetContainer: { 
+    componetContainer: {
         margin: 10,
         backgroundColor: themes.colors.page,
         flex: 1,
-        borderRadius: 8,    
+        borderRadius: 8,
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 16,
@@ -30,5 +30,38 @@ export const styles = StyleSheet.create({
     ItemSaldo: {
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    escolha: {
+        backgroundColor: themes.colors.white,
+        marginTop: 40,
+        padding: 10,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'row'
+    },
+    item1: {
+        width: '50%',
+        alignItems: 'center',
+        borderRadius: 1,
+        borderWidth: 1,
+        borderColor: themes.colors.primary
+    },
+    item2: {
+        width: '50%',
+        alignItems: 'center',
+        borderRadius: 1,
+        borderWidth: 1,
+        borderColor: themes.colors.primary
+    },
+    text: {
+        fontSize: 18
+    },
+    abaAtiva: {
+        backgroundColor: themes.colors.secondary,
+    },
+    textAbaAtiva: {
+        color: themes.colors.white,
+        fontWeight: 'bold'
     }
 });
