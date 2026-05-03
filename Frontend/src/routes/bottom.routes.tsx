@@ -7,50 +7,44 @@ import Home from '../pages/Home';
 import CustomTabBar from '../components/ButtonBar';
 import Header from '../components/Header';
 import { AuthProviderContext } from '../context/selectionContext';
-import { FabProvider } from '../context/fabContext';
+import { FabProvider, useFab } from '../context/fabContext';
 import { GlobalButton } from '../components/GlobalButton';
 
 const Tab = createBottomTabNavigator();
 
-export default function BottomRoutes() {
-  return (
-    <FabProvider>
-      <AuthProviderContext>
+function TabNavigator() {
+    const { setAction, setRequiresHarvest } = useFab();
+
+    return (
         <Tab.Navigator
             initialRouteName="Home"
             screenOptions={{
-              header: () => <Header />,
+                header: () => <Header />,
             }}
             tabBar={(props) => <CustomTabBar {...props} />}
-          >
-            <Tab.Screen
-              name="Aplicacoes"
-              component={Application}
-            />
+            screenListeners={{
+                tabPress: () => {
+                    setAction(null);
+                    setRequiresHarvest(true);
+                }
+            }}
+        >
+            <Tab.Screen name="Aplicacoes" component={Application} />
+            <Tab.Screen name="Recomendacoes" component={Recomendacoes} />
+            <Tab.Screen name="Home" component={Home} />
+            <Tab.Screen name="Relatorios" component={Report} />
+            <Tab.Screen name="Estoque" component={Stock} />
+        </Tab.Navigator>
+    );
+}
 
-            <Tab.Screen
-              name="Recomendacoes"
-              component={Recomendacoes}
-            />
-
-            <Tab.Screen
-              name="Home"
-              component={Home}
-            />
-
-            <Tab.Screen
-              name="Relatorios"
-              component={Report}
-            />
-
-            <Tab.Screen
-              name="Estoque"
-              component={Stock}
-            />
-          </Tab.Navigator>
-
-          <GlobalButton />
-        </AuthProviderContext>
-      </FabProvider>
+export default function BottomRoutes() {
+    return (
+        <FabProvider>
+            <AuthProviderContext>
+                <TabNavigator />  
+                <GlobalButton />
+            </AuthProviderContext>
+        </FabProvider>
     );
 }

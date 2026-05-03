@@ -1,31 +1,51 @@
-import React, { useEffect } from "react";
+import React, { use, useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   Text,
-  View,
-  Image,
-  Animated,
-  TextInput,
-  Button,
-  TouchableOpacity
+  View
 } from 'react-native';
 import { styles } from "./styles";
 import { useFab } from "../../context/fabContext";
 import { useNavigation } from "@react-navigation/core";
+import OptionsModal from "../../components/OptionsModal";
 
 
 export default function Recomendacoes() {
   const { setAction } = useFab();
   const navigation = useNavigation<any>();
 
-  useEffect(() => {
-    setAction(() => () => navigation.navigate('NewApplication'));
+  const [optionsVisible, setOptionsVisible] = useState(false);
 
-    return () => setAction(null);
-  }, [navigation]);
+  useFocusEffect(
+    useCallback(() => {
+      setAction(() => () => setOptionsVisible(true));
+
+      return () => {
+        setAction(null);
+        setOptionsVisible(false);
+      };
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
-      <Text>Recomendacoes</Text>
+      <Text>recomendation</Text>
+
+      <OptionsModal
+        visible={optionsVisible}
+        onClose={() => setOptionsVisible(false)}
+        title="Tipo de recomendação"
+        options={[
+          {
+            label: 'Analise de solo',
+            onPress:() => navigation.navigate('')
+          },
+           {
+            label: 'Recomendação manual',
+            onPress:() => navigation.navigate('RecommendationManual')
+          }
+        ]} 
+      />
     </View>
   );
 };

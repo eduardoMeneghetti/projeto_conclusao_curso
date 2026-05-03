@@ -10,6 +10,7 @@ export const themes = {
         white: '#FFFFFF',
         page: '#D9D9D9',
         red: '#fc2403',
-        background_page: '#ADB5BD'
+        background_page: '#ADB5BD',
+        blue: '#1996d4'
     }
 }

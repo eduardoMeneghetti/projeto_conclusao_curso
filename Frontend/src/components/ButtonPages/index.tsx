@@ -38,7 +38,9 @@ type Props = TouchableHighlightProps & {
                 onPress={handlePress}
                 activeOpacity={0.6}
             >
-                <Text style={styles.text}>{title}</Text>
+                <Text style={[styles.text, tipo === 'c' && styles.cancel]}>
+                    {title}
+                </Text>
             </TouchableOpacity>
      );
  }

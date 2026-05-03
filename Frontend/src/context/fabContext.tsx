@@ -7,6 +7,7 @@ type FabContextType = {
   setRequiresHarvest: (value: boolean) => void;
   requiresPropriety: boolean;
   setRequiresPropriety: (value: boolean) => void;
+  resetFab: () => void;
 };
 
 const FabContext = createContext<FabContextType>({} as FabContextType);
@@ -16,8 +17,14 @@ export const FabProvider = ({ children }: any) => {
   const [requiresHarvest, setRequiresHarvest] = useState(true);
   const [requiresPropriety, setRequiresPropriety] = useState(true);
 
+  const resetFab = () => {
+    setAction(null);
+    setRequiresHarvest(true);
+    setRequiresPropriety(true);
+  };
+
   return (
-    <FabContext.Provider value={{ action, setAction, requiresHarvest, setRequiresHarvest, requiresPropriety, setRequiresPropriety }}>
+    <FabContext.Provider value={{ action, setAction, requiresHarvest, setRequiresHarvest, requiresPropriety, setRequiresPropriety, resetFab }}>
       {children}
     </FabContext.Provider>
   );

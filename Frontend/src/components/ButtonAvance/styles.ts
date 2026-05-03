@@ -9,9 +9,10 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 40,
         paddingVertical: 40,
+        marginBottom: 10
     },
     buttonTextVoltar: {
-        color: themes.colors.red,
+        color: themes.colors.blue,
         fontSize: 16,
     },
     buttonTextSeguir: {

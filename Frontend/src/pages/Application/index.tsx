@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   Text,
   View
@@ -11,11 +12,13 @@ export default function Application() {
   const { setAction } = useFab();
   const navigation = useNavigation<any>();
 
-  useEffect(() => {
-    setAction(() => () => navigation.navigate('NewApplication'));
+  useFocusEffect(
+    useCallback(() => {
+      setAction(() => () => navigation.navigate('NewApplication'));
 
-    return () => setAction(null);
-  }, [navigation]);
+      return () => setAction(null);
+    }, [navigation])
+  );
 
   return (
     <View style={styles.container}>

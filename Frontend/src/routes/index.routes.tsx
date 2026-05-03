@@ -21,6 +21,9 @@ import { UnidadesMedidaForm } from "../pages/unidadesMedidaForm";
 import StockItemForm from "../pages/StockItemForm";
 import StockItemMov from "../pages/StockItemMov";
 import StockItemMovItens from "../pages/StockItemMovItens";
+import RecommendationManual from "../pages/RecommendationManual";
+import RecommendationManualGleba from "../pages/recommendationManualGleba";
+import recomendationManualInsumo from "../pages/recomendationManualInsumo";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -40,6 +43,9 @@ export type RootStackParamList = {
   StockItemForm: undefined;
   StockItemMov: undefined;
   StockItemMovItens: undefined;
+  RecommendationManual: undefined;
+  RecommendationManualGleba: undefined;
+  recomendationManualInsumo: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -136,6 +142,21 @@ export default function Routes() {
             <Stack.Screen
               name="StockItemMovItens"
               component={StockItemMovItens}
+            />
+
+            <Stack.Screen
+              name="RecommendationManual"
+              component={RecommendationManual}
+            />
+
+            <Stack.Screen
+              name="RecommendationManualGleba"
+              component={RecommendationManualGleba}
+            />
+
+            <Stack.Screen
+              name="recomendationManualInsumo"
+              component={recomendationManualInsumo}
             />
 
           </Stack.Navigator>

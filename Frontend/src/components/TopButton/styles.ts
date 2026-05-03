@@ -14,6 +14,9 @@ export const styles = StyleSheet.create({
         width: '100%',
         paddingTop: paddingHorizontal
     },
+    topNoButtons: {
+        paddingTop: paddingHorizontal
+    },
     title: {
         padding: '5%',
         textTransform: 'uppercase',
@@ -24,6 +27,10 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 250,
         alignItems: 'center'
+    },
+    spacer: {
+        height: 40,
+        marginBottom: 10
     },
     deleteRegistry: {
         color: themes.colors.red,

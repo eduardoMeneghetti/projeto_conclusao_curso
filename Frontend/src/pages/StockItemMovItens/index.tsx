@@ -9,6 +9,7 @@ import { AddItemForm } from "../../components/AddItemForm";
 import { useInsumoDatabase, Insumo } from "../../database/useInsumoDatabase";
 import { useAjusteEstoqueDatabase } from "../../database/useAjusteEstoqueDatabase";
 import { UseMovEstoqueInsumos } from "../../database/useMovEstoqueInsumos";
+import ButtonAvance from "../../components/ButtonAvance";
 
 type Item = {
     insumo_id: number;
@@ -120,7 +121,7 @@ export default function StockItemMovItens() {
         >
             <TopButton
                 title="Itens do ajuste"
-                onVoltar={() => navigation.goBack()}
+                onCancelar={() => navigation.navigate('BottomRoutes' as any, { screen: 'Estoque' })}
             />
 
             <ScrollView style={styles.listContainer} showsVerticalScrollIndicator={false}>
@@ -158,7 +159,12 @@ export default function StockItemMovItens() {
                 )}
             </View>
 
-            <Button title={isEditing ? "Voltar" : "Salvar"} onPress={isEditing ? () => navigation.goBack() : handleSalvar} />
+            <ButtonAvance
+                onSeguir={handleSalvar}
+                onVoltar={
+                    () => navigation.goBack()
+                }
+            />
 
             <AddItemForm
                 insumos={insumos}

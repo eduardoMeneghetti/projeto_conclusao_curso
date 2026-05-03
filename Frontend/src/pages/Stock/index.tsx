@@ -28,18 +28,20 @@ export default function Stock() {
   const [insumo, setInsumo] = useState<UseInsumoListItem[]>([]);
   const [abaAtiva, setAbaAtiva] = useState<'estoque' | 'movimentacoes'>('estoque');
   const [optionsVisible, setOptionsVisible] = useState(false);
-  const [optionsMovVisible, setOptionsMovVisible] = useState(false);
   const [movimentacoes, setMovimentacoes] = useState<any[]>([]);
 
-  useEffect(() => {
-    setRequiresHarvest(false);
-    setAction(() => () => setOptionsVisible(true));
+  useFocusEffect(
+    useCallback(() => {
+      setRequiresHarvest(false);
+      setAction(() => () => setOptionsVisible(true));
 
-    return () => {
-      setRequiresHarvest(true);
-      setAction(null);
-    };
-  }, []);
+      return () => {
+        setRequiresHarvest(true);
+        setAction(null);
+        setOptionsVisible(false);
+      };
+    }, [])
+  );
 
   useFocusEffect(
     useCallback(() => {

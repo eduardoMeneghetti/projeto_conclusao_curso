@@ -17,34 +17,42 @@ type Props = TouchableOpacityProps & {
 };
 
 export function TopButton({ title, onVoltar, onCancelar, onDeletar, ...rest }: Props) {
+    const hasAnyButton = onVoltar || onCancelar || onDeletar;
+
     return (
-        <View style={styles.top}>
-            <View style={styles.botoes}>
-                <ButtonPages
-                    title="Voltar"
-                    tipo="v"
-                    {...rest}
-                    onPress={onVoltar}
-                />
+        <View style={[styles.top, !hasAnyButton && styles.topNoButtons]}>
+            {hasAnyButton && (
+                <View style={styles.botoes}>
+                    {onVoltar && (
+                        <ButtonPages
+                            title="Voltar"
+                            tipo="v"
+                            {...rest}
+                            onPress={onVoltar}
+                        />
+                    )}
 
-                {onCancelar && (
-                    <ButtonPages
-                        title="Cancelar"
-                        tipo="c"
-                        {...rest}
-                        onPress={onCancelar}
-                    />
-                )}
+                    {onCancelar && (
+                        <ButtonPages
+                            title="Cancelar"
+                            tipo="c"
+                            {...rest}
+                            onPress={onCancelar}
+                        />
+                    )}
 
-                {onDeletar && (
-                    <TouchableOpacity
-                        onPress={onDeletar}
-                    >
-                        <Text style={styles.deleteRegistry}>Deletar</Text>
-                    </TouchableOpacity>
-                )}
+                    {onDeletar && (
+                        <TouchableOpacity
+                            onPress={onDeletar}
+                        >
+                            <Text style={styles.deleteRegistry}>Deletar</Text>
+                        </TouchableOpacity>
+                    )}
 
-            </View>
+                </View>
+            )}
+
+            {!hasAnyButton && <View style={styles.spacer} />}
 
             <Line />
 

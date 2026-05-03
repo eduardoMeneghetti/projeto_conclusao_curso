@@ -21,7 +21,6 @@ export const styles = StyleSheet.create({
         alignContent: 'flex-start'
     },
     cancel:{
-        color: themes.colors.red,
-        backgroundColor: themes.colors.red
+        color: themes.colors.red
     }
 });

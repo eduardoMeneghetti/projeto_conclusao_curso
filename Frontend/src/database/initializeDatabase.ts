@@ -193,6 +193,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       FOREIGN KEY (unidades_medida_id) REFERENCES unidades_medidas(id),
       FOREIGN KEY (principios_ativos_id) REFERENCES principios_ativos(id)
     );
+    
 
     CREATE TABLE IF NOT EXISTS glebas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -275,6 +276,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       quantidade REAL,
       valor_unitario REAL,
+      origem TEXT,
       ajuste_estoque_id INTEGER NOT NULL,
       insumo_id INTEGER NOT NULL,
       created_at TEXT NOT NULL,
@@ -362,6 +364,8 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       data_recomendacao TEXT,
       recomendante TEXT,
       operador TEXT,
+      area_aplic REAL,
+      status TEXT,
       ativo INTEGER DEFAULT 1,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,

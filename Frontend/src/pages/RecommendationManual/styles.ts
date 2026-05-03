@@ -11,13 +11,11 @@ export const styles = StyleSheet.create({
     },
     form: {
         flex: 1,
-        alignItems: 'flex-start',
-        paddingLeft: '5%',
-        gap: 16,
-        width: '100%'
+        marginStart: '5%',
+        alignItems: 'flex-start'
     },
-    topoForm: {
+    safraAtividade: {
         flexDirection: 'row',
         gap: 60
-    }
+    },
 })

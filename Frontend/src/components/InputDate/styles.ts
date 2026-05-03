@@ -5,6 +5,8 @@ import { themes } from "../../global/themes";
 export const styles = StyleSheet.create({
     container: {
         width: '90%',
+        paddingTop: 10,
+        paddingBottom: 10,
     },
     title: {
         fontSize: 14,

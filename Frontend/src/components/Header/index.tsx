@@ -64,7 +64,7 @@ export default function Header() {
             {selectedHarvest ? selectedHarvest.descricao : 'Seleção da safra'}
           </Text>
         </TouchableOpacity>
-        <Text>
+        <Text style={styles.titlePropriety}>
           {selectedPropriety ? selectedPropriety.descricao : ''}
         </Text>
       </View>

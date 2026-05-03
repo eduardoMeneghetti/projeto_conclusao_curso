@@ -135,11 +135,11 @@ export function AddItemForm({ insumos, onAdd, isVisible, onClose }: Props) {
                     />
 
                     <View style={styles.buttonsRow}>
-                        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmar}>
-                            <Text style={styles.confirmButtonText}>Confirmar</Text>
-                        </TouchableOpacity>
                         <TouchableOpacity style={styles.cancelButton} onPress={handleCancelar}>
                             <Text style={styles.cancelButtonText}>Cancelar</Text>
+                        </TouchableOpacity>
+                         <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmar}>
+                            <Text style={styles.confirmButtonText}>Confirmar</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { View, Text, TouchableOpacity, Modal, Alert } from 'react-native';
 import { styles } from "./styles";
 import MapView, { Marker, Polygon, MapPressEvent } from "react-native-maps";
 import { useNavigation } from "@react-navigation/core";
+import { useFocusEffect } from "@react-navigation/native";
 import { useFab } from "../../context/fabContext";
 import { usePropriety } from "../../context/PropContext";
 import { useCidadeDatabase } from "../../database/cityStateDatabase";
@@ -15,7 +16,7 @@ import { Ponto } from "../../util/Ponto";
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import { useAuthSelection } from '../../context/selectionContext';
 import { useActivityGlebaDatabase } from "../../database/useActivityGlebaDatabase";
-import { usePropDatabase } from "../../database/usePropDatabase";
+
 
 
 type GlebaRenderizada = {
@@ -32,7 +33,6 @@ export default function Home() {
     const { selectedAtividadeSafraId } = useAuthSelection();
     const { createGlebaWithPontos, getGlebasWithLatLong, getGlebasInActivity } = useGlebaDatabase();
     const { createActivityGleba, getColorGlebaById } = useActivityGlebaDatabase();
-    const { updateAreaPropriety } = usePropDatabase();
     const [glebas, setGlebas] = useState<GlebaRenderizada[]>([]);
     const database = useSQLiteContext();
 
@@ -118,14 +118,20 @@ export default function Home() {
     }, [selectedPropriety]);
 
 
-    useEffect(() => {
-        setAction(() => () => {
-            setPontos([]);
-            setModoDesenho(true);
-        });
+    useFocusEffect(
+        useCallback(() => {
+            setAction(() => () => {
+                setPontos([]);
+                setModoDesenho(true);
+            });
 
-        return () => setAction(null);
-    }, []);
+            return () => {
+                setAction(null);
+                setPontos([]);
+                setModoDesenho(false);
+            };
+        }, [])
+    );
 
     function handleMapPress(event: MapPressEvent) {
         if (!modoDesenho) return;

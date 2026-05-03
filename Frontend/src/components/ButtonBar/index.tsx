@@ -58,7 +58,7 @@ export default function ButtonBar(props: BottomTabBarProps) {
                         style={styles.image}
                     />
                     <Text style={[styles.text, isFocusedRecomendacoes && styles.textActive]}>
-                        Recomendações
+                        Recomend.
                     </Text>
                 </TouchableOpacity>
 
@@ -103,7 +103,7 @@ export default function ButtonBar(props: BottomTabBarProps) {
                         style={styles.image}
                     />
                     <Text style={[styles.text, isFocusedRelatorios && styles.textActive]}>
-                        Relatórios
+                        Análises
                     </Text>
                 </TouchableOpacity>
 

@@ -10,22 +10,32 @@ export const styles = StyleSheet.create({
         },
         tabItem: {
             flex: 1,
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            paddingTop: 10,
+        },
+        iconContainer: {
+            width: 60,
+            height: 60,
             justifyContent: 'center',
             alignItems: 'center',
         },
         image: {
-            width: 50,
-            height: 50
+            width: 40,
+            height: 40
         },
         imageActive: {
             tintColor: themes.colors.primary,
         },
         text: {
-            fontSize: 8,
-            marginTop: 4,
+            fontSize: 12,
+            marginTop: 2,
+            textAlign: 'center',
+            lineHeight: 13,
         },
         textActive: {
             fontWeight: 'bold',
             color: themes.colors.primary,
+            textAlign: 'center'
         }
 });

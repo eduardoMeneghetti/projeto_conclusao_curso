@@ -28,6 +28,9 @@ export default StyleSheet.create({
     },
     tilteHarvest: {
         fontSize: 18
+    },
+    titlePropriety: {
+        fontSize: 16
     }
 })
 
