@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_12_042725) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_03_045956) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -190,6 +190,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_042725) do
     t.bigint "ajuste_estoque_id", null: false
     t.datetime "created_at", null: false
     t.bigint "insumo_id", null: false
+    t.string "origem"
     t.decimal "quantidade", precision: 10, scale: 2
     t.datetime "updated_at", null: false
     t.decimal "valor_unitario", precision: 10, scale: 2
@@ -241,6 +242,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_042725) do
 
   create_table "recomendacoes_agricolas", force: :cascade do |t|
     t.bigint "analises_solo_id"
+    t.decimal "area_aplic", precision: 10, scale: 2
     t.bigint "atividade_gleba_id", null: false
     t.bigint "atividade_id", null: false
     t.bigint "atividade_safra_id", null: false
@@ -251,6 +253,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_042725) do
     t.bigint "propriedade_id", null: false
     t.string "recomendante"
     t.bigint "safra_id", null: false
+    t.string "status"
     t.datetime "updated_at", null: false
     t.index ["analises_solo_id"], name: "index_recomendacoes_agricolas_on_analises_solo_id"
     t.index ["atividade_gleba_id"], name: "index_recomendacoes_agricolas_on_atividade_gleba_id"
