@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_03_045956) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_06_003031) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -244,23 +244,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_03_045956) do
     t.bigint "analises_solo_id"
     t.decimal "area_aplic", precision: 10, scale: 2
     t.bigint "atividade_gleba_id", null: false
-    t.bigint "atividade_id", null: false
     t.bigint "atividade_safra_id", null: false
     t.boolean "ativo", default: true
     t.datetime "created_at", null: false
     t.datetime "data_recomendacao"
-    t.string "operador"
-    t.bigint "propriedade_id", null: false
-    t.string "recomendante"
-    t.bigint "safra_id", null: false
+    t.bigint "operador_id", null: false
+    t.bigint "recomendante_id", null: false
     t.string "status"
     t.datetime "updated_at", null: false
     t.index ["analises_solo_id"], name: "index_recomendacoes_agricolas_on_analises_solo_id"
     t.index ["atividade_gleba_id"], name: "index_recomendacoes_agricolas_on_atividade_gleba_id"
-    t.index ["atividade_id"], name: "index_recomendacoes_agricolas_on_atividade_id"
     t.index ["atividade_safra_id"], name: "index_recomendacoes_agricolas_on_atividade_safra_id"
-    t.index ["propriedade_id"], name: "index_recomendacoes_agricolas_on_propriedade_id"
-    t.index ["safra_id"], name: "index_recomendacoes_agricolas_on_safra_id"
+    t.index ["operador_id"], name: "index_recomendacoes_agricolas_on_operador_id"
+    t.index ["recomendante_id"], name: "index_recomendacoes_agricolas_on_recomendante_id"
   end
 
   create_table "recomendacoes_agricolas_itens", force: :cascade do |t|
@@ -343,9 +339,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_03_045956) do
   add_foreign_key "recomendacoes_agricolas", "analises_solos"
   add_foreign_key "recomendacoes_agricolas", "atividade_glebas"
   add_foreign_key "recomendacoes_agricolas", "atividade_safras"
-  add_foreign_key "recomendacoes_agricolas", "atividades"
-  add_foreign_key "recomendacoes_agricolas", "propriedades"
-  add_foreign_key "recomendacoes_agricolas", "safras"
+  add_foreign_key "recomendacoes_agricolas", "usuarios", column: "operador_id"
+  add_foreign_key "recomendacoes_agricolas", "usuarios", column: "recomendante_id"
   add_foreign_key "recomendacoes_agricolas_itens", "insumos"
   add_foreign_key "recomendacoes_agricolas_itens", "principios_ativos"
   add_foreign_key "recomendacoes_agricolas_itens", "recomendacoes_agricolas", column: "recomendacao_agricola_id"
