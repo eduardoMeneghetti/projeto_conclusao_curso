@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "update-ip": "node scripts/update-api-ip.js",
+    "start": "node scripts/update-api-ip.js && expo start",
+    "android": "node scripts/update-api-ip.js && expo start --android",
+    "ios": "node scripts/update-api-ip.js && expo start --ios",
+    "web": "node scripts/update-api-ip.js && expo start --web"
   },
   "dependencies": {
     "@expo/ui": "~0.2.0-beta.9",

@@ -6,7 +6,6 @@ import Stock from '../pages/Stock';
 import Home from '../pages/Home';
 import CustomTabBar from '../components/ButtonBar';
 import Header from '../components/Header';
-import { AuthProviderContext } from '../context/selectionContext';
 import { FabProvider, useFab } from '../context/fabContext';
 import { GlobalButton } from '../components/GlobalButton';
 
@@ -41,10 +40,8 @@ function TabNavigator() {
 export default function BottomRoutes() {
     return (
         <FabProvider>
-            <AuthProviderContext>
-                <TabNavigator />  
-                <GlobalButton />
-            </AuthProviderContext>
+            <TabNavigator />
+            <GlobalButton />
         </FabProvider>
     );
 }

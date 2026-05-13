@@ -1,4 +1,4 @@
-import {type SQLiteDatabase} from 'expo-sqlite'
+import { type SQLiteDatabase } from 'expo-sqlite'
 import { seedEstadosCidades } from './cityStateDatabase';
 
 export async function initializeDatabase(db: SQLiteDatabase) {
@@ -72,14 +72,14 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       id, nome, usuario, senha, email, operador, recomendante, ativo,
       created_at, updated_at, synced_at, is_dirty, server_id, deleted_at
     ) VALUES (
-      10, 'khronos_adm', 'khronos_adm', '749b6911bf2bbd920781343120d2d4603db44d5958555cbea16e241a8098639a', 'admin@admin', 1, 1, 1,
+      10, 'khronos_adm', 'khronos_adm', '749b6911bf2bbd920781343120d2d4603db44d5958555cbea16e241a8098639a', 'admin@admin.com.br', 1, 1, 1,
       datetime('now'), datetime('now'), NULL, 1, NULL, NULL
     );
 
 
     CREATE TABLE IF NOT EXISTS safras (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      descricao TEXT UNIQUE,
+      descricao TEXT,
       data_inicio TEXT,
       data_final TEXT,
       ativo INTEGER,
@@ -354,37 +354,34 @@ export async function initializeDatabase(db: SQLiteDatabase) {
     );
 
     CREATE TABLE IF NOT EXISTS recomendacoes_agricolas (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      safra_id INTEGER NOT NULL,
-      atividade_id INTEGER NOT NULL,
-      analises_solo_id INTEGER,
-      propriedade_id INTEGER NOT NULL,
-      atividade_gleba_id INTEGER NOT NULL,
-      atividade_safra_id INTEGER NOT NULL,
-      data_recomendacao TEXT,
-      recomendante TEXT,
-      operador TEXT,
-      area_aplic REAL,
-      status TEXT,
-      ativo INTEGER DEFAULT 1,
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL,
-      synced_at TEXT,
-      is_dirty INTEGER DEFAULT 1,
-      server_id INTEGER,
-      deleted_at TEXT,
-      FOREIGN KEY (safra_id) REFERENCES safras(id),
-      FOREIGN KEY (atividade_id) REFERENCES atividades(id),
-      FOREIGN KEY (analises_solo_id) REFERENCES analises_solos(id),
-      FOREIGN KEY (propriedade_id) REFERENCES propriedades(id),
-      FOREIGN KEY (atividade_gleba_id) REFERENCES atividade_glebas(id),
-      FOREIGN KEY (atividade_safra_id) REFERENCES atividade_safras(id)
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    atividade_safra_id INTEGER NOT NULL,   
+    atividade_gleba_id INTEGER NOT NULL,   
+    analises_solo_id INTEGER,             
+    data_recomendacao TEXT,
+    recomendante_id INTEGER NOT NULL,
+    operador_id INTEGER NOT NULL,
+    area_aplic REAL,
+    status TEXT,
+    origem TEXT,
+    ativo INTEGER DEFAULT 1,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    synced_at TEXT,
+    is_dirty INTEGER DEFAULT 1,
+    server_id INTEGER,
+    deleted_at TEXT,
+    FOREIGN KEY (atividade_safra_id) REFERENCES atividade_safras(id),
+    FOREIGN KEY (atividade_gleba_id) REFERENCES atividade_glebas(id),
+    FOREIGN KEY (analises_solo_id) REFERENCES analises_solos(id),
+    FOREIGN KEY (recomendante_id) REFERENCES usuarios(id),
+    FOREIGN KEY (operador_id) REFERENCES usuarios(id)
     );
+
 
     CREATE TABLE IF NOT EXISTS recomendacoes_agricolas_itens (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       recomendacao_agricola_id INTEGER NOT NULL,
-      principios_ativo_id INTEGER NOT NULL,
       insumo_id INTEGER NOT NULL,
       dose REAL,
       quantidade REAL,
@@ -395,7 +392,6 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       server_id INTEGER,
       deleted_at TEXT,
       FOREIGN KEY (recomendacao_agricola_id) REFERENCES recomendacoes_agricolas(id),
-      FOREIGN KEY (principios_ativo_id) REFERENCES principios_ativos(id),
       FOREIGN KEY (insumo_id) REFERENCES insumos(id)
     );
 

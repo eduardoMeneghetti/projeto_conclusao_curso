@@ -233,5 +233,35 @@ export function useUserDatabase() {
         }
     }
 
-    return { create, getByCrendentials, getUsersAll, getUsersActive, getUsuariosDirty, updateSyncedUsuario, updateUsuarios, getUsersById, checkUsuarioExists, checkEmailExists }
+    async function getUserOperador() {
+        try {
+            const row = await database.getAllAsync<UserDatabaseRaw>(
+                `SELECT *
+                FROM usuarios
+                WHERE operador = 1
+                AND deleted_at IS NULL`
+            );
+            return row.map(mapUser);
+        } catch (error) {
+            console.error("Erro ao buscar usuário operador:", error);
+            return null;
+        }  
+    }
+
+    async function getUserRecomendate(id: number) {
+        try {
+            const row = await database.getFirstAsync<UserDatabaseRaw>(
+                `SELECT u.recomendante
+                FROM usuarios u
+                WHERE id = $id
+                AND deleted_at IS NULL`
+            );
+            return row ? mapUser(row) : null
+        } catch (error) {
+            console.error("Erro ao buscar usuário operador:", error);
+            return null;
+        }  
+    }
+
+    return { create, getByCrendentials, getUsersAll, getUsersActive, getUsuariosDirty, updateSyncedUsuario, updateUsuarios, getUsersById, checkUsuarioExists, checkEmailExists, getUserOperador, getUserRecomendate }
 }

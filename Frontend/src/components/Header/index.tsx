@@ -89,7 +89,9 @@ export default function Header() {
         selectedId={selectedHarvest ? String(selectedHarvest.id) : null}
         onSelect={(item) => {
           const harvest = harvests.find(h => String(h.id) === item.id);
-          if (harvest) setSelectedHarvest(harvest);
+          if (harvest) {
+            setSelectedHarvest(harvest);
+          }
         }}
         showInactiveToggle={true}
         onToggleInactive={(show) => loadHarvests(show)}

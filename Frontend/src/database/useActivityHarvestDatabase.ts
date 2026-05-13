@@ -1,6 +1,7 @@
 import { SQLiteDatabase, useSQLiteContext } from "expo-sqlite";
 
 export type UseActivityHarvest = {
+    safra_descricao: any;
     id: number,
     atividade_id: number,
     safra_id: number,
@@ -11,6 +12,13 @@ export type UseActivityHarvest = {
     is_dirty: boolean,
     server_id: number | null,
     deleted_at: string | null,
+}
+
+export type GlebasInActivityHarvest = {
+    atividade_gleba_id: number,
+    gleba_id: number,
+    descricao_gleba: string,
+    area_hectares: number
 }
 
 type UseActivityHarvestRaw = Omit<UseActivityHarvest, "is_dirty"> & {
@@ -55,7 +63,18 @@ export function UseActivityHarvestDatabase() {
     async function getActivityHarvestById(id: number) {
         try {
             const row = await database.getFirstAsync<UseActivityHarvestRaw>(
-                `SELECT *
+                `SELECT 
+                    ats.id,
+                    ats.atividade_id,
+                    ats.safra_id,
+                    ats.propriedade_id,
+                    ats.created_at,
+                    ats.updated_at,
+                    ats.synced_at,
+                    ats.is_dirty,
+                    ats.server_id,
+                    ats.deleted_at,
+                    s.descricao as safra_descricao
                  FROM atividade_safras ats 
                  INNER JOIN safras s ON s.id = ats.safra_id
                  WHERE s.id = $id
@@ -72,8 +91,8 @@ export function UseActivityHarvestDatabase() {
     async function getActivityHarvestByPropriety(propriedade_id: number) {
         try {
             const rows = await database.getAllAsync<UseActivityHarvest>(`
-            SELECT 
-                ats.id as atividade_safra_id,
+            SELECT
+                ats.id as id,
                 s.descricao as safra_descricao,
                 a.descricao as atividade_descricao,
                 a.id as atividade_id,
@@ -81,7 +100,7 @@ export function UseActivityHarvestDatabase() {
                 s.ativo 
             FROM atividade_safras ats
             INNER JOIN safras s ON s.id = ats.safra_id
-            INNER JOIN atividades a ON a.id = ats.atividade_id
+            LEFT JOIN atividades a ON a.id = ats.atividade_id
             WHERE ats.propriedade_id = $propriedade_id
             AND ats.deleted_at IS NULL
         `, { $propriedade_id: propriedade_id });
@@ -115,5 +134,28 @@ export function UseActivityHarvestDatabase() {
         }
     }
 
-    return { createActivityHarvest, getActivityHarvestById, updateActivityHarvestById, getActivityHarvestByPropriety }
+    async function getGlebasInActivityHarvest(atividade_safra_id: number) {
+        try {
+            const rows = await database.getAllAsync<GlebasInActivityHarvest>(`
+                SELECT
+                ag.id AS atividade_gleba_id,
+                g.id AS gleba_id,
+                g.descricao AS descricao_gleba,
+                g.area_hectares AS area_hectares
+                FROM
+                glebas g
+                INNER JOIN atividade_glebas ag ON
+                ag.gleba_id = g.id
+                WHERE
+                ag.atividade_safra_id = $atividade_safra_id
+                AND ag.deleted_at IS NULL
+            `, { $atividade_safra_id: atividade_safra_id });
+            return rows;
+        } catch (error) {
+            console.error("Erro ao buscar glebas da atividade_safra:", error);
+            return [];
+        }
+    }
+
+    return { createActivityHarvest, getActivityHarvestById, updateActivityHarvestById, getActivityHarvestByPropriety, getGlebasInActivityHarvest }
 }

@@ -167,6 +167,7 @@ export default function StockItemMovItens() {
             />
 
             <AddItemForm
+                mode="estoque"
                 insumos={insumos}
                 isVisible={modalAddItemVisible}
                 onClose={() => setModalAddItemVisible(false)}

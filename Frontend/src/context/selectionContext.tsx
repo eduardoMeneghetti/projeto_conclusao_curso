@@ -13,6 +13,7 @@ type AuthSelectionContextType = {
   loadHarvests: (withInactive?: boolean) => void;
   setSelectedHarvest: (harvest: UseHarverst | null) => void;
   selectedAtividadeSafraId: number | null;
+  setSelectedAtividadeSafraId: (id: number | null) => void;
 };
 
 export const AuthSelectionContext =
@@ -52,9 +53,13 @@ export const AuthProviderContext = (props: any) => {
       return;
     }
 
-    getActivityHarvestById(harvest.id).then((activityHarvest) => {
-      if (activityHarvest) {
-        setSelectedAtividadeSafraId(activityHarvest.id);
+    getActivityHarvestById(harvest.id).then((atividadeSafra) => {
+      if (atividadeSafra) {
+        console.log('AtividadeSafra selecionada ID:', atividadeSafra.id);
+        setSelectedAtividadeSafraId(atividadeSafra.id);
+      } else {
+        console.log('Nenhuma AtividadeSafra encontrada para harvest:', harvest.id);
+        setSelectedAtividadeSafraId(null);
       }
     });
   };
@@ -69,8 +74,6 @@ export const AuthProviderContext = (props: any) => {
   };
 
   useEffect(() => {
-    setSelectedHarvest(null);
-    setSelectedAtividadeSafraId(null);
     loadHarvests();
   }, [selectedPropriety]);
 
@@ -85,6 +88,7 @@ export const AuthProviderContext = (props: any) => {
         loadHarvests,
         setSelectedHarvest: handleSelectHarvest,
         selectedAtividadeSafraId,
+        setSelectedAtividadeSafraId,
       }}
     >
       {props.children}
