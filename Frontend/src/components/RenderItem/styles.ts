@@ -55,8 +55,8 @@ export const styles = StyleSheet.create({
         color: themes.colors.black,
     },
     editIcon: {
-        width: 20,
-        height: 20
+        width: 28,
+        height: 28
     },
     GroupEditSaldo: {
         flexDirection: 'row',

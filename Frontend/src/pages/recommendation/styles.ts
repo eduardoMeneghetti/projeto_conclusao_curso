@@ -9,5 +9,10 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: themes.colors.background_page,
-    }
+    },
+     scroll: {
+        paddingBottom: 20,
+        width: '100%',
+        height: '100%',
+    },
 });

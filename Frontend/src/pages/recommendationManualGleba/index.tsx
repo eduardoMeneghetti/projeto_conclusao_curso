@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-    View,
-    Text,
-    Alert
-} from 'react-native'
+import { View, Alert } from 'react-native'
 import { styles } from "./styles";
 import { TopButton } from "../../components/TopButton";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -30,7 +26,9 @@ export default function RecommendationManualGleba() {
     const [operador, setOperador] = useState<UserDatabase[]>([]);
     const [seletectedOperador, setSelectedOperador] = useState<UserDatabase | null>(null);
 
-    const [areaAplic, setAreaAplic] = useState('');
+    const [areaAplic, setAreaAplic] = useState(
+        dadosRecomend.area_aplic ? String(dadosRecomend.area_aplic) : ''
+    );
 
     useEffect(() => {
         getUserOperador().then((result) => {
@@ -38,18 +36,31 @@ export default function RecommendationManualGleba() {
         });
 
         if (dadosRecomend.atividade_safra_id) {
-            console.log("Buscando glebas para atividade_safra_id: ", dadosRecomend.atividade_safra_id);
             getGlebasInActivityHarvest(dadosRecomend.atividade_safra_id).then((result) => {
                 if (result) setGleba(result);
             });
         }
     }, [dadosRecomend.atividade_safra_id]);
 
+    // Pré-seleciona gleba ao editar
+    useEffect(() => {
+        if (!dadosRecomend.atividade_gleba_id || gleba.length === 0) return;
+        const pre = gleba.find(g => g.atividade_gleba_id === dadosRecomend.atividade_gleba_id);
+        if (pre) setSelectedGleba(pre);
+    }, [dadosRecomend.atividade_gleba_id, gleba]);
+
+    // Pré-seleciona operador ao editar
+    useEffect(() => {
+        if (!dadosRecomend.operador_id || operador.length === 0) return;
+        const pre = operador.find(o => o.id === dadosRecomend.operador_id);
+        if (pre) setSelectedOperador(pre);
+    }, [dadosRecomend.operador_id, operador]);
+
     function handleNext() {
         if (!selectedGleba) {
             Alert.alert("Atenção", "Por favor, selecione uma gleba para continuar.");
             return;
-        } 
+        }
         if (!seletectedOperador) {
             Alert.alert("Atenção", "Por favor, selecione um operador.");
             return;
@@ -70,7 +81,7 @@ export default function RecommendationManualGleba() {
             ...dadosRecomend,
             gleba: selectedGleba,
             operador: seletectedOperador,
-            areaAplicacao: area
+            areaAplicacao: area,
         });
     }
 
@@ -81,23 +92,18 @@ export default function RecommendationManualGleba() {
             />
 
             <View style={styles.form}>
-
                 <ButtonSelect
                     title="Gleba da recomendação:"
                     text={selectedGleba ? `${selectedGleba.descricao_gleba} (${selectedGleba.area_hectares.toFixed(2)} ha)` : "Selecione a gleba"}
                     isRequired={true}
-                    onPress={
-                        () => setisGlebaModalVisible(true)
-                    }
+                    onPress={() => setisGlebaModalVisible(true)}
                 />
 
                 <ButtonSelect
                     title="Operador responsável:"
-                    text={seletectedOperador ? `${seletectedOperador.nome}` : "Selecione o operador"}
+                    text={seletectedOperador ? seletectedOperador.nome : "Selecione o operador"}
                     isRequired={true}
-                    onPress={
-                        () => setIsOperadorModal(true)
-                    }
+                    onPress={() => setIsOperadorModal(true)}
                 />
 
                 <InputText
@@ -108,54 +114,43 @@ export default function RecommendationManualGleba() {
                     returnKeyType="done"
                     value={areaAplic}
                     onChangeText={(text) => {
-                        // aceita ponto ou vírgula como separador decimal, até 2 casas
                         if (/^\d*[.,]?\d{0,2}$/.test(text)) setAreaAplic(text);
                     }}
                 />
-
             </View>
 
             <ButtonAvance
                 title="Próximo"
-                onSeguir={
-                    () => handleNext()
-                }
-                onVoltar={
-                    () => { navigation.goBack() }
-                }
+                onSeguir={() => handleNext()}
+                onVoltar={() => navigation.goBack()}
             />
-
 
             <SelectionModal
                 isVisible={isGlebaModalVisible}
                 onClose={() => setisGlebaModalVisible(false)}
                 title="Selecione a gleba"
                 data={gleba.map(g => ({
-                    id: String(g.gleba_id),
+                    id: String(g.atividade_gleba_id),
                     title: `${g.descricao_gleba} - ${g.area_hectares.toFixed(2)} ha`
                 }))}
-                selectedId={selectedGleba ? String(selectedGleba.gleba_id) : null}
+                selectedId={selectedGleba ? String(selectedGleba.atividade_gleba_id) : null}
                 onSelect={(item) => {
-                    const glebaSelecionada = gleba.find(g => String(g.gleba_id) === item.id);
+                    const glebaSelecionada = gleba.find(g => String(g.atividade_gleba_id) === item.id);
                     if (glebaSelecionada) setSelectedGleba(glebaSelecionada);
                 }}
             />
 
             <SelectionModal
                 isVisible={isOperadorModal}
-                onClose={()=> setIsOperadorModal(false)}
+                onClose={() => setIsOperadorModal(false)}
                 title="Selecione o operador"
-                data={operador.map(o => ({
-                    id: String(o.id),
-                    title: o.nome
-                }))}
+                data={operador.map(o => ({ id: String(o.id), title: o.nome }))}
                 selectedId={seletectedOperador ? String(seletectedOperador.id) : null}
                 onSelect={(item) => {
                     const operadorSelecionado = operador.find(o => String(o.id) === item.id);
                     if (operadorSelecionado) setSelectedOperador(operadorSelecionado);
                 }}
             />
-
         </View>
     )
 }

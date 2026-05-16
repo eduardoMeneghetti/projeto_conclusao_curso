@@ -24,20 +24,27 @@ export default function RecommendationManualInsumo() {
     const dadosRecommendation = route.params;
 
     const { getInsumoAtivo } = useInsumoDatabase();
-    const { createRecomendation } = useRecommendationDatabase();
-    const { createRecommendationItem } = useRecommendationItensDatabase();
+    const { createRecomendation, updateRecommendation } = useRecommendationDatabase();
+    const { createRecommendationItem, getItemsByRecommendationId, deleteItemsByRecommendationId } = useRecommendationItensDatabase();
+
+    const isEditing = !!dadosRecommendation.id;
+    const areaAplic: number = dadosRecommendation.areaAplicacao ?? 0;
 
     const [itens, setItens] = useState<RecomendacaoItem[]>([]);
     const [insumos, setInsumos] = useState<Insumo[]>([]);
     const [modalAddItemVisible, setModalAddItemVisible] = useState(false);
-
-    const areaAplic: number = dadosRecommendation.areaAplicacao ?? 0;
 
     useEffect(() => {
         getInsumoAtivo().then((result) => {
             if (result) setInsumos(result);
         });
     }, []);
+
+    // Carrega itens existentes ao editar
+    useEffect(() => {
+        if (!isEditing) return;
+        getItemsByRecommendationId(dadosRecommendation.id).then(setItens);
+    }, [dadosRecommendation.id]);
 
     function handleRemoverItem(insumo_id: number) {
         setItens(prev => prev.filter(i => i.insumo_id !== insumo_id));
@@ -46,18 +53,28 @@ export default function RecommendationManualInsumo() {
     async function handleSalvar() {
         if (!itens.length) return Alert.alert('Atenção', 'Adicione pelo menos um insumo');
 
-        try {
-            const recomendacao = await createRecomendation({
-                atividade_safra_id: dadosRecommendation.atividade_safra_id,
-                atividade_gleba_id: dadosRecommendation.gleba.atividade_gleba_id,
-                data_recomendacao: dadosRecommendation.data_recomendacao,
-                operador_id: dadosRecommendation.operador.id,
-                recomendante_id: dadosRecommendation.recomendante_id,
-                area_aplic: areaAplic,
-            });
+        const payload = {
+            atividade_safra_id: dadosRecommendation.atividade_safra_id,
+            atividade_gleba_id: dadosRecommendation.gleba.atividade_gleba_id,
+            data_inicio: dadosRecommendation.data_inicio,
+            data_fim: dadosRecommendation.data_fim,
+            operador_id: dadosRecommendation.operador.id,
+            recomendante_id: dadosRecommendation.recomendante_id,
+            area_aplic: areaAplic,
+        };
 
-            if (!recomendacao?.insertedRowI) throw new Error('Erro ao criar recomendação');
-            const recomendacaoId = recomendacao.insertedRowI;
+        try {
+            let recomendacaoId: number;
+
+            if (isEditing) {
+                await updateRecommendation({ id: dadosRecommendation.id, ...payload });
+                await deleteItemsByRecommendationId(dadosRecommendation.id);
+                recomendacaoId = dadosRecommendation.id;
+            } else {
+                const recomendacao = await createRecomendation(payload);
+                if (!recomendacao?.insertedRowI) throw new Error('Erro ao criar recomendação');
+                recomendacaoId = recomendacao.insertedRowI;
+            }
 
             for (const item of itens) {
                 await createRecommendationItem({
@@ -93,7 +110,7 @@ export default function RecommendationManualInsumo() {
                             <View style={styles.itemInfo}>
                                 <Text style={styles.itemDescricao}>{item.descricao}</Text>
                                 <Text style={styles.itemDetalhes}>
-                                    Dose: {item.dose.toFixed(2)} {item.unidade}/ha | Qtd: {item.quantidade.toFixed(2)} {item.unidade}
+                                    Dose: {Number(item.dose).toFixed(2)} {item.unidade}/ha | Qtd: {Number(item.quantidade).toFixed(2)} {item.unidade}
                                 </Text>
                             </View>
                             <TouchableOpacity

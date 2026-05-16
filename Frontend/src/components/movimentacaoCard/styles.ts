@@ -65,8 +65,8 @@ export const styles = StyleSheet.create({
         paddingLeft: 12,
     },
     EditButton: {
-        width: 20,
-        height: 20
+        width: 28,
+        height: 28 
     },
     upCard: {
         flexDirection: 'row',
