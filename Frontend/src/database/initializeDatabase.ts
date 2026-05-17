@@ -129,6 +129,12 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       deleted_at TEXT
     );
 
+    INSERT OR IGNORE INTO nutrientes (id, descricao, sigla, unidade, created_at, updated_at)
+    VALUES 
+      (1, 'Nitrogênio', 'N', 'kg/ha', datetime('now'), datetime('now')),
+      (2, 'Fósforo', 'P2O5', 'kg/ha', datetime('now'), datetime('now')),
+      (3, 'Potássio', 'K2O', 'kg/ha', datetime('now'), datetime('now'));
+
     CREATE TABLE IF NOT EXISTS principios_ativos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       descricao TEXT UNIQUE,

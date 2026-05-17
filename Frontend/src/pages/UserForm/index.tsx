@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
+    KeyboardAvoidingView,
+    Platform,
     View
 } from 'react-native'
 import { styles } from "./styles";
@@ -159,6 +161,9 @@ export default function UserForm() {
     }
 
     return (
+        <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                >
         <View style={styles.container}>
             <TopButton
                 title="Cadastro de usuário"
@@ -237,11 +242,13 @@ export default function UserForm() {
 
             </View>
 
+
             <Button
                 title="Salvar"
                 onPress={handleSalvar}
             />
 
         </View>
+        </KeyboardAvoidingView>
     )
 }
