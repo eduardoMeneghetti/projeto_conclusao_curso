@@ -96,6 +96,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       descricao TEXT UNIQUE,
       cor TEXT,
       ativo INTEGER,
+      tem_tabela_adubacao INTEGER,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
       synced_at TEXT,
@@ -103,6 +104,16 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       server_id INTEGER,
       deleted_at TEXT
     );
+
+    INSERT OR IGNORE INTO atividades (id, descricao, cor, ativo, tem_tabela_adubacao, created_at, updated_at, synced_at, is_dirty, server_id, deleted_at) VALUES
+      (1, 'SOJA',         '#2ECC71', 1, 1, datetime('now'), datetime('now'), NULL, 1, NULL, NULL),
+      (2, 'MILHO',        '#F1C40F', 1, 1, datetime('now'), datetime('now'), NULL, 1, NULL, NULL),
+      (3, 'TRIGO',        '#E67E22', 1, 1, datetime('now'), datetime('now'), NULL, 1, NULL, NULL),
+      (4, 'AVEIA BRANCA', '#607D8B', 1, 1, datetime('now'), datetime('now'), NULL, 1, NULL, NULL),
+      (5, 'AVEIA PRETA',  '#3498DB', 1, 1, datetime('now'), datetime('now'), NULL, 1, NULL, NULL),
+      (6, 'CEVADA',       '#795548', 1, 1, datetime('now'), datetime('now'), NULL, 1, NULL, NULL),
+      (7, 'CANOLA',       '#E91E63', 1, 1, datetime('now'), datetime('now'), NULL, 1, NULL, NULL),
+      (8, 'FEIJÃO',       '#9B59B6', 1, 1, datetime('now'), datetime('now'), NULL, 1, NULL, NULL);
 
     CREATE TABLE IF NOT EXISTS maquinas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -307,6 +318,11 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       deleted_at TEXT
     );
 
+    INSERT OR IGNORE INTO parametros_metricas (id, tipo, descricao, created_at, updated_at) VALUES
+      (1, 'ARGILA',           'Teor de Argila',              datetime('now'), datetime('now')),
+      (2, 'MATERIA_ORGANICA', 'Matéria Orgânica',            datetime('now'), datetime('now')),
+      (3, 'CTC',              'Capacidade de Troca de Cátions', datetime('now'), datetime('now'));
+
     CREATE TABLE IF NOT EXISTS fichamentos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       parametros_metrica_id INTEGER NOT NULL,
@@ -322,11 +338,24 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       FOREIGN KEY (parametros_metrica_id) REFERENCES parametros_metricas(id)
     );
 
+    INSERT OR IGNORE INTO fichamentos (parametros_metrica_id, classificacao, valor_min, valor_max, created_at, updated_at) VALUES
+      --Argila
+      (1, 'Classe 4', 0,    20,   datetime('now'), datetime('now')),
+      (1, 'Classe 3', 21,   40,   datetime('now'), datetime('now')),
+      (1, 'Classe 2', 41,   60,   datetime('now'), datetime('now')),
+      (1, 'Classe 1', 61,   999,  datetime('now'), datetime('now')),
+      --Matéria Orgânica
+      (2, 'Baixo',   0,    2.5,  datetime('now'), datetime('now')),
+      (2, 'Médio',   2.6,  5.0,  datetime('now'), datetime('now')),
+      (2, 'Alto',    5.1,  999,  datetime('now'), datetime('now')),
+      --CTC
+      (3, 'Baixa',      0,    7.5,  datetime('now'), datetime('now')),
+      (3, 'Média',      7.6,  15.0, datetime('now'), datetime('now')),
+      (3, 'Alta',       15.1, 30.0, datetime('now'), datetime('now')),
+      (3, 'Muito alta', 30.1, 999,  datetime('now'), datetime('now'));
+
     CREATE TABLE IF NOT EXISTS analises_solos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      propriedade_id INTEGER NOT NULL,
-      safra_id INTEGER NOT NULL,
-      atividade_id INTEGER NOT NULL,
       atividade_gleba_id INTEGER NOT NULL,
       atividade_safra_id INTEGER NOT NULL,
       data_coleta TEXT,
@@ -337,9 +366,6 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       is_dirty INTEGER DEFAULT 1,
       server_id INTEGER,
       deleted_at TEXT,
-      FOREIGN KEY (propriedade_id) REFERENCES propriedades(id),
-      FOREIGN KEY (safra_id) REFERENCES safras(id),
-      FOREIGN KEY (atividade_id) REFERENCES atividades(id),
       FOREIGN KEY (atividade_gleba_id) REFERENCES atividade_glebas(id),
       FOREIGN KEY (atividade_safra_id) REFERENCES atividade_safras(id)
     );

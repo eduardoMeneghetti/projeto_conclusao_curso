@@ -221,11 +221,34 @@ export function useRecommendationDatabase() {
         }
     }
 
+    async function deleteRecommendation(recomendacao_id: number) {
+        try {
+            await database.withTransactionAsync(async () => {
+                await database.runAsync(
+                    `UPDATE recomendacoes_agricolas_itens
+                     SET deleted_at = datetime('now'), is_dirty = 1
+                     WHERE recomendacao_agricola_id = $id`,
+                    { $id: recomendacao_id }
+                );
+                await database.runAsync(
+                    `UPDATE recomendacoes_agricolas
+                     SET deleted_at = datetime('now'), ativo = 0, is_dirty = 1
+                     WHERE id = $id`,
+                    { $id: recomendacao_id }
+                );
+            });
+        } catch (error) {
+            console.error('Erro ao deletar recomendação:', error);
+            throw error;
+        }
+    }
+
     return {
         createRecomendation,
         updateRecommendation,
         getRecommendationAll,
         getRecommendationById,
         updateStatusRecomendation,
+        deleteRecommendation
     }
 }

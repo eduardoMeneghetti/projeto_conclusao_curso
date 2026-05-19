@@ -25,6 +25,10 @@ import StockItemMovItens from "../pages/StockItemMovItens";
 import RecommendationManual from "../pages/RecommendationManual";
 import RecommendationManualGleba from "../pages/recommendationManualGleba";
 import recomendationManualInsumo from "../pages/recomendationManualInsumo";
+import AnaliseSolos from "../pages/AnaliseSolos";
+import AnaliseSolosResultado from "../pages/AnaliseSolosFichamento";
+import AnaliseNPK from "../pages/AnaliseNPK";
+import AnaliseSolosFichamento from "../pages/AnaliseSolosFichamento";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -47,6 +51,9 @@ export type RootStackParamList = {
   RecommendationManual: undefined;
   RecommendationManualGleba: undefined;
   recomendationManualInsumo: undefined;
+  AnaliseSolos: undefined;
+  AnaliseSolosFichamento: undefined;
+  AnaliseNPK: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -55,8 +62,8 @@ export default function Routes() {
   return (
     <AuthProvider>
       <SQLiteProvider databaseName="khronos.db" onInit={initializeDatabase}>
-          <ProprietyProvider>
-            <AuthProviderContext>
+        <ProprietyProvider>
+          <AuthProviderContext>
             <Stack.Navigator
               initialRouteName="Login"
               screenOptions={{ headerShown: false }}
@@ -161,9 +168,25 @@ export default function Routes() {
                 component={recomendationManualInsumo}
               />
 
+              <Stack.Screen
+                name="AnaliseSolos"
+                component={AnaliseSolos}
+              />
+
+
+              <Stack.Screen
+                name="AnaliseSolosFichamento"
+                component={AnaliseSolosFichamento}
+              />
+
+              <Stack.Screen
+                name="AnaliseNPK"
+                component={AnaliseNPK}
+              />
+
             </Stack.Navigator>
-            </AuthProviderContext>
-          </ProprietyProvider>
+          </AuthProviderContext>
+        </ProprietyProvider>
       </SQLiteProvider>
     </AuthProvider>
   );

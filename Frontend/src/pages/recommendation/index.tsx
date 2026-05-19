@@ -14,8 +14,6 @@ import { CardRecomendation } from "../../components/CardRecomendation";
 import { ScrollView } from "react-native-gesture-handler";
 import { usePropriety } from "../../context/PropContext";
 import { useRecommendationDatabase } from "../../database/useRecommendationDatabase";
-import { themes } from "../../global/themes";
-
 
 export default function Recomendacoes() {
   const { setAction } = useFab();
@@ -102,7 +100,7 @@ export default function Recomendacoes() {
         options={[
           {
             label: 'Analise de solo',
-            onPress: () => navigation.navigate('')
+            onPress: () => navigation.navigate('AnaliseSolos')
           },
           {
             label: 'Recomendação manual',

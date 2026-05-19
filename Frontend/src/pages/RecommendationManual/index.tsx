@@ -21,7 +21,7 @@ export default function RecommendationManual() {
     const isEditing = !!id;
 
     const { getActivityHarvestByPropriety } = UseActivityHarvestDatabase();
-    const { getRecommendationById } = useRecommendationDatabase();
+    const { getRecommendationById, deleteRecommendation } = useRecommendationDatabase();
 
     const [atividadeSafra, setAtividadeSafra] = useState<UseActivityHarvest[]>([]);
     const [isVisible, setIsVisible] = useState(false);
@@ -94,9 +94,35 @@ export default function RecommendationManual() {
         });
     }
 
+    function handleDeletar() {
+        Alert.alert(
+            'Excluir recomendação',
+            'Deseja realmente excluir esta recomendação? Esta ação não pode ser desfeita.',
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                    text: 'Excluir',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await deleteRecommendation(id);
+                            Alert.alert("Sucesso", "Recomendação excluída.")
+                            navigation.goBack();
+                        } catch {
+                            Alert.alert('Erro', 'Não foi possível excluir a recomendação.');
+                        }
+                    }
+                }
+            ]
+        );
+    }
+
     return (
         <View style={styles.container}>
-            <TopButton title="Recomendação Manual" onCancelar={() => navigation.goBack()} />
+            <TopButton title="Recomendação Manual"
+                onCancelar={() => navigation.goBack()}
+                onDeletar={isEditing ? () => handleDeletar() : undefined}
+            />
 
             <View style={styles.form}>
                 <ButtonSelect

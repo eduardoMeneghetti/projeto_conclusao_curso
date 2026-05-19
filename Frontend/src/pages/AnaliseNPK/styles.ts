@@ -5,9 +5,7 @@ export const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: '100%',
-        backgroundColor: themes.colors.page,
-        flexDirection: 'column',
-        justifyContent: 'space-between'
+        backgroundColor: themes.colors.page
     },
     form: {
         flex: 1,

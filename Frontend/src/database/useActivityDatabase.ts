@@ -92,7 +92,7 @@ export function useActivityDatabase() {
 
             const insertedRowId = result.lastInsertRowId.toLocaleString();
 
-            return ( console.log("Atividade cadastrada com Sucesso:", insertedRowId))
+            return (console.log("Atividade cadastrada com Sucesso:", insertedRowId))
         } catch (error) {
             console.error('Erro ao inserir nova atividade', error)
         } finally {
@@ -123,5 +123,18 @@ export function useActivityDatabase() {
 
     }
 
-    return { getActivity, getActivityAll, getActivityByName, getActivityById, createActivity, updateActivity }
+    async function verificaExisteTabela(atividade_id: number): Promise<boolean> {
+        try {
+            const row = await database.getFirstAsync<{ tem_tabela_adubacao: number }>(
+                `SELECT tem_tabela_adubacao FROM atividades WHERE id = $atividade_id AND deleted_at IS NULL`,
+                { $atividade_id: atividade_id }
+            );
+            return row?.tem_tabela_adubacao === 1;
+        } catch (error) {
+            console.error('Erro ao verificar tabela de adubação:', error);
+            return false;
+        }
+    }
+
+    return { getActivity, getActivityAll, getActivityByName, getActivityById, createActivity, updateActivity, verificaExisteTabela }
 }
