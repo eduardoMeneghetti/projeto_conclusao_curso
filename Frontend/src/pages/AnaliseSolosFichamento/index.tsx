@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
     View,
-    Text,
     Alert
 } from 'react-native'
 import { TopButton } from "../../components/TopButton";
@@ -9,35 +8,42 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { styles } from "./styles";
 import ButtonAvance from "../../components/ButtonAvance";
 import { InputText } from "../../components/TextInput";
+import useFichamentoDatabase from "../../database/useFichamentoDatabase";
 
 export default function AnaliseSolosFichamento() {
     const navigation = useNavigation<any>();
     const route = useRoute<any>();
     const dadosAnaliseSolo = route.params;
 
-    const {classificarParametro} = UseAnaliseClassificacao();
+    const { classificarParametro } = useFichamentoDatabase();
 
     const [argila, setArgila] = useState('');
     const [materialOrganico, setMaterialOrganico] = useState('');
     const [ctc, setCtc] = useState('');
 
-    async function handleSalvar(){
-        if(!argila || !materialOrganico || !ctc) return Alert.alert("Atenção", "Ao menos um parâmetro deve ser preenchido!")
-        
-        const classeArgila = await classificarParametro(1, Number(argila));  
-        const classeMO     = await classificarParametro(2, Number(materialOrganico));      
-        const classeCTC    = await classificarParametro(3, Number(ctc));     
+    async function handleSalvar() {
+        if (!argila || !materialOrganico || !ctc) {
+            Alert.alert('Atenção', 'Todos os parâmetros são obrigatórios');
+            return;
+        }
 
-        navigation.navigate('AnaliseNPK', 
+        const valorArgila = Number(argila.replace(',', '.'));
+        const valorMO     = Number(materialOrganico.replace(',', '.'));
+        const valorCTC    = Number(ctc.replace(',', '.'));
+
+        const classeArgila = await classificarParametro(1, valorArgila);
+        const classeMO     = await classificarParametro(2, valorMO);
+        const classeCTC    = await classificarParametro(3, valorCTC);
+
+        navigation.navigate('AnaliseNPK', {
             ...dadosAnaliseSolo,
             classeArgila,
             classeMO,
             classeCTC,
             argila,
             materialOrganico,
-            ctc
-        )
-
+            ctc,
+        });
     }
 
     return (
@@ -92,13 +98,10 @@ export default function AnaliseSolosFichamento() {
 
             <ButtonAvance
                 title="Próximo"
-                onSeguir={() => (handleSalvar)}
                 onVoltar={() => navigation.goBack()}
+                onSeguir={() => handleSalvar()}
             />
         </View>
     )
 }
 
-function UseAnaliseClassificacao(): { classificarParametro: any; } {
-    throw new Error("Function not implemented.");
-}

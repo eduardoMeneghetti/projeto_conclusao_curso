@@ -10,7 +10,6 @@ import { usePropriety } from "../../context/PropContext";
 import { useAuthSelection } from "../../context/selectionContext";
 import { GlebasInActivityHarvest, UseActivityHarvest, UseActivityHarvestDatabase } from "../../database/useActivityHarvestDatabase";
 import SelectionModal from "../../components/SelectionModal";
-import { UseAnaliseSolos } from "../../database/UseAnaliseSolos";
 import { useActivityDatabase } from "../../database/useActivityDatabase";
 
 export default function AnaliseSolos() {
@@ -19,7 +18,6 @@ export default function AnaliseSolos() {
     const { selectedPropriety } = usePropriety();
     const { getActivityHarvestByPropriety, getGlebasInActivityHarvest } = UseActivityHarvestDatabase();
     const { selectedAtividadeSafraId } = useAuthSelection();
-    const { createAnaliseSolo } = UseAnaliseSolos();
     const { verificaExisteTabela } = useActivityDatabase();
 
     const [isSafraVisible, setIsSafraVisible] = useState(false);
@@ -72,22 +70,14 @@ export default function AnaliseSolos() {
             return;
         }
 
-        try {
-            const result = await createAnaliseSolo({
-                atividade_safra_id: selectedSafra.id,
-                atividade_gleba_id: selectedGleba.atividade_gleba_id,
-                data_coleta: dataColeta.toISOString(),
-            });
+        navigation.navigate('AnaliseSolosFichamento', {
+            atividade_safra_id: selectedSafra.id,
+            atividade_gleba_id: selectedGleba.atividade_gleba_id,
+            qtd_area: selectedGleba.area_hectares,
+            data_coleta: dataColeta.toISOString(),
+            atividade_descricao: selectedSafra.atividade_descricao,
+        });
 
-            navigation.navigate('AnaliseSolosFichamento', {
-                analise_solo_id: result.insertedRowId,
-                atividade_safra_id: selectedSafra.id,
-                atividade_gleba_id: selectedGleba.atividade_gleba_id,
-                qtd_area: selectedGleba.area_hectares
-            });
-        } catch {
-            Alert.alert("Erro", "Não foi possível criar a análise de solo.");
-        }
     }
 
     return (

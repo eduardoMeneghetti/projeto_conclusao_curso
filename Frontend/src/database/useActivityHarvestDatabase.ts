@@ -2,6 +2,7 @@ import { SQLiteDatabase, useSQLiteContext } from "expo-sqlite";
 
 export type UseActivityHarvest = {
     safra_descricao: any;
+    atividade_descricao: string;
     id: number,
     atividade_id: number,
     safra_id: number,

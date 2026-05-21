@@ -25,5 +25,9 @@ export function useNutrienteDatabase() {
         }
     }
 
+    async function getInsumosByNutriente(sigla: string) {
+        
+    }
+
     return { getNutrientesAll };
 }

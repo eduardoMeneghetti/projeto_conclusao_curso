@@ -321,7 +321,9 @@ export async function initializeDatabase(db: SQLiteDatabase) {
     INSERT OR IGNORE INTO parametros_metricas (id, tipo, descricao, created_at, updated_at) VALUES
       (1, 'ARGILA',           'Teor de Argila',              datetime('now'), datetime('now')),
       (2, 'MATERIA_ORGANICA', 'Matéria Orgânica',            datetime('now'), datetime('now')),
-      (3, 'CTC',              'Capacidade de Troca de Cátions', datetime('now'), datetime('now'));
+      (3, 'CTC',              'Capacidade de Troca de Cátions', datetime('now'), datetime('now')),
+      (4, 'P',      'Fósforo',                       datetime('now'), datetime('now')),
+      (5, 'K',      'Potássio',                      datetime('now'), datetime('now'));
 
     CREATE TABLE IF NOT EXISTS fichamentos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

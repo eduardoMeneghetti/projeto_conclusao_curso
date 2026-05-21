@@ -26,9 +26,9 @@ import RecommendationManual from "../pages/RecommendationManual";
 import RecommendationManualGleba from "../pages/recommendationManualGleba";
 import recomendationManualInsumo from "../pages/recomendationManualInsumo";
 import AnaliseSolos from "../pages/AnaliseSolos";
-import AnaliseSolosResultado from "../pages/AnaliseSolosFichamento";
 import AnaliseNPK from "../pages/AnaliseNPK";
 import AnaliseSolosFichamento from "../pages/AnaliseSolosFichamento";
+import AnalisesSoloResultados from "../pages/AnalisesSoloResultados";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -54,6 +54,7 @@ export type RootStackParamList = {
   AnaliseSolos: undefined;
   AnaliseSolosFichamento: undefined;
   AnaliseNPK: undefined;
+  AnalisesSoloResultados: undefined
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -182,6 +183,11 @@ export default function Routes() {
               <Stack.Screen
                 name="AnaliseNPK"
                 component={AnaliseNPK}
+              />
+
+              <Stack.Screen
+                name="AnalisesSoloResultados"
+                component={AnalisesSoloResultados}
               />
 
             </Stack.Navigator>

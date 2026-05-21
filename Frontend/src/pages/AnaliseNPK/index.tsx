@@ -6,6 +6,8 @@ import { styles } from "./styles";
 import { TopButton } from "../../components/TopButton";
 import { InputText } from "../../components/TextInput";
 import { classificarP, classificarK } from "../../util/tabelasAdubacao";
+import { useAnalisesSoloResultados } from "../../database/useAnalisesSoloResultados";
+import { UseAnaliseSolos } from "../../database/UseAnaliseSolos";
 
 export default function AnaliseNPK() {
     const navigation = useNavigation<any>();
@@ -13,12 +15,17 @@ export default function AnaliseNPK() {
     const dadosAnaliseSolo = route.params;
 
     const argila = Number(dadosAnaliseSolo?.argila ?? 0);
-    const ctc    = Number(dadosAnaliseSolo?.ctc    ?? 0);
+    const materialOrganico = Number(dadosAnaliseSolo?.materialOrganico ?? 0);
+    const ctc = Number(dadosAnaliseSolo?.ctc ?? 0);
+    const { classeArgila, classeMO, classeCTC } = dadosAnaliseSolo ?? {};
 
-    const [fosforo, setFosforo]   = useState('');
+    const { createAnalisesSoloResultados } = useAnalisesSoloResultados();
+    const { createAnaliseSolo } = UseAnaliseSolos();
+
+    const [fosforo, setFosforo] = useState('');
     const [potassio, setPotassio] = useState('');
 
-    function handleSalvar() {
+    async function handleSalvar() {
         if (!fosforo || !potassio) {
             Alert.alert("Atenção", "Informe os valores de Fósforo e Potássio.");
             return;
@@ -35,7 +42,33 @@ export default function AnaliseNPK() {
         const classeP = classificarP(valorP, argila);
         const classeK = classificarK(valorK, ctc);
 
-        navigation.navigate('AnaliseSolosResultado', {
+        try {
+
+            const AnaliseSolo = await createAnaliseSolo({
+                atividade_gleba_id: dadosAnaliseSolo.atividade_gleba_id,
+                atividade_safra_id: dadosAnaliseSolo.atividade_safra_id,
+                data_coleta: dadosAnaliseSolo.data_coleta
+            })
+
+            if(!AnaliseSolo.insertedRowId) return console.error("Erro para gravar analise de solo", AnaliseSolo)
+            const analise_solo_id = AnaliseSolo.insertedRowId
+
+
+            await Promise.all([
+                createAnalisesSoloResultados({ analises_solo_id: analise_solo_id, parametro_medido: classeArgila ?? '', parametro_medido_id: 1, valor: argila }),
+                createAnalisesSoloResultados({ analises_solo_id: analise_solo_id, parametro_medido: classeMO ?? '', parametro_medido_id: 2, valor: materialOrganico }),
+                createAnalisesSoloResultados({ analises_solo_id: analise_solo_id, parametro_medido: classeCTC ?? '', parametro_medido_id: 3, valor: ctc }),
+                createAnalisesSoloResultados({ analises_solo_id: analise_solo_id, parametro_medido: classeP, parametro_medido_id: 4, valor: valorP }),
+                createAnalisesSoloResultados({ analises_solo_id: analise_solo_id, parametro_medido: classeK, parametro_medido_id: 5, valor: valorK }),
+            ]);
+
+            console.log('Sucesso gravadas analise de solo e resultados!')
+        } catch (error) {
+            console.error('Erro ao salvar analise de solo e resultados', error)
+            throw error
+        }
+
+        navigation.navigate('AnalisesSoloResultados', {
             ...dadosAnaliseSolo,
             fosforo: valorP,
             potassio: valorK,
@@ -79,7 +112,7 @@ export default function AnaliseNPK() {
 
             <ButtonAvance
                 title="Próximo"
-                onSeguir={handleSalvar}
+                onSeguir={() => handleSalvar()}
                 onVoltar={() => navigation.goBack()}
             />
         </View>
