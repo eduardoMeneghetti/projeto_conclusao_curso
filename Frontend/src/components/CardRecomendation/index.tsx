@@ -17,6 +17,7 @@ type RecomendacaoItemLista = {
 
 type Props = {
     id_recomendacao: number;
+    analises_solo_id: number | null;
     data_inicio: string;
     data_fim: string;
     status: StatusRecomendacao;
@@ -34,14 +35,18 @@ function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString('pt-BR');
 }
 
-export function CardRecomendation({ data_inicio, data_fim, status, area_aplic, operador, recomendante, safra, gleba, itens, onPress }: Props) {
+export function CardRecomendation({ data_inicio, data_fim, status, area_aplic, operador, recomendante, safra, gleba, itens, analises_solo_id, onPress }: Props) {
     const statusColor = getStatusColor(status);
     const statusLabel = getStatusLabel(status);
+
+    const tipoRecomendacao = analises_solo_id
+        ? 'Recomendação por Análise'
+        : 'Recomendação Manual';
 
     return (
         <View style={styles.card}>
             <View style={[styles.header, { borderLeftColor: statusColor }]}>
-                <Text style={styles.title}>Recomendação Manual</Text>
+                <Text style={styles.title}>{tipoRecomendacao}</Text>
                 <TouchableOpacity onPress={onPress}>
                     <Image
                         style={styles.editButton}

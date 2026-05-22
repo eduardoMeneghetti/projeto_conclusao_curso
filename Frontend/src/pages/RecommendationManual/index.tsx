@@ -17,8 +17,13 @@ export default function RecommendationManual() {
     const navigation = useNavigation<any>();
     const route = useRoute<any>();
 
-    const id = route.params?.id;
-    const isEditing = !!id;
+    const id                  = route.params?.id;
+    const isEditing           = !!id;
+    const safraIdFromAnalise  = route.params?.atividade_safra_id  as number | undefined;
+    const glebaIdFromAnalise  = route.params?.atividade_gleba_id  as number | undefined;
+    const areaFromAnalise     = route.params?.area_aplic          as number | undefined;
+    const initialItens        = route.params?.initialItens;
+    const analiseSoloId       = route.params?.analise_solo_id     as number | undefined;
 
     const { getActivityHarvestByPropriety } = UseActivityHarvestDatabase();
     const { getRecommendationById, deleteRecommendation } = useRecommendationDatabase();
@@ -54,18 +59,19 @@ export default function RecommendationManual() {
         });
     }, [selectedPropriety]);
 
-    // Pré-seleciona safra: ao editar usa atividade_safra_id da rec; do contrário usa contexto
+    // Pré-seleciona safra: editar → usa rec; análise de solo → usa param; senão → usa contexto
     useEffect(() => {
         if (atividadeSafra.length === 0) return;
         if (isEditing && editingRec) {
             const safra = atividadeSafra.find(as => as.id === editingRec.atividade_safra_id) ?? null;
             setSelectedSafra(safra);
         } else if (!isEditing) {
-            if (!selectedAtividadeSafraId) { setSelectedSafra(null); return; }
-            const safra = atividadeSafra.find(as => as.id === selectedAtividadeSafraId) ?? null;
+            const targetId = safraIdFromAnalise ?? selectedAtividadeSafraId;
+            if (!targetId) { setSelectedSafra(null); return; }
+            const safra = atividadeSafra.find(as => as.id === targetId) ?? null;
             setSelectedSafra(safra);
         }
-    }, [editingRec, atividadeSafra, selectedAtividadeSafraId]);
+    }, [editingRec, atividadeSafra, selectedAtividadeSafraId, safraIdFromAnalise]);
 
     function handleNext() {
         if (!selectedPropriety) {
@@ -84,13 +90,15 @@ export default function RecommendationManual() {
         navigation.navigate('RecommendationManualGleba', {
             id: isEditing ? id : undefined,
             atividade_safra_id: selectedSafra.id,
-            atividade_gleba_id: editingRec?.atividade_gleba_id,
+            atividade_gleba_id: editingRec?.atividade_gleba_id ?? glebaIdFromAnalise,
             operador_id: editingRec?.operador_id,
-            area_aplic: editingRec?.area_aplic,
+            area_aplic: editingRec?.area_aplic ?? areaFromAnalise,
             data_inicio: data_inicio.toISOString(),
             data_fim: data_fim.toISOString(),
             recomendante_id: user?.id,
             propriedade_id: selectedPropriety.id,
+            analise_solo_id: analiseSoloId,
+            initialItens,
         });
     }
 
@@ -119,7 +127,7 @@ export default function RecommendationManual() {
 
     return (
         <View style={styles.container}>
-            <TopButton title="Recomendação Manual"
+            <TopButton title="Recomendações agrícolas"
                 onCancelar={() => navigation.goBack()}
                 onDeletar={isEditing ? () => handleDeletar() : undefined}
             />

@@ -207,5 +207,22 @@ export function useInsumoDatabase() {
         }
     }
 
-    return { getInsumoAtivo, createInsumo, getInsumoById, getInsumoAll, updateInsumo, getInsumoByDescricao }
+    async function getInsumosByPrincipioAtivo(principios_ativos_id: number): Promise<{ id: number; descricao: string }[]> {
+        try {
+            const rows = await database.getAllAsync<{ id: number; descricao: string }>(`
+                SELECT i.id, i.descricao
+                FROM insumos i
+                WHERE i.principios_ativos_id = $principios_ativos_id
+                AND i.ativo = 1
+                AND i.deleted_at IS NULL
+                ORDER BY i.descricao ASC
+            `, { $principios_ativos_id: principios_ativos_id });
+            return rows;
+        } catch (error) {
+            console.error("Erro ao buscar insumos por princípio ativo:", error);
+            return [];
+        }
+    }
+
+    return { getInsumoAtivo, createInsumo, getInsumoById, getInsumoAll, updateInsumo, getInsumoByDescricao, getInsumosByPrincipioAtivo }
 }

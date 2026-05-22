@@ -62,19 +62,18 @@ export default function AnaliseNPK() {
                 createAnalisesSoloResultados({ analises_solo_id: analise_solo_id, parametro_medido: classeK, parametro_medido_id: 5, valor: valorK }),
             ]);
 
-            console.log('Sucesso gravadas analise de solo e resultados!')
+            navigation.navigate('AnalisesSoloResultados', {
+                ...dadosAnaliseSolo,
+                analise_solo_id,
+                fosforo: valorP,
+                potassio: valorK,
+                classeP,
+                classeK,
+            });
         } catch (error) {
             console.error('Erro ao salvar analise de solo e resultados', error)
             throw error
         }
-
-        navigation.navigate('AnalisesSoloResultados', {
-            ...dadosAnaliseSolo,
-            fosforo: valorP,
-            potassio: valorK,
-            classeP,
-            classeK,
-        });
     }
 
     return (

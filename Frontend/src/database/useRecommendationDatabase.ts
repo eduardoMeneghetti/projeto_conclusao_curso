@@ -39,6 +39,7 @@ export type RecomendationComplete = {
     safra: string;
     gleba: string;
     origem: string;
+    analises_solo_id: number | null;
     itens: RecomendacaoItemLista[];
 }
 
@@ -60,17 +61,18 @@ function mapRecommendation(row: RecommendationDatabaseRaw): RecommendationDataba
 export function useRecommendationDatabase() {
     const database = useSQLiteContext();
 
-    async function createRecomendation(data: Pick<RecommendationDatabase, "atividade_safra_id" | "atividade_gleba_id" | "data_inicio" | "data_fim" | "operador_id" | "recomendante_id" | "area_aplic">) {
+    async function createRecomendation(data: Pick<RecommendationDatabase, "atividade_safra_id" | "atividade_gleba_id" | "analises_solo_id" | "data_inicio" | "data_fim" | "operador_id" | "recomendante_id" | "area_aplic">) {
 
         const sentece = await database.prepareAsync(`
-            INSERT INTO recomendacoes_agricolas (atividade_safra_id, atividade_gleba_id, data_inicio, data_fim, operador_id, recomendante_id, area_aplic, status, created_at, updated_at, is_dirty, ativo)
-            VALUES ($atividade_safra_id, $atividade_gleba_id, $data_inicio, $data_fim, $operador_id, $recomendante_id, $area_aplic, 'P', datetime('now'), datetime('now'), 1, 1)`
+            INSERT INTO recomendacoes_agricolas (atividade_safra_id, atividade_gleba_id, analises_solo_id, data_inicio, data_fim, operador_id, recomendante_id, area_aplic, status, created_at, updated_at, is_dirty, ativo)
+            VALUES ($atividade_safra_id, $atividade_gleba_id, $analises_solo_id, $data_inicio, $data_fim, $operador_id, $recomendante_id, $area_aplic, 'P', datetime('now'), datetime('now'), 1, 1)`
         )
 
         try {
             const result = await sentece.executeAsync({
                 $atividade_safra_id: data.atividade_safra_id,
                 $atividade_gleba_id: data.atividade_gleba_id,
+                $analises_solo_id: data.analises_solo_id ?? null,
                 $data_inicio: data.data_inicio,
                 $data_fim: data.data_fim,
                 $operador_id: data.operador_id,
@@ -83,16 +85,19 @@ export function useRecommendationDatabase() {
         } catch (error) {
             console.error("Erro ao criar recomendação: ", error);
             throw error;
+        } finally {
+            await sentece.finalizeAsync();
         }
 
     }
 
-    async function updateRecommendation(data: Pick<RecommendationDatabase, "id" | "atividade_safra_id" | "atividade_gleba_id" | "data_inicio" | "data_fim" | "operador_id" | "recomendante_id" | "area_aplic">) {
+    async function updateRecommendation(data: Pick<RecommendationDatabase, "id" | "atividade_safra_id" | "atividade_gleba_id" | "analises_solo_id" | "data_inicio" | "data_fim" | "operador_id" | "recomendante_id" | "area_aplic">) {
 
         const sentece = await database.prepareAsync(`
             UPDATE recomendacoes_agricolas
             SET atividade_safra_id = $atividade_safra_id,
                 atividade_gleba_id = $atividade_gleba_id,
+                analises_solo_id = $analises_solo_id,
                 data_inicio = $data_inicio,
                 data_fim = $data_fim,
                 operador_id = $operador_id,
@@ -108,6 +113,7 @@ export function useRecommendationDatabase() {
                 $id: data.id,
                 $atividade_safra_id: data.atividade_safra_id,
                 $atividade_gleba_id: data.atividade_gleba_id,
+                $analises_solo_id: data.analises_solo_id ?? null,
                 $data_inicio: data.data_inicio,
                 $data_fim: data.data_fim,
                 $operador_id: data.operador_id,
@@ -120,6 +126,8 @@ export function useRecommendationDatabase() {
         } catch (error) {
             console.error("Erro ao atualizar recomendação: ", error);
             throw error;
+        } finally {
+            await sentece.finalizeAsync();
         }
 
     }
@@ -141,6 +149,7 @@ export function useRecommendationDatabase() {
                     i.descricao     AS insumo,
                     rai.quantidade,
                     rai.dose,
+                    ra.analises_solo_id, 
                     um.sigla        AS unidade
                 FROM recomendacoes_agricolas ra
                 INNER JOIN recomendacoes_agricolas_itens rai ON rai.recomendacao_agricola_id = ra.id
@@ -172,6 +181,7 @@ export function useRecommendationDatabase() {
                         safra: row.safra,
                         gleba: row.gleba,
                         origem: row.origem,
+                        analises_solo_id: row.analises_solo_id,
                         itens: [],
                     });
                 }

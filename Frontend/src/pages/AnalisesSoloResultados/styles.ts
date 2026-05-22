@@ -47,4 +47,20 @@ export const styles = StyleSheet.create({
         color: themes.colors.primary,
         fontWeight: 'bold',
     },
+    selectButton: {
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        backgroundColor: themes.colors.primary,
+        borderRadius: 6,
+    },
+    selectButtonText: {
+        color: themes.colors.white,
+        fontSize: 13,
+        fontWeight: '600',
+    },
+    divider: {
+        height: 1,
+        backgroundColor: themes.colors.background_input,
+        marginVertical: 8,
+    },
 })

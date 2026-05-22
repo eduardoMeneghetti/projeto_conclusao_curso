@@ -76,6 +76,7 @@ export default function Recomendacoes() {
                 origem={rec.origem}
                 status={rec.status}
                 safra={rec.safra}
+                analises_solo_id={rec.analises_solo_id}
                 itens={rec.itens}
                 onPress={
                   () => {

@@ -30,7 +30,9 @@ export default function RecommendationManualInsumo() {
     const isEditing = !!dadosRecommendation.id;
     const areaAplic: number = dadosRecommendation.areaAplicacao ?? 0;
 
-    const [itens, setItens] = useState<RecomendacaoItem[]>([]);
+    const [itens, setItens] = useState<RecomendacaoItem[]>(
+        dadosRecommendation.initialItens ?? []
+    );
     const [insumos, setInsumos] = useState<Insumo[]>([]);
     const [modalAddItemVisible, setModalAddItemVisible] = useState(false);
 
@@ -61,6 +63,7 @@ export default function RecommendationManualInsumo() {
             operador_id: dadosRecommendation.operador.id,
             recomendante_id: dadosRecommendation.recomendante_id,
             area_aplic: areaAplic,
+            analises_solo_id: dadosRecommendation.analise_solo_id
         };
 
         try {

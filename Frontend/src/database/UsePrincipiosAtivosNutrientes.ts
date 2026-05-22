@@ -20,6 +20,12 @@ export type NutrienteItem = {
     percentual: number;
 };
 
+export type PrincipioAtivoResult = {
+    id: number;
+    descricao: string;
+    percentual: number;
+};
+
 type UsePrincipiosNutrientesRaw = Omit<UsePrincipiosNutrientes, "is_dirty"> & {
     is_dirty: number
 }
@@ -128,11 +134,31 @@ export function UsePrincipiosAtivosNutrientes() {
         }
     }
 
+    async function getInsumosByNutriente(sigla: string): Promise<PrincipioAtivoResult[]> {
+        try {
+            const rows = await database.getAllAsync<PrincipioAtivoResult>(`
+                SELECT pa.id, pa.descricao, pan.percentual
+                FROM principios_ativos_nutrientes pan
+                INNER JOIN nutrientes n ON n.id = pan.nutriente_id
+                INNER JOIN principios_ativos pa ON pa.id = pan.principios_ativo_id
+                WHERE n.sigla = $sigla
+                AND pan.deleted_at IS NULL
+                ORDER BY pan.percentual DESC`,
+                { $sigla: sigla }
+            );
+            return rows;
+        } catch (error) {
+            console.error("Falha ao buscar nutriente item ", error)
+            throw error
+        }
+    }
+
     return {
         createPrincipioNutriente,
         updatePrincipiosNutrientes,
         getPrincipiosNutrientesAll,
         getNutrientesByPrincipioId,
         deleteNutrientesByPrincipioId,
+        getInsumosByNutriente
     }
 }
