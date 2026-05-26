@@ -29,6 +29,8 @@ import AnaliseSolos from "../pages/AnaliseSolos";
 import AnaliseNPK from "../pages/AnaliseNPK";
 import AnaliseSolosFichamento from "../pages/AnaliseSolosFichamento";
 import AnalisesSoloResultados from "../pages/AnalisesSoloResultados";
+import Maquinas from "../pages/Maquinas";
+import MaquinasForm from "../pages/MaquinasForm";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -55,6 +57,8 @@ export type RootStackParamList = {
   AnaliseSolosFichamento: undefined;
   AnaliseNPK: undefined;
   AnalisesSoloResultados: undefined
+  Maquinas: undefined;
+  MaquinasForm: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -188,6 +192,16 @@ export default function Routes() {
               <Stack.Screen
                 name="AnalisesSoloResultados"
                 component={AnalisesSoloResultados}
+              />
+
+              <Stack.Screen
+                name="Maquinas"
+                component={Maquinas}
+              />
+
+              <Stack.Screen
+                name="MaquinasForm"
+                component={MaquinasForm}
               />
 
             </Stack.Navigator>

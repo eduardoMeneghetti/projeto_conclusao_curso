@@ -3,7 +3,7 @@ import { useCallback } from "react";
 
 export type PrincipioAtivoDatabase = {
     id: number,
-    descricao: string, 
+    descricao: string,
     ativo: boolean,
     created_at: string,
     updated_at: string,
@@ -30,7 +30,7 @@ export function usePrincipioAtivoDatabase() {
     const database = useSQLiteContext();
 
     async function createPrincipioAtivo(data: Pick<PrincipioAtivoDatabase, "descricao">) {
-        
+
         const sentece = await database.prepareAsync(`
             INSERT INTO principios_ativos (descricao, created_at, updated_at, is_dirty, ativo)    
             VALUES ($descricao, datetime('now'), datetime('now'), 1, 1)
@@ -47,7 +47,7 @@ export function usePrincipioAtivoDatabase() {
         } catch (error) {
             console.log("nao foi possivel cadastrar o principio ativo: ", error)
             throw error;
-        }finally {
+        } finally {
             await sentece.finalizeAsync();
         }
 
@@ -61,13 +61,13 @@ export function usePrincipioAtivoDatabase() {
             return rows.map(mapPrincipioAtivo)
         } catch (error) {
             console.error("Erro ao buscar principio ativo:", error)
-        }  
+        }
     }
 
     async function getPrincipioAtivoAll() {
         try {
             const rows = await database.getAllAsync<PrincipioAtivoDatabaseRaw>(`
-                SELECT * FROM principios_ativos WHERE ativo = 1
+                SELECT * FROM principios_ativos WHERE deleted_at IS NULL
             `)
             return rows.map(mapPrincipioAtivo)
         }
@@ -83,14 +83,14 @@ export function usePrincipioAtivoDatabase() {
                 { $id: id }
             );
             return row ? mapPrincipioAtivo(row) : null;
-        }catch (error) {
+        } catch (error) {
             console.log("erro ao buscar principio ativo", error);
             return null;
         }
     }
 
     async function updatePrincipioAtivo(data: Pick<PrincipioAtivoDatabase, "id" | "descricao" | "ativo">) {
-        
+
         const sentece = await database.prepareAsync(`
             UPDATE principios_ativos 
             SET descricao = $descricao, ativo = $ativo, updated_at = datetime('now'), is_dirty = 1
@@ -98,7 +98,7 @@ export function usePrincipioAtivoDatabase() {
         `)
 
         try {
-            
+
             await sentece.executeAsync({
                 $id: data.id,
                 $descricao: data.descricao,
@@ -106,14 +106,20 @@ export function usePrincipioAtivoDatabase() {
             })
 
         } catch (error) {
-            console.log("erro ao atualizar principio ativo", error);    
+            console.log("erro ao atualizar principio ativo", error);
             throw error;
-        }finally {
+        } finally {
             await sentece.finalizeAsync();
         }
 
     }
 
 
-    return { createPrincipioAtivo, getPrincipioAtivo, getPrincipioAtivoAll, getPrincipioAtivoById, updatePrincipioAtivo }
+    return {
+        createPrincipioAtivo,
+        getPrincipioAtivo,
+        getPrincipioAtivoAll,
+        getPrincipioAtivoById,
+        updatePrincipioAtivo
+    }
 }

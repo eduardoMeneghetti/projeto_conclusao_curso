@@ -50,7 +50,7 @@ export function useUnidadesMedida() {
         } catch (error) {
             console.log("nao foi possivel cadastrar a unidade de medida: ", error)
             throw error;
-        }finally {
+        } finally {
             await sentece.finalizeAsync();
         }
 
@@ -66,15 +66,15 @@ export function useUnidadesMedida() {
             console.log("nao foi possivel obter as unidades de medida: ", error)
             throw error;
         }
-    } 
+    }
 
     async function getUnidadesMedidaAll() {
         try {
             const rows = await database.getAllAsync<UseUnidadesMedidaRaw>(`
-                SELECT * FROM unidades_medidas WHERE ativo = 1
+                SELECT * FROM unidades_medidas WHERE deleted_at IS NULL
             `);
-            return rows.map(mapUnidadesMedida); 
-        }catch (error) {
+            return rows.map(mapUnidadesMedida);
+        } catch (error) {
             console.log("nao foi possivel obter as unidades de medida: ", error)
             throw error;
         }
@@ -85,8 +85,8 @@ export function useUnidadesMedida() {
             const row = await database.getFirstAsync<UseUnidadesMedidaRaw>(`
                 SELECT * FROM unidades_medidas WHERE id = $id 
             `, { $id: id });
-            return row ? mapUnidadesMedida(row) : null; 
-        }catch (error) {
+            return row ? mapUnidadesMedida(row) : null;
+        } catch (error) {
             console.log("nao foi possivel obter a unidade de medida por id: ", error)
             throw error;
         }
@@ -101,7 +101,7 @@ export function useUnidadesMedida() {
         `)
 
         try {
-            
+
             await sentence.executeAsync({
                 $id: data.id,
                 $descricao: data.descricao,
@@ -112,12 +112,18 @@ export function useUnidadesMedida() {
         } catch (error) {
             console.log("nao foi possivel atualizar a unidade de medida: ", error)
             throw error;
-        }finally {
+        } finally {
             await sentence.finalizeAsync();
         }
 
     }
 
-    return {createUnidadeMedida, getUnidadesMedida, getUnidadesMedidaById, getUnidadesMedidaAll, updateUnidadeMedida }
+    return {
+        createUnidadeMedida,
+        getUnidadesMedida,
+        getUnidadesMedidaById,
+        getUnidadesMedidaAll,
+        updateUnidadeMedida
+    }
 
 }

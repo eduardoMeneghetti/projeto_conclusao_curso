@@ -432,17 +432,14 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS aplicaoes_insumos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      propriedade_id INTEGER NOT NULL,
-      atividade_id INTEGER NOT NULL,
       atividade_safra_id INTEGER NOT NULL,
       atividade_gleba_id INTEGER NOT NULL,
-      usuario_id INTEGER NOT NULL,
       maquina_id INTEGER NOT NULL,
-      operador TEXT,
+      operador_id INTEGER NOT NULL,
       recomendacoes_agricolas_id INTEGER,
       area_aplic REAL,
-      data_inicio TEXT,
-      data_final TEXT,
+      data_inicio TEXT NOT NULL,
+      data_final TEXT NOT NULL,
       ativo INTEGER DEFAULT 1,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
@@ -450,11 +447,9 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       is_dirty INTEGER DEFAULT 1,
       server_id INTEGER,
       deleted_at TEXT,
-      FOREIGN KEY (propriedade_id) REFERENCES propriedades(id),
-      FOREIGN KEY (atividade_id) REFERENCES atividades(id),
       FOREIGN KEY (atividade_safra_id) REFERENCES atividade_safras(id),
       FOREIGN KEY (atividade_gleba_id) REFERENCES atividade_glebas(id),
-      FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+      FOREIGN KEY (operador_id) REFERENCES usuarios(id),
       FOREIGN KEY (maquina_id) REFERENCES maquinas(id),
       FOREIGN KEY (recomendacoes_agricolas_id) REFERENCES recomendacoes_agricolas(id)
     );

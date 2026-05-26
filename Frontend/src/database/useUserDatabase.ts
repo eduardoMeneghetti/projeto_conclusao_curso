@@ -245,7 +245,7 @@ export function useUserDatabase() {
         } catch (error) {
             console.error("Erro ao buscar usuário operador:", error);
             return null;
-        }  
+        }
     }
 
     async function getUserRecomendate(id: number) {
@@ -260,8 +260,21 @@ export function useUserDatabase() {
         } catch (error) {
             console.error("Erro ao buscar usuário operador:", error);
             return null;
-        }  
+        }
     }
 
-    return { create, getByCrendentials, getUsersAll, getUsersActive, getUsuariosDirty, updateSyncedUsuario, updateUsuarios, getUsersById, checkUsuarioExists, checkEmailExists, getUserOperador, getUserRecomendate }
+    return {
+        create,
+        getByCrendentials,
+        getUsersAll,
+        getUsersActive,
+        getUsuariosDirty,
+        updateSyncedUsuario,
+        updateUsuarios,
+        getUsersById,
+        checkUsuarioExists,
+        checkEmailExists,
+        getUserOperador,
+        getUserRecomendate
+    }
 }

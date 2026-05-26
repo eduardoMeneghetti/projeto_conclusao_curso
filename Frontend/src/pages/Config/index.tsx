@@ -133,7 +133,7 @@ export default function Config() {
                             text="Cadastro de máquinas"
                             isRequired={false}
                             onPress={
-                                () => { }
+                                () => {navigation.navigate('Maquinas')}
                             }
                         />
 
