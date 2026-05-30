@@ -135,10 +135,14 @@ export function useInsumoDatabase() {
                 COALESCE((
                     SELECT SUM(mei.quantidade)
                     FROM movimentacao_estoque_insumos mei
-                    INNER JOIN ajuste_estoques ae ON ae.id = mei.ajuste_estoque_id
+                    LEFT JOIN ajuste_estoques ae ON ae.id = mei.ajuste_estoque_id
+                    LEFT JOIN aplicacoes_insumos ai ON ai.id = mei.aplicacoes_insumo_id
+                    LEFT JOIN atividade_safras ats ON ats.id = ai.atividade_safra_id
                     WHERE mei.insumo_id = i.id
-                    AND ae.propriedade_id = $propriedade_id
-                    AND ae.deleted_at IS NULL
+                    AND COALESCE(ae.propriedade_id, ats.propriedade_id) = $propriedade_id
+                    AND mei.deleted_at IS NULL
+                    AND (ae.id IS NULL OR ae.deleted_at IS NULL)
+                    AND (ai.id IS NULL OR ai.deleted_at IS NULL)
                 ), 0) as saldo
             FROM insumos i
             INNER JOIN unidades_medidas um ON um.id = i.unidades_medida_id

@@ -41,7 +41,7 @@ export default function Application() {
           },
           {
             label: 'Nova aplicação',
-            onPress: () => navigation.navigate('')
+            onPress: () => navigation.navigate('ApplicationNew')
           }
         ]}
       />

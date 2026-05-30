@@ -4,7 +4,9 @@ export type useMovInsumo = {
     id: number,
     quantidade: number,
     valor_unitario: number,
-    ajuste_estoque_id: number,
+    origem: string | null,
+    ajuste_estoque_id: number | null,
+    aplicacoes_insumo_id: number | null,
     insumo_id: number,
     created_at: string,
     updated_at: string,
@@ -18,6 +20,14 @@ export type useMovInsumoRaw = Omit<useMovInsumo, "is_dirty"> & {
     is_dirty: number
 }
 
+type CreateMovData = {
+    quantidade: number;
+    valor_unitario: number;
+    insumo_id: number;
+    ajuste_estoque_id?: number | null;
+    aplicacoes_insumo_id?: number | null;
+}
+
 function mapMovInsumo(row: useMovInsumoRaw): useMovInsumo {
     return {
         ...row,
@@ -28,21 +38,25 @@ function mapMovInsumo(row: useMovInsumoRaw): useMovInsumo {
 export function UseMovEstoqueInsumos() {
     const database = useSQLiteContext();
 
-    async function createMovInsumo(data: Pick<useMovInsumoRaw, "quantidade" | "valor_unitario" | "insumo_id" | "ajuste_estoque_id">, entrada_saida: 'E' | 'S') {
-
+    async function createMovInsumo(data: CreateMovData, entrada_saida: 'E' | 'S') {
         const quantidade = entrada_saida === 'S' ? -Math.abs(data.quantidade) : Math.abs(data.quantidade);
+        const origem = data.aplicacoes_insumo_id ? 'aplic' : 'ajuste';
 
         const sentece = await database.prepareAsync(`
-        INSERT INTO movimentacao_estoque_insumos(ajuste_estoque_id, insumo_id, quantidade, valor_unitario, created_at, updated_at, is_dirty)
-        VALUES($ajuste_estoque_id, $insumo_id, $quantidade, $valor_unitario, datetime('now'), datetime('now'), 1)
+            INSERT INTO movimentacao_estoque_insumos
+                (ajuste_estoque_id, aplicacoes_insumo_id, insumo_id, quantidade, valor_unitario, origem, created_at, updated_at, is_dirty)
+            VALUES
+                ($ajuste_estoque_id, $aplicacoes_insumo_id, $insumo_id, $quantidade, $valor_unitario, $origem, datetime('now'), datetime('now'), 1)
         `)
 
         try {
             const result = await sentece.executeAsync({
-                $ajuste_estoque_id: data.ajuste_estoque_id,
+                $ajuste_estoque_id: data.ajuste_estoque_id ?? null,
+                $aplicacoes_insumo_id: data.aplicacoes_insumo_id ?? null,
                 $insumo_id: data.insumo_id,
                 $quantidade: quantidade,
-                $valor_unitario: data.valor_unitario
+                $valor_unitario: data.valor_unitario,
+                $origem: origem,
             })
 
             return { lastInsertRowId: result.lastInsertRowId }
@@ -57,13 +71,16 @@ export function UseMovEstoqueInsumos() {
     async function saldoItemById(insumo_id: number, propriedade_id: number) {
         try {
             const row = await database.getFirstAsync<{ saldo: number }>(
-                `SELECT COALESCE(SUM(quantidade), 0) as saldo
+                `SELECT COALESCE(SUM(mei.quantidade), 0) as saldo
                 FROM movimentacao_estoque_insumos mei
-                INNER JOIN ajuste_estoques ae ON ae.id = mei.ajuste_estoque_id
+                LEFT JOIN ajuste_estoques ae ON ae.id = mei.ajuste_estoque_id
+                LEFT JOIN aplicacoes_insumos ai ON ai.id = mei.aplicacoes_insumo_id
+                LEFT JOIN atividade_safras ats ON ats.id = ai.atividade_safra_id
                 WHERE mei.insumo_id = $insumo_id
-                AND ae.propriedade_id = $propriedade_id
+                AND COALESCE(ae.propriedade_id, ats.propriedade_id) = $propriedade_id
                 AND mei.deleted_at IS NULL
-                AND ae.deleted_at IS NULL`,
+                AND (ae.id IS NULL OR ae.deleted_at IS NULL)
+                AND (ai.id IS NULL OR ai.deleted_at IS NULL)`,
                 { $insumo_id: insumo_id, $propriedade_id: propriedade_id }
             )
 

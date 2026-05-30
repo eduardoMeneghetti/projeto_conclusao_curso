@@ -158,6 +158,12 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       deleted_at TEXT
     );
 
+    INSERT OR IGNORE INTO principios_ativos (id, descricao, created_at, updated_at, ativo) 
+    VALUES
+      (1, 'Ureia',                datetime('now'), datetime('now'), 1),
+      (2, 'Monoamônio Fosfato',   datetime('now'), datetime('now'), 1),
+      (3, 'Cloreto de Potássio',  datetime('now'), datetime('now'), 1);
+
     CREATE TABLE IF NOT EXISTS principios_ativos_nutrientes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       principios_ativo_id INTEGER NOT NULL,
@@ -172,6 +178,15 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       FOREIGN KEY (principios_ativo_id) REFERENCES principios_ativos(id),
       FOREIGN KEY (nutriente_id) REFERENCES nutrientes(id)
     );
+
+    INSERT OR IGNORE INTO principios_ativos_nutrientes (principios_ativo_id, nutriente_id, percentual, created_at, updated_at) 
+    VALUES
+    -- Ureia → N (45%)
+     (1, 1, 45, datetime('now'), datetime('now')),
+    -- Monoamônio Fosfato → N (11%) e P (48%)
+     (2, 2, 48, datetime('now'), datetime('now')),
+    -- Cloreto de Potássio → K (60%)
+     (3, 3, 60, datetime('now'), datetime('now'));
 
     CREATE TABLE IF NOT EXISTS unidades_medidas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -294,7 +309,8 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       quantidade REAL,
       valor_unitario REAL,
       origem TEXT,
-      ajuste_estoque_id INTEGER NOT NULL,
+      ajuste_estoque_id INTEGER,
+      aplicacoes_insumo_id INTEGER,
       insumo_id INTEGER NOT NULL,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
@@ -303,6 +319,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       server_id INTEGER,
       deleted_at TEXT,
       FOREIGN KEY (ajuste_estoque_id) REFERENCES ajuste_estoques(id),
+      FOREIGN KEY (aplicacoes_insumo_id) REFERENCES aplicacoes_insumos(id),
       FOREIGN KEY (insumo_id) REFERENCES insumos(id)
     );
 
@@ -430,7 +447,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       FOREIGN KEY (insumo_id) REFERENCES insumos(id)
     );
 
-    CREATE TABLE IF NOT EXISTS aplicaoes_insumos (
+    CREATE TABLE IF NOT EXISTS aplicacoes_insumos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       atividade_safra_id INTEGER NOT NULL,
       atividade_gleba_id INTEGER NOT NULL,
@@ -456,8 +473,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS aplicacoes_itens_insumos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      aplicaoes_insumo_id INTEGER NOT NULL,
-      principios_ativo_id INTEGER NOT NULL,
+      aplicacoes_insumo_id INTEGER NOT NULL,
       insumo_id INTEGER NOT NULL,
       quantidade_aplic REAL,
       dose_aplic REAL,
@@ -467,11 +483,47 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       is_dirty INTEGER DEFAULT 1,
       server_id INTEGER,
       deleted_at TEXT,
-      FOREIGN KEY (aplicaoes_insumo_id) REFERENCES aplicaoes_insumos(id),
-      FOREIGN KEY (principios_ativo_id) REFERENCES principios_ativos(id),
+      FOREIGN KEY (aplicacoes_insumo_id) REFERENCES aplicacoes_insumos(id),
       FOREIGN KEY (insumo_id) REFERENCES insumos(id)
     );
   `);
+
+  // Migration v2: torna ajuste_estoque_id nullable e adiciona aplicacoes_insumo_id
+  const movCols = await db.getAllAsync<{ name: string }>(
+    "PRAGMA table_info(movimentacao_estoque_insumos)"
+  );
+  const hasAplicCol = movCols.some(c => c.name === 'aplicacoes_insumo_id');
+  if (!hasAplicCol) {
+    await db.execAsync(`
+      CREATE TABLE movimentacao_estoque_insumos_v2 (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        quantidade REAL,
+        valor_unitario REAL,
+        origem TEXT,
+        ajuste_estoque_id INTEGER,
+        aplicacoes_insumo_id INTEGER,
+        insumo_id INTEGER NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        synced_at TEXT,
+        is_dirty INTEGER DEFAULT 1,
+        server_id INTEGER,
+        deleted_at TEXT,
+        FOREIGN KEY (ajuste_estoque_id) REFERENCES ajuste_estoques(id),
+        FOREIGN KEY (aplicacoes_insumo_id) REFERENCES aplicacoes_insumos(id),
+        FOREIGN KEY (insumo_id) REFERENCES insumos(id)
+      );
+
+      INSERT INTO movimentacao_estoque_insumos_v2
+        (id, quantidade, valor_unitario, origem, ajuste_estoque_id, aplicacoes_insumo_id, insumo_id, created_at, updated_at, synced_at, is_dirty, server_id, deleted_at)
+      SELECT id, quantidade, valor_unitario, 'ajuste', ajuste_estoque_id, NULL, insumo_id, created_at, updated_at, synced_at, is_dirty, server_id, deleted_at
+      FROM movimentacao_estoque_insumos;
+
+      DROP TABLE movimentacao_estoque_insumos;
+
+      ALTER TABLE movimentacao_estoque_insumos_v2 RENAME TO movimentacao_estoque_insumos;
+    `);
+  }
 
   //cria as cidades e estados
   await seedEstadosCidades(db);

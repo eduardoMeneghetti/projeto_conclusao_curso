@@ -67,6 +67,24 @@ export function useMaquinasDatabase() {
         }
     }
 
+    async function getMaquinas() {
+        try {
+
+            const rows = await database.getAllAsync<useMaquinasRaw>(`
+                SELECT * 
+                FROM maquinas 
+                WHERE deleted_at IS NULL     
+                  AND ativo = 1
+            `)
+
+            console.log('Sucesso ao localizar maquinas', rows)
+            return rows.map(mapMaquinas)
+        } catch (error) {
+            console.error('Erro ao localizar máquinas', error)
+            throw error
+        }
+    }
+
 
     async function getMaquinaById(id_maquina: number) {
         try {
@@ -116,7 +134,8 @@ export function useMaquinasDatabase() {
         createMaquina,
         getMaquinasAll,
         updateMaquinas,
-        getMaquinaById
+        getMaquinaById,
+        getMaquinas
     }
 
 }

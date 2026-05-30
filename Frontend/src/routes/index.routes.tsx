@@ -31,6 +31,9 @@ import AnaliseSolosFichamento from "../pages/AnaliseSolosFichamento";
 import AnalisesSoloResultados from "../pages/AnalisesSoloResultados";
 import Maquinas from "../pages/Maquinas";
 import MaquinasForm from "../pages/MaquinasForm";
+import ApplicationNew from "../pages/ApplicationNew";
+import ApplicationNewGleba from "../pages/ApplicationNewGleba";
+import ApplicationNewItens from "../pages/ApplicationNewItens";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -59,6 +62,9 @@ export type RootStackParamList = {
   AnalisesSoloResultados: undefined
   Maquinas: undefined;
   MaquinasForm: undefined;
+  ApplicationNew: undefined;
+  ApplicationNewGleba: undefined;
+  ApplicationNewItens: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -202,6 +208,21 @@ export default function Routes() {
               <Stack.Screen
                 name="MaquinasForm"
                 component={MaquinasForm}
+              />
+
+              <Stack.Screen
+                name="ApplicationNew"
+                component={ApplicationNew}
+              />
+
+              <Stack.Screen
+                name="ApplicationNewGleba"
+                component={ApplicationNewGleba}
+              />
+
+              <Stack.Screen
+                name="ApplicationNewItens"
+                component={ApplicationNewItens}
               />
 
             </Stack.Navigator>

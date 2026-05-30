@@ -37,28 +37,30 @@ export function UseAplicacoesDatabase() {
 
     async function createAplic(data: Pick<useAplic, "atividade_safra_id" | "atividade_gleba_id" | "maquina_id" | "operador_id" | "recomendacoes_agricolas_id" | "area_aplic" | "data_inicio" | "data_final">) {
         const sentece = await database.prepareAsync(`
-            INSERT INTO aplicaoes_insumos (atividade_safra_id, atividade_gleba_id, maquina_id, operador_id, recomendacoes_agricolas_id, area_aplic, data_inicio, data_final, created_at, updated_at, ativo, is_dirty)
+            INSERT INTO aplicacoes_insumos (atividade_safra_id, atividade_gleba_id, maquina_id, operador_id, recomendacoes_agricolas_id, area_aplic, data_inicio, data_final, created_at, updated_at, ativo, is_dirty)
                                    VALUES ($atividade_safra_id, $atividade_gleba_id, $maquina_id, $operador_id, $recomendacoes_agricolas_id, $area_aplic, $data_inicio, $data_final, datetime('now'), datetime('now'), 1, 1) 
         `)
 
         try {
             const result = await sentece.executeAsync({
-                atividade_safra_id: data.atividade_safra_id,
-                atividade_gleba_id: data.atividade_gleba_id,
-                maquina_id: data.maquina_id,
-                operador_id: data.operador_id,
-                recomendacoes_agricolas_id: data.recomendacoes_agricolas_id,
-                area_aplic: data.area_aplic,
-                data_inicio: data.data_inicio,
-                data_final: data.data_final
+                $atividade_safra_id: data.atividade_safra_id,
+                $atividade_gleba_id: data.atividade_gleba_id,
+                $maquina_id: data.maquina_id,
+                $operador_id: data.operador_id,
+                $recomendacoes_agricolas_id: data.recomendacoes_agricolas_id ?? null,
+                $area_aplic: data.area_aplic,
+                $data_inicio: data.data_inicio,
+                $data_final: data.data_final
             })
 
             console.log("Aplicação gerada com sucesso! :", result)
 
             return { insertRowId: result.lastInsertRowId }
         } catch (error) {
-            console.error("Erro ao realizar cadastro de máquina: ", error)
+            console.error("Erro ao realizar cadastro de aplicação: ", error)
             throw error
+        } finally {
+            await sentece.finalizeAsync();
         }
     }
 
