@@ -1,4 +1,5 @@
 import { useSQLiteContext } from "expo-sqlite";
+import { AplicacaoItemLista } from "./useAplicacoesDatabase";
 
 export type useAplicacoes = {
     id: number;
@@ -12,6 +13,14 @@ export type useAplicacoes = {
     is_dirty: boolean;
     server_id: number | null;
     deleted_at: string | null;
+}
+
+export type aplicacoesItens = {
+    insumo_id: number;
+    descricao: string;
+    quantidade: number;
+    dose: number;
+    unidade: string;
 }
 
 type useAplicacoesRaw = Omit<useAplicacoes, "is_dirty"> & {
@@ -53,7 +62,59 @@ export function useAplicacoesItensDatabase() {
         }
     }
 
-    return {
-        createAplicacaoItem
+    async function getAplicacaoItensByAplicacaoId(aplicacoes_insumo_id: number): Promise<aplicacoesItens[]> {
+        try {
+            const rows = await database.getAllAsync<aplicacoesItens>(`
+                SELECT
+                    aii.insumo_id,
+                    i.descricao,
+                    aii.quantidade_aplic as quantidade,
+                    aii.dose_aplic as dose,
+                    um.sigla AS unidade
+                FROM aplicacoes_itens_insumos aii
+                INNER JOIN insumos i ON i.id = aii.insumo_id
+                INNER JOIN unidades_medidas um ON um.id = i.unidades_medida_id
+                WHERE aii.aplicacoes_insumo_id = $aplicacoes_insumo_id
+                  AND aii.deleted_at IS NULL`,
+                { $aplicacoes_insumo_id: aplicacoes_insumo_id }
+            );
+
+            return rows;
+        } catch (error) {
+            console.error("Erro ao buscar itens de aplicação: ", error);
+            throw error;
+        }
     }
+
+    async function deleteItemByAplicacaoId(aplicacoes_insumo_id: number) {
+        try {
+            await database.withTransactionAsync(async () => {
+                await database.runAsync(
+                    `UPDATE aplicacoes_itens_insumos
+                    SET deleted_at = datetime('now'), is_dirty = 1
+                    WHERE aplicacoes_insumo_id = $aplicacoes_insumo_id
+                      AND deleted_at IS NULL`,
+                    { $aplicacoes_insumo_id: aplicacoes_insumo_id }
+                );
+
+                await database.runAsync(`
+                    UPDATE movimentacao_estoque_insumos
+                    SET deleted_at = datetime('now'), is_dirty = 1
+                    WHERE aplicacoes_insumo_id = $aplicacoes_insumo_id
+                      AND deleted_at IS NULL`,
+                    { $aplicacoes_insumo_id: aplicacoes_insumo_id }
+                );
+            });
+        } catch (error) {
+            console.error("Erro ao deletar itens de aplicação: ", error);
+            throw error;
+        }
+    }
+
+    return {
+        createAplicacaoItem,
+        getAplicacaoItensByAplicacaoId,
+        deleteItemByAplicacaoId
+    }
+
 }

@@ -21,6 +21,21 @@ export type RecommendationDatabase = {
     deleted_at: string | null;
 };
 
+export type RecomendacaoImportItem = {
+    id: number;
+    atividade_safra_id: number;
+    atividade_gleba_id: number;
+    operador_id: number;
+    area_aplic: number;
+    data_inicio: string;
+    data_fim: string;
+    status: StatusRecomendacao;
+    gleba: string;
+    safra: string;
+    recomendante: string;
+    total_itens: number;
+};
+
 export type RecomendacaoItemLista = {
     insumo: string;
     quantidade: number;
@@ -217,7 +232,9 @@ export function useRecommendationDatabase() {
 
     async function updateStatusRecomendation() {
         try {
-            await database.runAsync(`
+            await database.withTransactionAsync(async () => {
+
+                await database.runAsync(`
                 UPDATE recomendacoes_agricolas
                 SET status = 'A',
                     updated_at = datetime('now'),
@@ -225,7 +242,24 @@ export function useRecommendationDatabase() {
                 WHERE status = 'P'
                   AND date('now') > date(data_fim)
                   AND deleted_at IS NULL
-            `);
+                `);
+
+                await database.runAsync(`
+                UPDATE recomendacoes_agricolas
+                SET status = 'F',
+                    updated_at = datetime('now'),
+                    is_dirty = 1
+                WHERE deleted_at IS NULL
+                    AND status IN ('P', 'A')
+                    AND (
+                    SELECT COALESCE(SUM(ap.area_aplic), 0)
+                    FROM aplicacoes_insumos ap
+                    WHERE ap.recomendacoes_agricolas_id = recomendacoes_agricolas.id
+                    AND ap.deleted_at IS NULL
+                    ) >= area_aplic
+                `);
+
+            });
         } catch (error) {
             console.error('Erro ao atualizar status das recomendações:', error);
         }
@@ -253,11 +287,47 @@ export function useRecommendationDatabase() {
         }
     }
 
+    async function getRecomendacoesListaImportacao(propriedade_id: number): Promise<RecomendacaoImportItem[]> {
+        try {
+            return await database.getAllAsync<RecomendacaoImportItem>(`
+                SELECT
+                    ra.id,
+                    ra.atividade_safra_id,
+                    ra.atividade_gleba_id,
+                    ra.operador_id,
+                    ra.area_aplic,
+                    ra.data_inicio,
+                    ra.data_fim,
+                    ra.status,
+                    g.descricao  AS gleba,
+                    s.descricao  AS safra,
+                    u2.nome      AS recomendante,
+                    (SELECT COUNT(*) FROM recomendacoes_agricolas_itens rai
+                     WHERE rai.recomendacao_agricola_id = ra.id
+                       AND rai.deleted_at IS NULL) AS total_itens
+                FROM recomendacoes_agricolas ra
+                INNER JOIN atividade_glebas ag  ON ag.id  = ra.atividade_gleba_id
+                INNER JOIN glebas g             ON g.id   = ag.gleba_id
+                INNER JOIN atividade_safras ats ON ats.id = ra.atividade_safra_id
+                INNER JOIN safras s             ON s.id   = ats.safra_id
+                INNER JOIN usuarios u2          ON u2.id  = ra.recomendante_id
+                WHERE ats.propriedade_id = $propriedade_id
+                  AND ra.deleted_at IS NULL
+                  AND ra.status IN ('P', 'A', 'R')
+                ORDER BY ra.data_inicio DESC
+            `, { $propriedade_id: propriedade_id });
+        } catch (error) {
+            console.error('Erro ao buscar recomendações para importação:', error);
+            return [];
+        }
+    }
+
     return {
         createRecomendation,
         updateRecommendation,
         getRecommendationAll,
         getRecommendationById,
+        getRecomendacoesListaImportacao,
         updateStatusRecomendation,
         deleteRecommendation
     }

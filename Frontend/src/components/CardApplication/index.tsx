@@ -5,10 +5,10 @@ import {
     TouchableOpacity,
     Image
 } from "react-native";
-import { StatusRecomendacao, getStatusLabel, getStatusColor } from "../../util/statusRecomendacao";
 import { styles } from "./styles";
+import { themes } from "../../global/themes";
 
-type RecomendacaoItemLista = {
+type AplicacaoItemLista = {
     insumo: string;
     quantidade: number;
     dose: number;
@@ -16,18 +16,15 @@ type RecomendacaoItemLista = {
 }
 
 type Props = {
-    id_recomendacao: number;
-    analises_solo_id: number | null;
+    id_aplicacao: number;
     data_inicio: string;
-    data_fim: string;
-    status: StatusRecomendacao;
+    data_final: string;
     area_aplic: number;
     operador: string;
-    recomendante: string;
     safra: string;
     gleba: string;
-    origem: string;
-    itens: RecomendacaoItemLista[];
+    recomendacoes_agricolas_id: number | null;
+    itens: AplicacaoItemLista[];
     onPress?: () => void;
 }
 
@@ -35,18 +32,16 @@ function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString('pt-BR');
 }
 
-export function CardRecomendation({id_recomendacao, data_inicio, data_fim, status, area_aplic, operador, recomendante, safra, gleba, itens, analises_solo_id, onPress }: Props) {
-    const statusColor = getStatusColor(status);
-    const statusLabel = getStatusLabel(status);
+export function CardApplication({ id_aplicacao, data_inicio, data_final, area_aplic, operador, safra, gleba, itens, recomendacoes_agricolas_id, onPress }: Props) {
 
-    const tipoRecomendacao = analises_solo_id
-        ? 'Recomendação por Análise'
-        : 'Recomendação Manual';
+    const tipoRecomendacao = recomendacoes_agricolas_id
+        ? 'Aplicação por Recomendação'
+        : 'Aplicação Manual';
 
     return (
         <View style={styles.card}>
-            <View style={[styles.header, { borderLeftColor: statusColor }]}>
-                <Text style={styles.title}>#{id_recomendacao} {tipoRecomendacao}</Text>
+            <View style={[styles.header, { borderLeftColor: themes.colors.primary }]}>
+                <Text style={styles.title}>#{id_aplicacao} {tipoRecomendacao}</Text>
                 <TouchableOpacity onPress={onPress}>
                     <Image
                         style={styles.editButton}
@@ -57,13 +52,17 @@ export function CardRecomendation({id_recomendacao, data_inicio, data_fim, statu
 
             <View style={styles.metaRow}>
                 <Text style={styles.safra}>{safra}</Text>
-                <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
-                    <Text style={styles.statusText}>{statusLabel}</Text>
+                <View style={styles.statusBadge}>
+                    <Text style={styles.statusText}></Text>
                 </View>
             </View>
 
+            <Text style={styles.recomendacao}>
+                {recomendacoes_agricolas_id ? 'Recomendação ID: ' + recomendacoes_agricolas_id : 'Sem recomendação associada'}
+            </Text>
+
             <Text style={styles.periodo}>
-                {formatDate(data_inicio)} → {formatDate(data_fim)}
+                {formatDate(data_inicio)} → {formatDate(data_final)}
             </Text>
 
             <View style={styles.divider} />
@@ -80,10 +79,6 @@ export function CardRecomendation({id_recomendacao, data_inicio, data_fim, statu
             </View>
 
             <View style={styles.infoRow}>
-                <View style={styles.infoBlock}>
-                    <Text style={styles.label}>Recomendante</Text>
-                    <Text style={styles.value}>{recomendante}</Text>
-                </View>
                 <View style={styles.infoBlock}>
                     <Text style={styles.label}>Operador</Text>
                     <Text style={styles.value}>{operador}</Text>

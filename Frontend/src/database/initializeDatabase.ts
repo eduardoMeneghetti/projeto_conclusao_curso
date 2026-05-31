@@ -488,43 +488,6 @@ export async function initializeDatabase(db: SQLiteDatabase) {
     );
   `);
 
-  // Migration v2: torna ajuste_estoque_id nullable e adiciona aplicacoes_insumo_id
-  const movCols = await db.getAllAsync<{ name: string }>(
-    "PRAGMA table_info(movimentacao_estoque_insumos)"
-  );
-  const hasAplicCol = movCols.some(c => c.name === 'aplicacoes_insumo_id');
-  if (!hasAplicCol) {
-    await db.execAsync(`
-      CREATE TABLE movimentacao_estoque_insumos_v2 (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        quantidade REAL,
-        valor_unitario REAL,
-        origem TEXT,
-        ajuste_estoque_id INTEGER,
-        aplicacoes_insumo_id INTEGER,
-        insumo_id INTEGER NOT NULL,
-        created_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL,
-        synced_at TEXT,
-        is_dirty INTEGER DEFAULT 1,
-        server_id INTEGER,
-        deleted_at TEXT,
-        FOREIGN KEY (ajuste_estoque_id) REFERENCES ajuste_estoques(id),
-        FOREIGN KEY (aplicacoes_insumo_id) REFERENCES aplicacoes_insumos(id),
-        FOREIGN KEY (insumo_id) REFERENCES insumos(id)
-      );
-
-      INSERT INTO movimentacao_estoque_insumos_v2
-        (id, quantidade, valor_unitario, origem, ajuste_estoque_id, aplicacoes_insumo_id, insumo_id, created_at, updated_at, synced_at, is_dirty, server_id, deleted_at)
-      SELECT id, quantidade, valor_unitario, 'ajuste', ajuste_estoque_id, NULL, insumo_id, created_at, updated_at, synced_at, is_dirty, server_id, deleted_at
-      FROM movimentacao_estoque_insumos;
-
-      DROP TABLE movimentacao_estoque_insumos;
-
-      ALTER TABLE movimentacao_estoque_insumos_v2 RENAME TO movimentacao_estoque_insumos;
-    `);
-  }
-
   //cria as cidades e estados
   await seedEstadosCidades(db);
 }

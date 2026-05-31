@@ -18,7 +18,6 @@ import { InputText } from '../../components/TextInput';
 export default function ApplicationNewGleba() {
     const navigation = useNavigation<any>();
     const route = useRoute<any>();
-
     const dados = route.params;
 
     const { getGlebasInActivityHarvest } = UseActivityHarvestDatabase();
@@ -37,7 +36,9 @@ export default function ApplicationNewGleba() {
     const [operador, setOperador] = useState<UserDatabase[]>([]);
     const [seletectedOperador, setSelectedOperador] = useState<UserDatabase | null>(null);
 
-    const [areaAplic, setAreaAplic] = useState('');
+    const [areaAplic, setAreaAplic] = useState(
+        dados.area_aplic ? String(dados.area_aplic) : ''
+    );
 
     useEffect(() => {
         getUserOperador().then((result) => {
@@ -54,6 +55,27 @@ export default function ApplicationNewGleba() {
             });
         }
     }, [dados.atividadeSafraId]);
+
+    // Pré-seleciona gleba ao editar
+    useEffect(() => {
+        if (!dados.atividade_gleba_id || gleba.length === 0) return;
+        const pre = gleba.find(g => g.atividade_gleba_id === dados.atividade_gleba_id);
+        if (pre) setSelectedGleba(pre);
+    }, [dados.atividade_gleba_id, gleba]);
+
+    // Pré-seleciona operador ao editar
+    useEffect(() => {
+        if (!dados.operador_id || operador.length === 0) return;
+        const pre = operador.find(o => o.id === dados.operador_id);
+        if (pre) setSelectedOperador(pre);
+    }, [dados.operador_id, operador]);
+
+    //pré-seleciona máquina ao editar
+    useEffect(() => {
+        if (!dados.maquina_id || maquina.length === 0) return;
+        const pre = maquina.find(m => m.id === dados.maquina_id);
+        if (pre) setSelectedMaquina(pre);
+    }, [dados.maquina_id, maquina]);
 
     function handleNext() {
         if (!selectedMaquina) {
@@ -184,7 +206,7 @@ export default function ApplicationNewGleba() {
             <ButtonAvance
                 title="Avançar"
                 onSeguir={
-                    () => {handleNext()}
+                    () => { handleNext() }
                 }
                 onVoltar={
                     () => { navigation.goBack() }

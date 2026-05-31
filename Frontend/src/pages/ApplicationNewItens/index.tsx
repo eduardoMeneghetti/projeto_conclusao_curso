@@ -11,27 +11,27 @@ import {
 import { styles } from './styles';
 import { TopButton } from '../../components/TopButton';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { AddItemForm, RecomendacaoItem } from '../../components/AddItemForm';
+import { AddItemForm } from '../../components/AddItemForm';
 import ButtonAvance from '../../components/ButtonAvance';
 import ButtonPages from '../../components/ButtonPages';
 import { Insumo, useInsumoDatabase } from '../../database/useInsumoDatabase';
 import { UseAplicacoesDatabase } from '../../database/useAplicacoesDatabase';
-import { useAplicacoesItensDatabase } from '../../database/useAplicacoesItensDatabase';
+import { aplicacoesItens, useAplicacoesItensDatabase } from '../../database/useAplicacoesItensDatabase';
 import { UseMovEstoqueInsumos } from '../../database/useMovEstoqueInsumos';
-import { useAjusteEstoqueDatabase } from '../../database/useAjusteEstoqueDatabase';
 
 export default function ApplicationNewItens() {
     const navigation = useNavigation<any>();
     const route = useRoute<any>();
+    const isEditing = !!route.params?.id;
+
     const dadosAplic = route.params;
 
     const { getInsumoAtivo } = useInsumoDatabase();
-    const { create } = useAjusteEstoqueDatabase();
-    const { createMovInsumo, validarSaidaSemNegatacao } = UseMovEstoqueInsumos();
-    const { createAplic } = UseAplicacoesDatabase();
-    const { createAplicacaoItem } = useAplicacoesItensDatabase();
+    const { createMovInsumo, validarSaidaSemNegatacao, saldoItemById } = UseMovEstoqueInsumos();
+    const { createAplic, updateAplicacao } = UseAplicacoesDatabase();
+    const { createAplicacaoItem, getAplicacaoItensByAplicacaoId, deleteItemByAplicacaoId } = useAplicacoesItensDatabase();
 
-    const [itens, setItens] = useState<RecomendacaoItem[]>(
+    const [itens, setItens] = useState<aplicacoesItens[]>(
         dadosAplic.initialItens ?? []
     );
 
@@ -44,6 +44,12 @@ export default function ApplicationNewItens() {
         });
     }, []);
 
+    //carrega itens existentes ao editar
+    useEffect(() => {
+        if(!isEditing) return;
+        getAplicacaoItensByAplicacaoId(dadosAplic.id).then(setItens);
+    }, [dadosAplic.id]);
+
     function handleRemoverItem(insumo_id: number) {
         setItens(prev => prev.filter(i => i.insumo_id !== insumo_id));
     }
@@ -55,35 +61,68 @@ export default function ApplicationNewItens() {
         }
 
         try {
-            console.log('Iniciando criação da aplicação com dados: ', dadosAplic);
+            let aplicacaoId: number;
 
-            for (const item of itens) {
-                const validacao = await validarSaidaSemNegatacao(
-                    item.insumo_id,
-                    item.quantidade,
-                    dadosAplic.proprietyId,
-                    item.descricao
-                );
+            if (isEditing) {
+                const oldItens = await getAplicacaoItensByAplicacaoId(dadosAplic.id);
 
-                if (!validacao.valido) {
-                    Alert.alert('Erro', validacao.mensagem || 'Saldo insuficiente para este item');
-                    return;
+                for (const item of itens) {
+                    const saldoAtual = await saldoItemById(item.insumo_id, dadosAplic.proprietyId);
+                    const oldItem = oldItens.find(o => o.insumo_id === item.insumo_id);
+                    const saldoDisponivel = saldoAtual + (oldItem?.quantidade ?? 0);
+
+                    if (item.quantidade > saldoDisponivel) {
+                        Alert.alert('Saldo insuficiente',
+                            `Insumo: ${item.descricao}\nSaldo disponível: ${saldoDisponivel.toLocaleString('pt-BR')}\nQuantidade necessária: ${item.quantidade.toLocaleString('pt-BR')}`
+                        );
+                        return;
+                    }
                 }
+
+                await deleteItemByAplicacaoId(dadosAplic.id);
+
+                await updateAplicacao({
+                    id: dadosAplic.id,
+                    atividade_safra_id: dadosAplic.atividadeSafraId,
+                    atividade_gleba_id: dadosAplic.atividade_gleba_id,
+                    maquina_id: dadosAplic.maquina_id,
+                    operador_id: dadosAplic.operador_id,
+                    recomendacoes_agricolas_id: dadosAplic.recomendacoes_agricolas_id ?? null,
+                    area_aplic: dadosAplic.areaAplic,
+                    data_inicio: dadosAplic.data_inicio,
+                    data_final: dadosAplic.data_fim
+                });
+
+                aplicacaoId = dadosAplic.id;
+            } else {
+                for (const item of itens) {
+                    const validacao = await validarSaidaSemNegatacao(
+                        item.insumo_id,
+                        item.quantidade,
+                        dadosAplic.proprietyId,
+                        item.descricao
+                    );
+
+                    if (!validacao.valido) {
+                        Alert.alert('Erro', validacao.mensagem || 'Saldo insuficiente para este item');
+                        return;
+                    }
+                }
+
+                const aplic = await createAplic({
+                    atividade_safra_id: dadosAplic.atividadeSafraId,
+                    atividade_gleba_id: dadosAplic.atividade_gleba_id,
+                    maquina_id: dadosAplic.maquina_id,
+                    operador_id: dadosAplic.operador_id,
+                    recomendacoes_agricolas_id: dadosAplic.recomendacoes_agricolas_id,
+                    area_aplic: dadosAplic.areaAplic,
+                    data_inicio: dadosAplic.data_inicio,
+                    data_final: dadosAplic.data_fim
+                });
+
+                if (!aplic.insertRowId) return Alert.alert('Erro', 'Não foi possível criar a aplicação');
+                aplicacaoId = aplic.insertRowId;
             }
-
-            const aplic = await createAplic({
-                atividade_safra_id: dadosAplic.atividadeSafraId,
-                atividade_gleba_id: dadosAplic.atividade_gleba_id,
-                maquina_id: dadosAplic.maquina_id,
-                operador_id: dadosAplic.operador_id,
-                recomendacoes_agricolas_id: dadosAplic.recomendacoes_agricolas_id,
-                area_aplic: dadosAplic.areaAplic,
-                data_inicio: dadosAplic.data_inicio,
-                data_final: dadosAplic.data_fim
-            })
-
-            if (!aplic.insertRowId) return Alert.alert('Erro', 'Não foi possível criar a aplicação');
-            const aplicacaoId = aplic.insertRowId;
 
             for (const item of itens) {
                 await createAplicacaoItem({
@@ -103,14 +142,13 @@ export default function ApplicationNewItens() {
                 }, 'S');
             }
 
-            Alert.alert('Sucesso', 'Aplicação registrada com sucesso!');
+            Alert.alert('Sucesso', isEditing ? 'Aplicação atualizada com sucesso!' : 'Aplicação registrada com sucesso!');
             navigation.navigate('BottomRoutes', { screen: 'Aplicacoes' });
 
         } catch (error) {
             console.error('Erro ao salvar aplicação:', error);
             Alert.alert('Erro', 'Não foi possível salvar a aplicação.');
         }
-
     }
 
     return (
