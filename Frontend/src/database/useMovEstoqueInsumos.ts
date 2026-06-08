@@ -1,5 +1,16 @@
 import { useSQLiteContext } from "expo-sqlite";
 
+export type ExtratoMovimento = {
+    id: number;
+    data: string;
+    quantidade: number;
+    valor_unitario: number;
+    tipo: 'AJUSTE' | 'APLICAÇÃO';
+    descricao: string | null;
+    gleba: string | null;
+    safra: string | null;
+};
+
 export type useMovInsumo = {
     id: number,
     quantidade: number,
@@ -232,5 +243,66 @@ export function UseMovEstoqueInsumos() {
     }
 
 
-    return { createMovInsumo, saldoItemById, validarSaidaSemNegatacao, validarSaidaSemNegatacaoAoEditar, deleteMovItensById, deleteAjusteCompleto, canDeleteAjuste }
+    async function getExtratoEstoque(
+        insumo_id: number,
+        propriedade_id: number,
+        data_inicio: string | null,
+        data_fim: string | null
+    ): Promise<ExtratoMovimento[]> {
+        const d1A = data_inicio ? `AND date(ae.data) >= date('${data_inicio}')` : '';
+        const d2A = data_fim    ? `AND date(ae.data) <= date('${data_fim}')` : '';
+        const d1P = data_inicio ? `AND date(ai.data_inicio) >= date('${data_inicio}')` : '';
+        const d2P = data_fim    ? `AND date(ai.data_inicio) <= date('${data_fim}')` : '';
+
+        try {
+            return await database.getAllAsync<ExtratoMovimento>(`
+                SELECT
+                    mei.id,
+                    ae.data AS data,
+                    mei.quantidade,
+                    mei.valor_unitario,
+                    'AJUSTE' AS tipo,
+                    ae.observacao AS descricao,
+                    NULL AS gleba,
+                    NULL AS safra
+                FROM movimentacao_estoque_insumos mei
+                INNER JOIN ajuste_estoques ae ON ae.id = mei.ajuste_estoque_id
+                WHERE mei.insumo_id = ${insumo_id}
+                  AND ae.propriedade_id = ${propriedade_id}
+                  AND mei.deleted_at IS NULL
+                  AND ae.deleted_at IS NULL
+                  ${d1A} ${d2A}
+
+                UNION ALL
+
+                SELECT
+                    mei.id,
+                    ai.data_inicio AS data,
+                    mei.quantidade,
+                    mei.valor_unitario,
+                    'APLICAÇÃO' AS tipo,
+                    NULL AS descricao,
+                    g.descricao AS gleba,
+                    s.descricao AS safra
+                FROM movimentacao_estoque_insumos mei
+                INNER JOIN aplicacoes_insumos ai ON ai.id = mei.aplicacoes_insumo_id
+                INNER JOIN atividade_glebas ag ON ag.id = ai.atividade_gleba_id
+                INNER JOIN glebas g ON g.id = ag.gleba_id
+                INNER JOIN atividade_safras ats ON ats.id = ai.atividade_safra_id
+                INNER JOIN safras s ON s.id = ats.safra_id
+                WHERE mei.insumo_id = ${insumo_id}
+                  AND ats.propriedade_id = ${propriedade_id}
+                  AND mei.deleted_at IS NULL
+                  AND ai.deleted_at IS NULL
+                  ${d1P} ${d2P}
+
+                ORDER BY data DESC
+            `);
+        } catch (error) {
+            console.error('Erro ao buscar extrato de estoque: ', error);
+            return [];
+        }
+    }
+
+    return { createMovInsumo, saldoItemById, validarSaidaSemNegatacao, validarSaidaSemNegatacaoAoEditar, deleteMovItensById, deleteAjusteCompleto, canDeleteAjuste, getExtratoEstoque }
 }

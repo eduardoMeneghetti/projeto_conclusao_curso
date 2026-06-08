@@ -58,6 +58,7 @@ export type RecomendationComplete = {
     itens: RecomendacaoItemLista[];
 }
 
+
 type RecomendacaoItemFlat = Omit<RecomendationComplete, 'itens'> & RecomendacaoItemLista;
 
 type RecommendationDatabaseRaw = Omit<RecommendationDatabase, "ativo" | "is_dirty"> & {
@@ -234,29 +235,55 @@ export function useRecommendationDatabase() {
         try {
             await database.withTransactionAsync(async () => {
 
+                // 1. → F: área aplicada atingiu ou superou a área da recomendação
                 await database.runAsync(`
-                UPDATE recomendacoes_agricolas
-                SET status = 'A',
-                    updated_at = datetime('now'),
-                    is_dirty = 1
-                WHERE status = 'P'
-                  AND date('now') > date(data_fim)
-                  AND deleted_at IS NULL
+                    UPDATE recomendacoes_agricolas
+                    SET status = 'F', updated_at = datetime('now'), is_dirty = 1
+                    WHERE deleted_at IS NULL
+                      AND status != 'F'
+                      AND (SELECT COALESCE(SUM(ap.area_aplic), 0)
+                           FROM aplicacoes_insumos ap
+                           WHERE ap.recomendacoes_agricolas_id = recomendacoes_agricolas.id
+                             AND ap.deleted_at IS NULL) >= area_aplic
                 `);
 
+                // 2. → R: tem aplicações mas a área total ainda não fechou
+                //    (após o passo 1, as que ficaram com status != F e sum > 0 têm sum < area)
                 await database.runAsync(`
-                UPDATE recomendacoes_agricolas
-                SET status = 'F',
-                    updated_at = datetime('now'),
-                    is_dirty = 1
-                WHERE deleted_at IS NULL
-                    AND status IN ('P', 'A')
-                    AND (
-                    SELECT COALESCE(SUM(ap.area_aplic), 0)
-                    FROM aplicacoes_insumos ap
-                    WHERE ap.recomendacoes_agricolas_id = recomendacoes_agricolas.id
-                    AND ap.deleted_at IS NULL
-                    ) >= area_aplic
+                    UPDATE recomendacoes_agricolas
+                    SET status = 'R', updated_at = datetime('now'), is_dirty = 1
+                    WHERE deleted_at IS NULL
+                      AND status != 'F'
+                      AND (SELECT COALESCE(SUM(ap.area_aplic), 0)
+                           FROM aplicacoes_insumos ap
+                           WHERE ap.recomendacoes_agricolas_id = recomendacoes_agricolas.id
+                             AND ap.deleted_at IS NULL) > 0
+                `);
+
+                // 3. → A: prazo encerrado e sem nenhuma aplicação
+                await database.runAsync(`
+                    UPDATE recomendacoes_agricolas
+                    SET status = 'A', updated_at = datetime('now'), is_dirty = 1
+                    WHERE deleted_at IS NULL
+                      AND status NOT IN ('F', 'R')
+                      AND date('now') > date(data_fim)
+                      AND (SELECT COALESCE(SUM(ap.area_aplic), 0)
+                           FROM aplicacoes_insumos ap
+                           WHERE ap.recomendacoes_agricolas_id = recomendacoes_agricolas.id
+                             AND ap.deleted_at IS NULL) = 0
+                `);
+
+                // 4. → P: dentro do prazo e sem nenhuma aplicação (também reseta R/A se aplicações foram removidas)
+                await database.runAsync(`
+                    UPDATE recomendacoes_agricolas
+                    SET status = 'P', updated_at = datetime('now'), is_dirty = 1
+                    WHERE deleted_at IS NULL
+                      AND status NOT IN ('F', 'R')
+                      AND date('now') <= date(data_fim)
+                      AND (SELECT COALESCE(SUM(ap.area_aplic), 0)
+                           FROM aplicacoes_insumos ap
+                           WHERE ap.recomendacoes_agricolas_id = recomendacoes_agricolas.id
+                             AND ap.deleted_at IS NULL) = 0
                 `);
 
             });
@@ -322,6 +349,33 @@ export function useRecommendationDatabase() {
         }
     }
 
+    async function getRecomendationsResumoBySafra(
+        propriedade_id: number,
+        safra_id: number
+    ): Promise<{ status: string; tipo: string; total: number }[]> {
+        try {
+            return await database.getAllAsync<{ status: string; tipo: string; total: number }>(`
+                SELECT
+                    ra.status,
+                    CASE
+                        WHEN ra.analises_solo_id IS NOT NULL THEN 'ANALISE'
+                        ELSE 'MANUAL'
+                    END AS tipo,
+                    COUNT(*) AS total
+                FROM recomendacoes_agricolas ra
+                INNER JOIN atividade_glebas ag ON ag.id = ra.atividade_gleba_id
+                INNER JOIN atividade_safras ats ON ats.id = ag.atividade_safra_id
+                WHERE ats.propriedade_id = $propriedade_id
+                  AND ats.safra_id = $safra_id
+                  AND ra.deleted_at IS NULL
+                GROUP BY ra.status, tipo
+            `, { $propriedade_id: propriedade_id, $safra_id: safra_id });
+        } catch (error) {
+            console.error('Erro ao buscar resumo de recomendações por safra:', error);
+            return [];
+        }
+    }
+
     return {
         createRecomendation,
         updateRecommendation,
@@ -329,6 +383,7 @@ export function useRecommendationDatabase() {
         getRecommendationById,
         getRecomendacoesListaImportacao,
         updateStatusRecomendation,
-        deleteRecommendation
+        deleteRecommendation,
+        getRecomendationsResumoBySafra
     }
 }

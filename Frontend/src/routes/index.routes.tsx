@@ -34,6 +34,10 @@ import MaquinasForm from "../pages/MaquinasForm";
 import ApplicationNew from "../pages/ApplicationNew";
 import ApplicationNewGleba from "../pages/ApplicationNewGleba";
 import ApplicationNewItens from "../pages/ApplicationNewItens";
+import StockReportFilters from "../pages/StockReportFilters";
+import StockReport from "../pages/StockReport";
+import RecommendationsReportFilters from "../pages/RecommendationsReportFilters";
+import RecommendationsReport from "../pages/RecommendationsReport";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -65,6 +69,17 @@ export type RootStackParamList = {
   ApplicationNew: undefined;
   ApplicationNewGleba: undefined;
   ApplicationNewItens: undefined;
+  StockReportFilters: undefined;
+  StockReport: {
+    insumo_id: number;
+    propriedade_id: number;
+    insumo_descricao: string;
+    insumo_unidade: string;
+    data_inicio: string | null;
+    data_fim: string | null;
+  };
+  RecommendationsReportFilters: undefined;
+  RecommendationsReport: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -223,6 +238,26 @@ export default function Routes() {
               <Stack.Screen
                 name="ApplicationNewItens"
                 component={ApplicationNewItens}
+              />
+
+              <Stack.Screen
+                name="StockReportFilters"
+                component={StockReportFilters}
+              />
+
+              <Stack.Screen
+                name="StockReport"
+                component={StockReport}
+              />
+
+              <Stack.Screen
+                name="RecommendationsReportFilters"
+                component={RecommendationsReportFilters}
+              />
+
+              <Stack.Screen
+                name="RecommendationsReport"
+                component={RecommendationsReport}
               />
 
             </Stack.Navigator>

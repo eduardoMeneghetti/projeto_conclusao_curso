@@ -11,6 +11,7 @@ export const themes = {
         page: '#D9D9D9',
         red: '#fc2403',
         background_page: '#ADB5BD',
-        blue: '#1996d4'
+        blue: '#1996d4',
+        brown: '#97602c',
     }
 }

@@ -18,6 +18,7 @@ import { Insumo, useInsumoDatabase } from '../../database/useInsumoDatabase';
 import { UseAplicacoesDatabase } from '../../database/useAplicacoesDatabase';
 import { aplicacoesItens, useAplicacoesItensDatabase } from '../../database/useAplicacoesItensDatabase';
 import { UseMovEstoqueInsumos } from '../../database/useMovEstoqueInsumos';
+import { useRecommendationDatabase } from '../../database/useRecommendationDatabase';
 
 export default function ApplicationNewItens() {
     const navigation = useNavigation<any>();
@@ -29,6 +30,7 @@ export default function ApplicationNewItens() {
     const { getInsumoAtivo } = useInsumoDatabase();
     const { createMovInsumo, validarSaidaSemNegatacao, saldoItemById } = UseMovEstoqueInsumos();
     const { createAplic, updateAplicacao } = UseAplicacoesDatabase();
+    const { updateStatusRecomendation } = useRecommendationDatabase();
     const { createAplicacaoItem, getAplicacaoItensByAplicacaoId, deleteItemByAplicacaoId } = useAplicacoesItensDatabase();
 
     const [itens, setItens] = useState<aplicacoesItens[]>(
@@ -141,6 +143,8 @@ export default function ApplicationNewItens() {
                     aplicacoes_insumo_id: aplicacaoId,
                 }, 'S');
             }
+
+            await updateStatusRecomendation();
 
             Alert.alert('Sucesso', isEditing ? 'Aplicação atualizada com sucesso!' : 'Aplicação registrada com sucesso!');
             navigation.navigate('BottomRoutes', { screen: 'Aplicacoes' });

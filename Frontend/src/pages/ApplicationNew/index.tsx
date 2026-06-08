@@ -14,6 +14,7 @@ import { usePropriety } from "../../context/PropContext";
 import SelectionModal from "../../components/SelectionModal";
 import { InputDate } from "../../components/InputDate";
 import { UseAplicacoesDatabase } from "../../database/useAplicacoesDatabase";
+import { useRecommendationDatabase } from "../../database/useRecommendationDatabase";
 
 export default function ApplicationNew() {
     const navigation = useNavigation<any>();
@@ -25,6 +26,7 @@ export default function ApplicationNew() {
     const { selectedPropriety } = usePropriety();
     const { getActivityHarvestByPropriety } = UseActivityHarvestDatabase();
     const { getAplicacaoById, deleteAplicacao } = UseAplicacoesDatabase();
+    const { updateStatusRecomendation } = useRecommendationDatabase();
     const { selectedAtividadeSafraId } = useAuthSelection();
 
     const [data_inicio, setData_inicio] = useState<Date>(new Date());
@@ -109,6 +111,7 @@ export default function ApplicationNew() {
                     onPress: async () => {
                         try {
                             await deleteAplicacao(editingAplicacao.id);
+                            await updateStatusRecomendation();
                             Alert.alert('Sucesso', 'Aplicação excluída com sucesso!');
                             navigation.goBack();
                         } catch (error) {
