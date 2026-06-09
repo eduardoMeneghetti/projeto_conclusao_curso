@@ -38,6 +38,10 @@ import StockReportFilters from "../pages/StockReportFilters";
 import StockReport from "../pages/StockReport";
 import RecommendationsReportFilters from "../pages/RecommendationsReportFilters";
 import RecommendationsReport from "../pages/RecommendationsReport";
+import HistoricoAnaliseFilters from "../pages/HistoricoAnaliseFilters";
+import HistoricoAnaliseReport from "../pages/HistoricoAnaliseReport";
+import ConsumoInsumosGlebaFilters from "../pages/ConsumoInsumosGlebaFilters";
+import ConsumoInsumosGlebaReport from "../pages/ConsumoInsumosGlebaReport";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -80,6 +84,10 @@ export type RootStackParamList = {
   };
   RecommendationsReportFilters: undefined;
   RecommendationsReport: undefined;
+  HistoricoAnaliseFilters: undefined;
+  HistoricoAnaliseReport: undefined;
+  ConsumoInsumosGlebaFilters: undefined;
+  ConsumoInsumosGlebaReport: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -258,6 +266,26 @@ export default function Routes() {
               <Stack.Screen
                 name="RecommendationsReport"
                 component={RecommendationsReport}
+              />
+
+              <Stack.Screen
+                name="HistoricoAnaliseFilters"
+                component={HistoricoAnaliseFilters}
+              />
+
+              <Stack.Screen
+                name="HistoricoAnaliseReport"
+                component={HistoricoAnaliseReport}
+              />
+
+              <Stack.Screen
+                name="ConsumoInsumosGlebaFilters"
+                component={ConsumoInsumosGlebaFilters}
+              />
+
+              <Stack.Screen
+                name="ConsumoInsumosGlebaReport"
+                component={ConsumoInsumosGlebaReport}
               />
 
             </Stack.Navigator>

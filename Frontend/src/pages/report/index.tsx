@@ -23,7 +23,7 @@ export default function Report() {
 
   function handleNavigateToStockReport() {
     if (!selectedPropriety) {
-      Alert.alert('Atenção', 'O relatório de estoque requer uma propriedade selecionada. Por favor, selecione uma propriedade para acessar este relatório.');
+      Alert.alert('Atenção', 'Para acessar o relatório selecione uma propriedade nas configurações.');
       return;
     }
 
@@ -32,11 +32,29 @@ export default function Report() {
 
   function handleNavigateToRecommendationsReport() {
     if (!selectedPropriety) {
-      Alert.alert('Atenção', 'O relatório de recomendações requer uma propriedade selecionada. Por favor, selecione uma propriedade para acessar este relatório.');
+      Alert.alert('Atenção', 'Para acessar o relatório selecione uma propriedade nas configurações.');
       return;
     }
 
     navigation.navigate('RecommendationsReportFilters');
+  }
+
+  function handleHistoricoAnaliseFilters() {
+    if (!selectedPropriety) {
+      Alert.alert('Atenção', 'Para acessar o relatório selecione uma propriedade nas configurações.');
+      return;
+    }
+
+    navigation.navigate('HistoricoAnaliseFilters');
+  }
+
+  function handleConsumoInsumosGlebaFilters() {
+    if (!selectedPropriety) {
+      Alert.alert('Atenção', 'Para acessar o relatório selecione uma propriedade nas configurações.');
+      return;
+    }
+
+    navigation.navigate('ConsumoInsumosGlebaFilters');
   }
 
   return (
@@ -61,7 +79,7 @@ export default function Report() {
         title="Histórico de Análises de Solo"
         imageSource={require('../../assets/icon/analise_solo.png')}
         onPress={
-          () => navigation.navigate('SoilAnalysisReport')
+          () => handleHistoricoAnaliseFilters()
         }
       />
 
@@ -69,7 +87,7 @@ export default function Report() {
         title="Consumo de Insumos por Gleba"
         imageSource={require('../../assets/icon/insumos.png')}
         onPress={
-          () => navigation.navigate('InputConsumptionReport')
+          () => handleConsumoInsumosGlebaFilters()
         }
       />
 

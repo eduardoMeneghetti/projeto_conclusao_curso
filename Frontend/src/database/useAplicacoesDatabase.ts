@@ -1,5 +1,21 @@
 import { useSQLiteContext } from "expo-sqlite";
 
+export type ConsumoItemLista = {
+    insumo: string;
+    unidade_medida: string;
+    total_quantidade: number;
+    total_dose: number;
+}
+
+export type ConsumoInsumosGleba = {
+    gleba: string;
+    area_gleba: number;
+    safra: string;
+    itens: ConsumoItemLista[]
+}
+
+type ConsumoItemFlat = Omit<ConsumoInsumosGleba, 'itens'> & ConsumoItemLista;
+
 export type useAplic = {
     id: number;
     atividade_safra_id: number;
@@ -214,14 +230,14 @@ export function UseAplicacoesDatabase() {
                 await database.runAsync(`
                     UPDATE aplicacoes_itens_insumos
                     SET deleted_at = datetime('now'), is_dirty = 1
-                    WHERE aplicacoes_insumo_id = $aplicacoes_insumo_id`, 
+                    WHERE aplicacoes_insumo_id = $aplicacoes_insumo_id`,
                     { $aplicacoes_insumo_id: aplicacoes_insumo_id }
                 );
 
                 await database.runAsync(`
                     UPDATE aplicacoes_insumos
                     SET deleted_at = datetime('now'), is_dirty = 1, ativo = 0 
-                    WHERE id = $aplicacoes_insumo_id`, 
+                    WHERE id = $aplicacoes_insumo_id`,
                     { $aplicacoes_insumo_id: aplicacoes_insumo_id }
                 );
 
@@ -239,11 +255,89 @@ export function UseAplicacoesDatabase() {
 
     }
 
+    async function getConsumoInsumosGleba(
+        propriedade_id: number,
+        safra_id: number | null,
+        data_inicio: string | null,
+        data_fim: string | null,
+        gleba_id: number | null
+    ): Promise<ConsumoInsumosGleba[]> {
+        const filtroDataInicio = data_inicio
+            ? `AND date(ai.data_inicio) >= date('${data_inicio}')`
+            : '';
+        const filtroDataFim = data_fim
+            ? `AND date(ai.data_inicio) <= date('${data_fim}')`
+            : '';
+        const filtroSafra = safra_id
+            ? `AND ats.safra_id = ${safra_id}`
+            : ''
+        const filtroGleba = gleba_id
+            ? `AND g.id = ${gleba_id}`
+            : ''
+
+        try {
+            const rows = await database.getAllAsync<ConsumoItemFlat>(`
+            SELECT
+                s.descricao AS safra,
+                g.descricao AS gleba,
+                g.area_hectares AS area_gleba,
+                i.descricao AS insumo,
+                um.sigla AS unidade_medida,
+                SUM(aii.quantidade_aplic) AS total_quantidade,
+                SUM(aii.dose_aplic) AS total_dose
+            FROM aplicacoes_itens_insumos aii
+            INNER JOIN aplicacoes_insumos ai ON aii.aplicacoes_insumo_id = ai.id
+            INNER JOIN insumos i ON i.id = aii.insumo_id
+            INNER JOIN unidades_medidas um ON um.id = i.unidades_medida_id
+            INNER JOIN atividade_glebas ag ON ai.atividade_gleba_id = ag.id
+            INNER JOIN atividade_safras ats ON ai.atividade_safra_id = ats.id
+            INNER JOIN safras s ON ats.safra_id = s.id
+            INNER JOIN glebas g ON ag.gleba_id = g.id
+                WHERE ats.propriedade_id = ${propriedade_id}
+                  AND ai.deleted_at IS NULL
+                  AND aii.deleted_at IS NULL
+                  ${filtroSafra}
+                  ${filtroGleba}
+                  ${filtroDataInicio}
+                  ${filtroDataFim}
+            GROUP BY g.id, i.id
+            ORDER BY g.descricao, i.descricao
+            `);
+
+            const ConsumoMap = new Map<string, ConsumoInsumosGleba>();
+
+            for (const row of rows) {
+                if (!ConsumoMap.has(row.gleba)) {
+                    ConsumoMap.set(row.gleba, {
+                        gleba: row.gleba,
+                        area_gleba: row.area_gleba,
+                        safra: row.safra,
+                        itens: [],
+                    });
+                }
+                ConsumoMap.get(row.gleba)!.itens.push({
+                    insumo: row.insumo,
+                    unidade_medida: row.unidade_medida,
+                    total_quantidade: row.total_quantidade,
+                    total_dose: row.total_dose,
+                });
+            }
+
+            return Array.from(ConsumoMap.values());
+        } catch (error) {
+            console.error('Erro ao buscar consumo de insumos por gleba', error)
+            return []
+        }
+
+    }
+
+
     return {
         createAplic,
         getAplicacoesAll,
         getAplicacaoById,
         updateAplicacao,
-        deleteAplicacao
+        deleteAplicacao,
+        getConsumoInsumosGleba
     }
 }

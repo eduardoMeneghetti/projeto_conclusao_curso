@@ -57,7 +57,7 @@ export const styles = StyleSheet.create({
     movData: {
         fontSize: 13,
         color: themes.colors.gray,
-        width: 40,
+        width: 60,
     },
     movQtd: {
         fontSize: 14,

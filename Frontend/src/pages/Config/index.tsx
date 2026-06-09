@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -29,7 +29,6 @@ export default function Config() {
         loadProprieties
     } = usePropriety();
     const { user, signOut } = useAuth();
-
 
     function handleLogout() {
         Alert.alert(
@@ -85,16 +84,16 @@ export default function Config() {
                             onPress={onOpen}
                         />
 
-                        <ButtonSelect
+                         {user?.usuario === 'khronos_adm' && (<ButtonSelect
                             title="Usuários"
                             text="Cadastro de usuários"
                             isRequired={false}
                             onPress={
                                 () => { navigation.navigate('User') }
                             }
-                        />
+                        />)}
 
-                        <ButtonSelect
+                       <ButtonSelect
                             title="Atividades"
                             text="Cadastro de atividade"
                             isRequired={false}
@@ -115,7 +114,7 @@ export default function Config() {
                             text="Cadastro de unidades de medida"
                             isRequired={false}
                             onPress={
-                                () => {navigation.navigate('UnidadesMedida')}
+                                () => { navigation.navigate('UnidadesMedida') }
                             }
                         />
 
@@ -124,7 +123,7 @@ export default function Config() {
                             text="Cadastro de princípios ativos"
                             isRequired={false}
                             onPress={
-                                () => {navigation.navigate('PrincipioAtivo')}
+                                () => { navigation.navigate('PrincipioAtivo') }
                             }
                         />
 
@@ -133,7 +132,7 @@ export default function Config() {
                             text="Cadastro de máquinas"
                             isRequired={false}
                             onPress={
-                                () => {navigation.navigate('Maquinas')}
+                                () => { navigation.navigate('Maquinas') }
                             }
                         />
 

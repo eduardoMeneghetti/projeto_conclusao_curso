@@ -296,7 +296,7 @@ export function UseMovEstoqueInsumos() {
                   AND ai.deleted_at IS NULL
                   ${d1P} ${d2P}
 
-                ORDER BY data DESC
+                ORDER BY data ASC
             `);
         } catch (error) {
             console.error('Erro ao buscar extrato de estoque: ', error);

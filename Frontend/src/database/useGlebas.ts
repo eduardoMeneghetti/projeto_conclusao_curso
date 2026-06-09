@@ -34,6 +34,12 @@ type GlebaComPontos = {
     area_hectares: number;  
 }
 
+export type GlebaSelect = {
+    id: number;
+    descricao: string;
+    area_hectares: number;
+}
+
 
 function mapGleba(row: UseGlebaRaw): UseGleba {
     return {
@@ -184,6 +190,24 @@ export function useGlebaDatabase() {
         }
     }
 
+     async function getGlebaInProprietySelect(propriedade_id: number) {
+        try {
+            const rows = await database.getAllAsync<GlebaSelect>(`
+                SELECT g.id, g.descricao, g.area_hectares
+                FROM glebas g 
+                INNER JOIN propriedades p ON p.id = g.propriedade_id
+                WHERE p.id = $propriedade_id
+                AND g.deleted_at IS NULL`,
+                { $propriedade_id: propriedade_id }
+            );
+
+            return rows;
+        } catch (error) {
+            console.error("Erro ao localizar glebas da propriedade", error);
+            throw error;
+        }
+    }
+
     return {
         create,
         createPontos,
@@ -191,6 +215,7 @@ export function useGlebaDatabase() {
         getGlebasWithLatLong,
         getGlebasInActivity,
         getGlebaInPropriety,
-        deleteGleba
+        deleteGleba,
+        getGlebaInProprietySelect
     };
 }
