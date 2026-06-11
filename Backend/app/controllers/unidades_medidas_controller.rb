@@ -1,70 +1,55 @@
 class UnidadesMedidasController < ApplicationController
-  before_action :set_unidades_medida, only: %i[ show edit update destroy ]
+  before_action :set_unidades_medida, only: [:update]
 
-  # GET /unidades_medidas or /unidades_medidas.json
   def index
-    @unidades_medidas = UnidadesMedida.all
+    if params[:updated_after]
+      @unidades_medidas = UnidadesMedida.where('updated_at > ?', params[:updated_after])
+    else
+      @unidades_medidas = UnidadesMedida.all
+    end
+    render json: @unidades_medidas
   end
 
-  # GET /unidades_medidas/1 or /unidades_medidas/1.json
-  def show
-  end
+  def sync_unidades_medidas
+    unidades_medidas = params[:unidades_medidas]
+    resultado = []
 
-  # GET /unidades_medidas/new
-  def new
-    @unidades_medida = UnidadesMedida.new
-  end
+    unidades_medidas.each do |unidade|
+      existing = UnidadesMedida.find_by(id: unidade[:server_id])
+      existing ||= UnidadesMedida.find_by(sigla: unidade[:sigla])
 
-  # GET /unidades_medidas/1/edit
-  def edit
-  end
+      campos = { descricao: unidade[:descricao], sigla: unidade[:sigla], ativo: unidade[:ativo] }
 
-  # POST /unidades_medidas or /unidades_medidas.json
-  def create
-    @unidades_medida = UnidadesMedida.new(unidades_medida_params)
-
-    respond_to do |format|
-      if @unidades_medida.save
-        format.html { redirect_to @unidades_medida, notice: "Unidades medida was successfully created." }
-        format.json { render :show, status: :created, location: @unidades_medida }
+      if existing
+        existing.update(campos)
+        resultado << { id: existing.id, local_id: unidade[:id] }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @unidades_medida.errors, status: :unprocessable_entity }
+        novo = UnidadesMedida.new(campos)
+        if novo.save
+          resultado << { id: novo.id, local_id: unidade[:id] }
+        else
+          resultado << { id: nil, local_id: unidade[:id], errors: novo.errors.full_messages }
+        end
       end
     end
+    render json: { message: 'Unidades de medidas sincronizadas', unidades_medidas: resultado }, status: :ok
   end
 
-  # PATCH/PUT /unidades_medidas/1 or /unidades_medidas/1.json
   def update
-    respond_to do |format|
-      if @unidades_medida.update(unidades_medida_params)
-        format.html { redirect_to @unidades_medida, notice: "Unidades medida was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @unidades_medida }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @unidades_medida.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /unidades_medidas/1 or /unidades_medidas/1.json
-  def destroy
-    @unidades_medida.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to unidades_medidas_path, notice: "Unidades medida was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+    if @unidades_medida.update(unidades_medida_params)
+      render json: @unidades_medida, status: :ok
+    else
+      render json: @unidades_medida.errors, status: :unprocessable_entity
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_unidades_medida
-      @unidades_medida = UnidadesMedida.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def unidades_medida_params
-      params.expect(unidades_medida: [ :descrcicao ])
-    end
+  def set_unidades_medida
+    @unidades_medida = UnidadesMedida.find(params.expect(:id))
+  end
+
+  def unidades_medida_params
+    params.expect(unidades_medida: [:descricao, :sigla, :ativo])
+  end
 end

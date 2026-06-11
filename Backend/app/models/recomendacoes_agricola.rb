@@ -1,8 +1,7 @@
 class RecomendacoesAgricola < ApplicationRecord
-  belongs_to :safra
-  belongs_to :atividade
-  belongs_to :analises_solo
-  belongs_to :propriedade
+  belongs_to :analises_solo, optional: true
   belongs_to :atividade_gleba
   belongs_to :atividade_safra
+  belongs_to :operador, class_name: 'Usuario', foreign_key: :operador_id
+  belongs_to :recomendante, class_name: 'Usuario', foreign_key: :recomendante_id
 end

@@ -1,70 +1,54 @@
 class MaquinasController < ApplicationController
-  before_action :set_maquina, only: %i[ show edit update destroy ]
+  before_action :set_maquina, only: [:update]
 
-  # GET /maquinas or /maquinas.json
   def index
-    @maquinas = Maquina.all
+    if params[:updated_after]
+      @maquinas = Maquina.where('updated_at > ?', params[:updated_after])
+    else
+      @maquinas = Maquina.all
+    end
+    render json: @maquinas
   end
 
-  # GET /maquinas/1 or /maquinas/1.json
-  def show
-  end
+  def sync_maquinas
+    maquinas = params[:maquinas]
+    resultado = []
 
-  # GET /maquinas/new
-  def new
-    @maquina = Maquina.new
-  end
+    maquinas.each do |maquina|
+      existing = Maquina.find_by(id: maquina[:server_id])
 
-  # GET /maquinas/1/edit
-  def edit
-  end
-
-  # POST /maquinas or /maquinas.json
-  def create
-    @maquina = Maquina.new(maquina_params)
-
-    respond_to do |format|
-      if @maquina.save
-        format.html { redirect_to @maquina, notice: "Maquina was successfully created." }
-        format.json { render :show, status: :created, location: @maquina }
+      if existing
+        existing.update(
+          descricao: maquina[:descricao],
+          ativo: maquina[:ativo]
+        )
+        resultado << { id: existing.id, local_id: maquina[:id] }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @maquina.errors, status: :unprocessable_entity }
+        novo = Maquina.create(
+          descricao: maquina[:descricao],
+          ativo: maquina[:ativo]
+        )
+        resultado << { id: novo.id, local_id: maquina[:id] }
       end
     end
+    render json: { message: 'Máquinas sincronizadas', maquinas: resultado }, status: :ok
   end
 
-  # PATCH/PUT /maquinas/1 or /maquinas/1.json
   def update
-    respond_to do |format|
-      if @maquina.update(maquina_params)
-        format.html { redirect_to @maquina, notice: "Maquina was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @maquina }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @maquina.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /maquinas/1 or /maquinas/1.json
-  def destroy
-    @maquina.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to maquinas_path, notice: "Maquina was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+    if @maquina.update(maquina_params)
+      render json: @maquina, status: :ok
+    else
+      render json: @maquina.errors, status: :unprocessable_entity
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_maquina
-      @maquina = Maquina.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def maquina_params
-      params.expect(maquina: [ :descricao, :ativo ])
-    end
+  def set_maquina
+    @maquina = Maquina.find(params.expect(:id))
+  end
+
+  def maquina_params
+    params.expect(maquina: [:descricao, :ativo])
+  end
 end

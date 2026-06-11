@@ -1,70 +1,70 @@
 class AnalisesSolosController < ApplicationController
-  before_action :set_analises_solo, only: %i[ show edit update destroy ]
+  before_action :set_analises_solo, only: [:update]
 
-  # GET /analises_solos or /analises_solos.json
   def index
-    @analises_solos = AnalisesSolo.all
+    if params[:updated_after]
+      @analises_solos = AnalisesSolo.where('updated_at > ?', params[:updated_after])
+    else
+      @analises_solos = AnalisesSolo.all
+    end
+    render json: @analises_solos
   end
 
-  # GET /analises_solos/1 or /analises_solos/1.json
-  def show
-  end
+  def sync_analises_solos
+    analises_solos = params[:analises_solos]
+    resultado = []
 
-  # GET /analises_solos/new
-  def new
-    @analises_solo = AnalisesSolo.new
-  end
+    analises_solos.each do |item|
+      existing = AnalisesSolo.find_by(id: item[:server_id])
 
-  # GET /analises_solos/1/edit
-  def edit
-  end
+      atividade_safra = AtividadeSafra.find_by(id: item[:atividade_safra_id])
+      atividade_id    = item[:atividade_id]   || atividade_safra&.atividade_id
+      propriedade_id  = item[:propriedade_id] || atividade_safra&.propriedade_id
+      safra_id        = item[:safra_id]       || atividade_safra&.safra_id
 
-  # POST /analises_solos or /analises_solos.json
-  def create
-    @analises_solo = AnalisesSolo.new(analises_solo_params)
+      campos = {
+        atividade_gleba_id: item[:atividade_gleba_id],
+        atividade_safra_id: item[:atividade_safra_id],
+        atividade_id:       atividade_id,
+        propriedade_id:     propriedade_id,
+        safra_id:           safra_id,
+        data_coleta:        item[:data_coleta],
+        ativo:              item[:ativo]
+      }
 
-    respond_to do |format|
-      if @analises_solo.save
-        format.html { redirect_to @analises_solo, notice: "Analises solo was successfully created." }
-        format.json { render :show, status: :created, location: @analises_solo }
+      if existing
+        if existing.update(campos)
+          resultado << { id: existing.id, local_id: item[:id] }
+        else
+          resultado << { id: nil, local_id: item[:id], errors: existing.errors.full_messages }
+        end
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @analises_solo.errors, status: :unprocessable_entity }
+        novo = AnalisesSolo.new(campos)
+        if novo.save
+          resultado << { id: novo.id, local_id: item[:id] }
+        else
+          resultado << { id: nil, local_id: item[:id], errors: novo.errors.full_messages }
+        end
       end
     end
+    render json: { message: 'Análises de solos sincronizadas', analises_solos: resultado }, status: :ok
   end
 
-  # PATCH/PUT /analises_solos/1 or /analises_solos/1.json
   def update
-    respond_to do |format|
-      if @analises_solo.update(analises_solo_params)
-        format.html { redirect_to @analises_solo, notice: "Analises solo was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @analises_solo }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @analises_solo.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /analises_solos/1 or /analises_solos/1.json
-  def destroy
-    @analises_solo.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to analises_solos_path, notice: "Analises solo was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+    if @analises_solo.update(analises_solo_params)
+      render json: @analises_solo, status: :ok
+    else
+      render json: @analises_solo.errors, status: :unprocessable_entity
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_analises_solo
-      @analises_solo = AnalisesSolo.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def analises_solo_params
-      params.expect(analises_solo: [ :propriedade_id, :safra_id, :atividade_id, :aatividade_gleba_id, :atividade_safra_id, :data_coleta ])
-    end
+  def set_analises_solo
+    @analises_solo = AnalisesSolo.find(params.expect(:id))
+  end
+
+  def analises_solo_params
+    params.expect(analises_solo: [:propriedade_id, :safra_id, :atividade_id, :atividade_gleba_id, :atividade_safra_id, :data_coleta, :ativo])
+  end
 end

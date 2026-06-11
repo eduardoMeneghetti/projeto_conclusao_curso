@@ -1,70 +1,55 @@
 class NutrientesController < ApplicationController
-  before_action :set_nutriente, only: %i[ show edit update destroy ]
+  before_action :set_nutriente, only: [:update]
 
-  # GET /nutrientes or /nutrientes.json
   def index
-    @nutrientes = Nutriente.all
+    if params[:updated_after]
+      @nutrientes = Nutriente.where('updated_at > ?', params[:updated_after])
+    else
+      @nutrientes = Nutriente.all
+    end
+    render json: @nutrientes
   end
 
-  # GET /nutrientes/1 or /nutrientes/1.json
-  def show
-  end
+  def sync_nutrientes
+    nutrientes = params[:nutrientes]
+    resultado = []
 
-  # GET /nutrientes/new
-  def new
-    @nutriente = Nutriente.new
-  end
+    nutrientes.each do |nutriente|
+      existing = Nutriente.find_by(id: nutriente[:server_id])
+      existing ||= Nutriente.find_by(sigla: nutriente[:sigla])
 
-  # GET /nutrientes/1/edit
-  def edit
-  end
+      campos = { descricao: nutriente[:descricao], sigla: nutriente[:sigla], unidade: nutriente[:unidade] }
 
-  # POST /nutrientes or /nutrientes.json
-  def create
-    @nutriente = Nutriente.new(nutriente_params)
-
-    respond_to do |format|
-      if @nutriente.save
-        format.html { redirect_to @nutriente, notice: "Nutriente was successfully created." }
-        format.json { render :show, status: :created, location: @nutriente }
+      if existing
+        existing.update(campos)
+        resultado << { id: existing.id, local_id: nutriente[:id] }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @nutriente.errors, status: :unprocessable_entity }
+        novo = Nutriente.new(campos)
+        if novo.save
+          resultado << { id: novo.id, local_id: nutriente[:id] }
+        else
+          resultado << { id: nil, local_id: nutriente[:id], errors: novo.errors.full_messages }
+        end
       end
     end
+    render json: { message: 'Nutrientes sincronizados', nutrientes: resultado }, status: :ok
   end
 
-  # PATCH/PUT /nutrientes/1 or /nutrientes/1.json
   def update
-    respond_to do |format|
-      if @nutriente.update(nutriente_params)
-        format.html { redirect_to @nutriente, notice: "Nutriente was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @nutriente }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @nutriente.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /nutrientes/1 or /nutrientes/1.json
-  def destroy
-    @nutriente.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to nutrientes_path, notice: "Nutriente was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+    if @nutriente.update(nutriente_params)
+      render json: @nutriente, status: :ok
+    else
+      render json: @nutriente.errors, status: :unprocessable_entity
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_nutriente
-      @nutriente = Nutriente.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def nutriente_params
-      params.expect(nutriente: [ :descricao, :sigla, :unidade ])
-    end
+  def set_nutriente
+    @nutriente = Nutriente.find(params.expect(:id))
+  end
+
+  def nutriente_params
+    params.expect(nutriente: [:descricao, :sigla, :unidade])
+  end
 end

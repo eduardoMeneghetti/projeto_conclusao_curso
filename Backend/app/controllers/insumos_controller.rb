@@ -1,70 +1,60 @@
 class InsumosController < ApplicationController
-  before_action :set_insumo, only: %i[ show edit update destroy ]
+  before_action :set_insumo, only: [:update]
 
-  # GET /insumos or /insumos.json
   def index
-    @insumos = Insumo.all
+    if params[:updated_after]
+      @insumos = Insumo.where('updated_at > ?', params[:updated_after])
+    else
+      @insumos = Insumo.all
+    end
+    render json: @insumos
   end
 
-  # GET /insumos/1 or /insumos/1.json
-  def show
-  end
+  def sync_insumos
+    insumos = params[:insumos]
+    resultado = []
 
-  # GET /insumos/new
-  def new
-    @insumo = Insumo.new
-  end
+    insumos.each do |insumo|
+      existing = Insumo.find_by(id: insumo[:server_id])
 
-  # GET /insumos/1/edit
-  def edit
-  end
-
-  # POST /insumos or /insumos.json
-  def create
-    @insumo = Insumo.new(insumo_params)
-
-    respond_to do |format|
-      if @insumo.save
-        format.html { redirect_to @insumo, notice: "Insumo was successfully created." }
-        format.json { render :show, status: :created, location: @insumo }
+      if existing
+        existing.update(
+          descricao: insumo[:descricao],
+          semente: insumo[:semente],
+          ativo: insumo[:ativo],
+          unidades_medida_id: insumo[:unidades_medida_id],
+          principios_ativos_id: insumo[:principios_ativos_id]
+        )
+        resultado << { id: existing.id, local_id: insumo[:id] }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @insumo.errors, status: :unprocessable_entity }
+        novo = Insumo.create(
+          descricao: insumo[:descricao],
+          semente: insumo[:semente],
+          ativo: insumo[:ativo],
+          unidades_medida_id: insumo[:unidades_medida_id],
+          principios_ativos_id: insumo[:principios_ativos_id]
+        )
+        resultado << { id: novo.id, local_id: insumo[:id] }
       end
     end
+    render json: { message: 'Insumos sincronizados', insumos: resultado }, status: :ok
   end
 
-  # PATCH/PUT /insumos/1 or /insumos/1.json
   def update
-    respond_to do |format|
-      if @insumo.update(insumo_params)
-        format.html { redirect_to @insumo, notice: "Insumo was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @insumo }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @insumo.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /insumos/1 or /insumos/1.json
-  def destroy
-    @insumo.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to insumos_path, notice: "Insumo was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+    if @insumo.update(insumo_params)
+      render json: @insumo, status: :ok
+    else
+      render json: @insumo.errors, status: :unprocessable_entity
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_insumo
-      @insumo = Insumo.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def insumo_params
-      params.expect(insumo: [ :descricao, :semente, :ativo, :unidades_medida_id, :principios_ativo_id ])
-    end
+  def set_insumo
+    @insumo = Insumo.find(params.expect(:id))
+  end
+
+  def insumo_params
+    params.expect(insumo: [:descricao, :semente, :ativo, :unidades_medida_id, :principios_ativos_id])
+  end
 end

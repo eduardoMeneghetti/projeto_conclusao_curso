@@ -1,70 +1,68 @@
 class PrincipiosAtivosNutrientesController < ApplicationController
-  before_action :set_principios_ativos_nutriente, only: %i[ show edit update destroy ]
+  before_action :set_principios_ativos_nutriente, only: [:update]
 
-  # GET /principios_ativos_nutrientes or /principios_ativos_nutrientes.json
   def index
-    @principios_ativos_nutrientes = PrincipiosAtivosNutriente.all
+    if params[:updated_after]
+      @principios_ativos_nutrientes = PrincipiosAtivosNutriente.where('updated_at > ?', params[:updated_after])
+    else
+      @principios_ativos_nutrientes = PrincipiosAtivosNutriente.all
+    end
+    render json: @principios_ativos_nutrientes
   end
 
-  # GET /principios_ativos_nutrientes/1 or /principios_ativos_nutrientes/1.json
-  def show
-  end
+  def sync_principios_ativos_nutrientes
+    principios_ativos_nutrientes = params[:principios_ativos_nutrientes]
+    resultado = []
 
-  # GET /principios_ativos_nutrientes/new
-  def new
-    @principios_ativos_nutriente = PrincipiosAtivosNutriente.new
-  end
+    principios_ativos_nutrientes.each do |item|
+      existing = PrincipiosAtivosNutriente.find_by(id: item[:server_id])
+      existing ||= PrincipiosAtivosNutriente.find_by(
+        principios_ativo_id: item[:principios_ativo_id],
+        nutriente_id: item[:nutriente_id]
+      )
 
-  # GET /principios_ativos_nutrientes/1/edit
-  def edit
-  end
+      campos = {
+        principios_ativo_id: item[:principios_ativo_id],
+        nutriente_id:        item[:nutriente_id],
+        percentual:          item[:percentual]
+      }
 
-  # POST /principios_ativos_nutrientes or /principios_ativos_nutrientes.json
-  def create
-    @principios_ativos_nutriente = PrincipiosAtivosNutriente.new(principios_ativos_nutriente_params)
-
-    respond_to do |format|
-      if @principios_ativos_nutriente.save
-        format.html { redirect_to @principios_ativos_nutriente, notice: "Principios ativos nutriente was successfully created." }
-        format.json { render :show, status: :created, location: @principios_ativos_nutriente }
+      if existing
+        if existing.update(campos)
+          resultado << { id: existing.id, local_id: item[:id] }
+        else
+          resultado << { id: nil, local_id: item[:id], errors: existing.errors.full_messages }
+        end
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @principios_ativos_nutriente.errors, status: :unprocessable_entity }
+        novo = PrincipiosAtivosNutriente.new(campos)
+        if novo.save
+          resultado << { id: novo.id, local_id: item[:id] }
+        else
+          resultado << { id: nil, local_id: item[:id], errors: novo.errors.full_messages }
+        end
       end
     end
+    render json: { message: 'Princípios ativos nutrientes sincronizados', principios_ativos_nutrientes: resultado }, status: :ok
   end
 
-  # PATCH/PUT /principios_ativos_nutrientes/1 or /principios_ativos_nutrientes/1.json
   def update
-    respond_to do |format|
-      if @principios_ativos_nutriente.update(principios_ativos_nutriente_params)
-        format.html { redirect_to @principios_ativos_nutriente, notice: "Principios ativos nutriente was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @principios_ativos_nutriente }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @principios_ativos_nutriente.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /principios_ativos_nutrientes/1 or /principios_ativos_nutrientes/1.json
-  def destroy
-    @principios_ativos_nutriente.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to principios_ativos_nutrientes_path, notice: "Principios ativos nutriente was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+    if @principios_ativos_nutriente.update(principios_ativos_nutriente_params)
+      render json: @principios_ativos_nutriente, status: :ok
+    else
+      render json: @principios_ativos_nutriente.errors, status: :unprocessable_entity
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_principios_ativos_nutriente
-      @principios_ativos_nutriente = PrincipiosAtivosNutriente.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def principios_ativos_nutriente_params
-      params.expect(principios_ativos_nutriente: [ :principio_ativos_id, :nutriente_id, :percentual ])
-    end
+  def set_principios_ativos_nutriente
+    @principios_ativos_nutriente = PrincipiosAtivosNutriente.find_by(id: params[:id])
+    render json: { error: 'Registro não encontrado' }, status: :not_found unless @principios_ativos_nutriente
+  end
+
+  def principios_ativos_nutriente_params
+    # mobile envia 'principio_ativo_nutriente', Rails usa 'principios_ativos_nutriente'
+    data = params[:principios_ativos_nutriente].presence || params[:principio_ativo_nutriente]
+    data.permit(:principios_ativo_id, :nutriente_id, :percentual)
+  end
 end

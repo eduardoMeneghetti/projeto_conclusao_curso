@@ -1,70 +1,65 @@
 class MovimentacaoEstoqueInsumosController < ApplicationController
-  before_action :set_movimentacao_estoque_insumo, only: %i[ show edit update destroy ]
+  before_action :set_movimentacao_estoque_insumo, only: [:update]
 
-  # GET /movimentacao_estoque_insumos or /movimentacao_estoque_insumos.json
   def index
-    @movimentacao_estoque_insumos = MovimentacaoEstoqueInsumo.all
+    if params[:updated_after]
+      @movimentacao_estoque_insumos = MovimentacaoEstoqueInsumo.where('updated_at > ?', params[:updated_after])
+    else
+      @movimentacao_estoque_insumos = MovimentacaoEstoqueInsumo.all
+    end
+    render json: @movimentacao_estoque_insumos
   end
 
-  # GET /movimentacao_estoque_insumos/1 or /movimentacao_estoque_insumos/1.json
-  def show
-  end
+  def sync_movimentacao_estoque_insumos
+    movimentacao_estoque_insumos = params[:movimentacao_estoque_insumos]
+    resultado = []
 
-  # GET /movimentacao_estoque_insumos/new
-  def new
-    @movimentacao_estoque_insumo = MovimentacaoEstoqueInsumo.new
-  end
+    movimentacao_estoque_insumos.each do |item|
+      existing = MovimentacaoEstoqueInsumo.find_by(id: item[:server_id])
 
-  # GET /movimentacao_estoque_insumos/1/edit
-  def edit
-  end
+      campos = {
+        ajuste_estoque_id:    item[:ajuste_estoque_id],
+        aplicacoes_insumo_id: item[:aplicacoes_insumo_id],
+        insumo_id:            item[:insumo_id],
+        quantidade:           item[:quantidade],
+        valor_unitario:       item[:valor_unitario],
+        origem:               item[:origem],
+        deleted_at:           item[:deleted_at]
+      }
 
-  # POST /movimentacao_estoque_insumos or /movimentacao_estoque_insumos.json
-  def create
-    @movimentacao_estoque_insumo = MovimentacaoEstoqueInsumo.new(movimentacao_estoque_insumo_params)
-
-    respond_to do |format|
-      if @movimentacao_estoque_insumo.save
-        format.html { redirect_to @movimentacao_estoque_insumo, notice: "Movimentacao estoque insumo was successfully created." }
-        format.json { render :show, status: :created, location: @movimentacao_estoque_insumo }
+      if existing
+        if existing.update(campos)
+          resultado << { id: existing.id, local_id: item[:id] }
+        else
+          resultado << { id: nil, local_id: item[:id], errors: existing.errors.full_messages }
+        end
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @movimentacao_estoque_insumo.errors, status: :unprocessable_entity }
+        novo = MovimentacaoEstoqueInsumo.new(campos)
+        if novo.save
+          resultado << { id: novo.id, local_id: item[:id] }
+        else
+          resultado << { id: nil, local_id: item[:id], errors: novo.errors.full_messages }
+        end
       end
     end
+    render json: { message: 'Movimentações de estoque sincronizadas', movimentacao_estoque_insumos: resultado }, status: :ok
   end
 
-  # PATCH/PUT /movimentacao_estoque_insumos/1 or /movimentacao_estoque_insumos/1.json
   def update
-    respond_to do |format|
-      if @movimentacao_estoque_insumo.update(movimentacao_estoque_insumo_params)
-        format.html { redirect_to @movimentacao_estoque_insumo, notice: "Movimentacao estoque insumo was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @movimentacao_estoque_insumo }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @movimentacao_estoque_insumo.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /movimentacao_estoque_insumos/1 or /movimentacao_estoque_insumos/1.json
-  def destroy
-    @movimentacao_estoque_insumo.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to movimentacao_estoque_insumos_path, notice: "Movimentacao estoque insumo was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+    if @movimentacao_estoque_insumo.update(movimentacao_estoque_insumo_params)
+      render json: @movimentacao_estoque_insumo, status: :ok
+    else
+      render json: @movimentacao_estoque_insumo.errors, status: :unprocessable_entity
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_movimentacao_estoque_insumo
-      @movimentacao_estoque_insumo = MovimentacaoEstoqueInsumo.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def movimentacao_estoque_insumo_params
-      params.expect(movimentacao_estoque_insumo: [ :quantidade, :valor_unitario, :ajuste_estoque_id, :insumo_id ])
-    end
+  def set_movimentacao_estoque_insumo
+    @movimentacao_estoque_insumo = MovimentacaoEstoqueInsumo.find(params.expect(:id))
+  end
+
+  def movimentacao_estoque_insumo_params
+    params.expect(movimentacao_estoque_insumo: [:ajuste_estoque_id, :aplicacoes_insumo_id, :insumo_id, :quantidade, :valor_unitario, :origem, :deleted_at])
+  end
 end

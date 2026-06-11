@@ -25,12 +25,13 @@ class GlebasController < ApplicationController
     glebas.each do |gleba|
       existing = Gleba.find_by(id: gleba[:server_id])
 
-    if existing
+      if existing
         existing.update(
           descricao: gleba[:descricao],
           ativo: gleba[:ativo],
           area_hectares: gleba[:area_hectares],
-          propriedade_id: gleba[:propriedade_id]
+          propriedade_id: gleba[:propriedade_id],
+          deleted_at: gleba[:deleted_at]
         )
         resultado << { id: existing.id, local_id: gleba[:id] }
       else
@@ -38,11 +39,12 @@ class GlebasController < ApplicationController
           descricao: gleba[:descricao],
           ativo: gleba[:ativo],
           area_hectares: gleba[:area_hectares],
-          propriedade_id: gleba[:propriedade_id]
+          propriedade_id: gleba[:propriedade_id],
+          deleted_at: gleba[:deleted_at]
         )
         resultado << { id: novo.id, local_id: gleba[:id] }
       end
-    end 
+    end
     render json: { message: 'Glebas sincronizadas', glebas: resultado }, status: :ok  
   end
   
@@ -55,6 +57,6 @@ class GlebasController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def gleba_params
-      params.expect(gleba: [ :descricao, :ativo, :area_hectares, :propriedade_id ])
+      params.expect(gleba: [:descricao, :ativo, :area_hectares, :propriedade_id, :deleted_at])
     end
 end

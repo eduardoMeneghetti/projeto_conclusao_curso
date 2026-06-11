@@ -1,3 +1,3 @@
 class Fichamento < ApplicationRecord
-  belongs_to :parametro_metrica
+  belongs_to :parametros_metrica
 end

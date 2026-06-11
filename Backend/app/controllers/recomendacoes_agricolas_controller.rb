@@ -1,70 +1,71 @@
 class RecomendacoesAgricolasController < ApplicationController
-  before_action :set_recomendacoes_agricola, only: %i[ show edit update destroy ]
+  before_action :set_recomendacoes_agricola, only: [:update]
 
-  # GET /recomendacoes_agricolas or /recomendacoes_agricolas.json
   def index
-    @recomendacoes_agricolas = RecomendacoesAgricola.all
+    if params[:updated_after]
+      @recomendacoes_agricolas = RecomendacoesAgricola.where('updated_at > ?', params[:updated_after])
+    else
+      @recomendacoes_agricolas = RecomendacoesAgricola.all
+    end
+    render json: @recomendacoes_agricolas
   end
 
-  # GET /recomendacoes_agricolas/1 or /recomendacoes_agricolas/1.json
-  def show
-  end
+  def sync_recomendacoes_agricolas
+    recomendacoes_agricolas = params[:recomendacoes_agricolas]
+    resultado = []
 
-  # GET /recomendacoes_agricolas/new
-  def new
-    @recomendacoes_agricola = RecomendacoesAgricola.new
-  end
+    recomendacoes_agricolas.each do |item|
+      existing = RecomendacoesAgricola.find_by(id: item[:server_id])
 
-  # GET /recomendacoes_agricolas/1/edit
-  def edit
-  end
+      # mobile envia data_inicio/data_fim; servidor tem data_recomendacao
+      data_recomendacao = item[:data_recomendacao] || item[:data_inicio] || item[:data_fim]
 
-  # POST /recomendacoes_agricolas or /recomendacoes_agricolas.json
-  def create
-    @recomendacoes_agricola = RecomendacoesAgricola.new(recomendacoes_agricola_params)
+      campos = {
+        analises_solo_id:  item[:analises_solo_id],
+        area_aplic:        item[:area_aplic],
+        atividade_gleba_id: item[:atividade_gleba_id],
+        atividade_safra_id: item[:atividade_safra_id],
+        ativo:             item[:ativo],
+        data_recomendacao: data_recomendacao,
+        operador_id:       item[:operador_id],
+        recomendante_id:   item[:recomendante_id],
+        status:            item[:status],
+        deleted_at:        item[:deleted_at]
+      }
 
-    respond_to do |format|
-      if @recomendacoes_agricola.save
-        format.html { redirect_to @recomendacoes_agricola, notice: "Recomendacoes agricola was successfully created." }
-        format.json { render :show, status: :created, location: @recomendacoes_agricola }
+      if existing
+        if existing.update(campos)
+          resultado << { id: existing.id, local_id: item[:id] }
+        else
+          resultado << { id: nil, local_id: item[:id], errors: existing.errors.full_messages }
+        end
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @recomendacoes_agricola.errors, status: :unprocessable_entity }
+        novo = RecomendacoesAgricola.new(campos)
+        if novo.save
+          resultado << { id: novo.id, local_id: item[:id] }
+        else
+          resultado << { id: nil, local_id: item[:id], errors: novo.errors.full_messages }
+        end
       end
     end
+    render json: { message: 'Recomendações agrícolas sincronizadas', recomendacoes_agricolas: resultado }, status: :ok
   end
 
-  # PATCH/PUT /recomendacoes_agricolas/1 or /recomendacoes_agricolas/1.json
   def update
-    respond_to do |format|
-      if @recomendacoes_agricola.update(recomendacoes_agricola_params)
-        format.html { redirect_to @recomendacoes_agricola, notice: "Recomendacoes agricola was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @recomendacoes_agricola }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @recomendacoes_agricola.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /recomendacoes_agricolas/1 or /recomendacoes_agricolas/1.json
-  def destroy
-    @recomendacoes_agricola.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to recomendacoes_agricolas_path, notice: "Recomendacoes agricola was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+    if @recomendacoes_agricola.update(recomendacoes_agricola_params)
+      render json: @recomendacoes_agricola, status: :ok
+    else
+      render json: @recomendacoes_agricola.errors, status: :unprocessable_entity
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_recomendacoes_agricola
-      @recomendacoes_agricola = RecomendacoesAgricola.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def recomendacoes_agricola_params
-      params.expect(recomendacoes_agricola: [ :safra_id, :atividade_id, :analises_solo_id, :propriedade_id, :atividade_gleba_id, :atividade_safra_id, :data_recomendacao, :recomendante, :operador ])
-    end
+  def set_recomendacoes_agricola
+    @recomendacoes_agricola = RecomendacoesAgricola.find(params.expect(:id))
+  end
+
+  def recomendacoes_agricola_params
+    params.expect(recomendacoes_agricola: [:analises_solo_id, :area_aplic, :atividade_gleba_id, :atividade_safra_id, :ativo, :data_recomendacao, :operador_id, :recomendante_id, :status, :deleted_at])
+  end
 end

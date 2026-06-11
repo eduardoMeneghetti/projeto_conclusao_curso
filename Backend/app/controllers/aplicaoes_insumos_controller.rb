@@ -1,70 +1,82 @@
 class AplicaoesInsumosController < ApplicationController
-  before_action :set_aplicaoes_insumo, only: %i[ show edit update destroy ]
+  before_action :set_aplicacoes_insumo, only: [:update]
 
-  # GET /aplicaoes_insumos or /aplicaoes_insumos.json
   def index
-    @aplicaoes_insumos = AplicaoesInsumo.all
+    if params[:updated_after]
+      @aplicacoes_insumos = AplicaoesInsumo.where('updated_at > ?', params[:updated_after])
+    else
+      @aplicacoes_insumos = AplicaoesInsumo.all
+    end
+    render json: @aplicacoes_insumos
   end
 
-  # GET /aplicaoes_insumos/1 or /aplicaoes_insumos/1.json
-  def show
-  end
+  def sync_aplicacoes_insumos
+    aplicacoes_insumos = params[:aplicacoes_insumos]
+    resultado = []
 
-  # GET /aplicaoes_insumos/new
-  def new
-    @aplicaoes_insumo = AplicaoesInsumo.new
-  end
+    aplicacoes_insumos.each do |item|
+      existing = AplicaoesInsumo.find_by(id: item[:server_id])
 
-  # GET /aplicaoes_insumos/1/edit
-  def edit
-  end
+      atividade_safra = AtividadeSafra.find_by(id: item[:atividade_safra_id])
+      atividade_id    = atividade_safra&.atividade_id
+      propriedade_id  = atividade_safra&.propriedade_id
+      usuario_id      = item[:usuario_id] || item[:operador_id]
+      operador_id     = item[:operador_id] || item[:usuario_id]
 
-  # POST /aplicaoes_insumos or /aplicaoes_insumos.json
-  def create
-    @aplicaoes_insumo = AplicaoesInsumo.new(aplicaoes_insumo_params)
+      campos = {
+        atividade_safra_id:       item[:atividade_safra_id],
+        atividade_gleba_id:       item[:atividade_gleba_id],
+        atividade_id:             atividade_id,
+        propriedade_id:           propriedade_id,
+        usuario_id:               usuario_id,
+        operador_id:              operador_id,
+        maquina_id:               item[:maquina_id],
+        recomendacoes_agricolas_id: item[:recomendacoes_agricolas_id],
+        area_aplic:               item[:area_aplic],
+        data_inicio:              item[:data_inicio],
+        data_final:               item[:data_final],
+        ativo:                    item[:ativo],
+        deleted_at:               item[:deleted_at]
+      }
 
-    respond_to do |format|
-      if @aplicaoes_insumo.save
-        format.html { redirect_to @aplicaoes_insumo, notice: "Aplicaoes insumo was successfully created." }
-        format.json { render :show, status: :created, location: @aplicaoes_insumo }
+      if existing
+        if existing.update(campos)
+          resultado << { id: existing.id, local_id: item[:id] }
+        else
+          resultado << { id: nil, local_id: item[:id], errors: existing.errors.full_messages }
+        end
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @aplicaoes_insumo.errors, status: :unprocessable_entity }
+        novo = AplicaoesInsumo.new(campos)
+        if novo.save
+          resultado << { id: novo.id, local_id: item[:id] }
+        else
+          resultado << { id: nil, local_id: item[:id], errors: novo.errors.full_messages }
+        end
       end
     end
+    render json: { message: 'Aplicações de insumos sincronizadas', aplicacoes_insumos: resultado }, status: :ok
   end
 
-  # PATCH/PUT /aplicaoes_insumos/1 or /aplicaoes_insumos/1.json
   def update
-    respond_to do |format|
-      if @aplicaoes_insumo.update(aplicaoes_insumo_params)
-        format.html { redirect_to @aplicaoes_insumo, notice: "Aplicaoes insumo was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @aplicaoes_insumo }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @aplicaoes_insumo.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /aplicaoes_insumos/1 or /aplicaoes_insumos/1.json
-  def destroy
-    @aplicaoes_insumo.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to aplicaoes_insumos_path, notice: "Aplicaoes insumo was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+    if @aplicacoes_insumo.update(aplicacoes_insumo_params)
+      render json: @aplicacoes_insumo, status: :ok
+    else
+      render json: @aplicacoes_insumo.errors, status: :unprocessable_entity
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_aplicaoes_insumo
-      @aplicaoes_insumo = AplicaoesInsumo.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def aplicaoes_insumo_params
-      params.expect(aplicaoes_insumo: [ :propriedade_id, :atividade_id, :atividade_safra_id, :atividade_gleba_id, :usuario_id, :maquina_id, :operador, :recomendacoes_agricola_id, :area_aplic, :data_inicio, :data_final ])
-    end
+  def set_aplicacoes_insumo
+    @aplicacoes_insumo = AplicaoesInsumo.find(params.expect(:id))
+  end
+
+  def aplicacoes_insumo_params
+    data = params[:aplicacoes_insumo].presence ||
+           params[:aplicaoes_insumo].presence ||
+           params[:aplicacao_insumo]
+    data.permit(:atividade_safra_id, :atividade_gleba_id, :atividade_id, :propriedade_id,
+                :usuario_id, :operador_id, :maquina_id, :recomendacoes_agricolas_id,
+                :area_aplic, :data_inicio, :data_final, :ativo, :deleted_at)
+  end
 end

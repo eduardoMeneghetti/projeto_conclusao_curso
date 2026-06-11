@@ -1,70 +1,64 @@
 class AjusteEstoquesController < ApplicationController
-  before_action :set_ajuste_estoque, only: %i[ show edit update destroy ]
+  before_action :set_ajuste_estoque, only: [:update]
 
-  # GET /ajuste_estoques or /ajuste_estoques.json
   def index
-    @ajuste_estoques = AjusteEstoque.all
+    if params[:updated_after]
+      @ajuste_estoques = AjusteEstoque.where('updated_at > ?', params[:updated_after])
+    else
+      @ajuste_estoques = AjusteEstoque.all
+    end
+    render json: @ajuste_estoques
   end
 
-  # GET /ajuste_estoques/1 or /ajuste_estoques/1.json
-  def show
-  end
+  def sync_ajuste_estoques
+    ajuste_estoques = params[:ajuste_estoques]
+    resultado = []
 
-  # GET /ajuste_estoques/new
-  def new
-    @ajuste_estoque = AjusteEstoque.new
-  end
+    ajuste_estoques.each do |item|
+      existing = AjusteEstoque.find_by(id: item[:server_id])
 
-  # GET /ajuste_estoques/1/edit
-  def edit
-  end
+      campos = {
+        usuario_id:    item[:usuario_id],
+        propriedade_id: item[:propriedade_id],
+        observacao:    item[:observacao],
+        data:          item[:data],
+        entrada_saida: item[:entrada_saida]&.to_s&.first,
+        deleted_at:    item[:deleted_at]
+      }
 
-  # POST /ajuste_estoques or /ajuste_estoques.json
-  def create
-    @ajuste_estoque = AjusteEstoque.new(ajuste_estoque_params)
-
-    respond_to do |format|
-      if @ajuste_estoque.save
-        format.html { redirect_to @ajuste_estoque, notice: "Ajuste estoque was successfully created." }
-        format.json { render :show, status: :created, location: @ajuste_estoque }
+      if existing
+        if existing.update(campos)
+          resultado << { id: existing.id, local_id: item[:id] }
+        else
+          resultado << { id: nil, local_id: item[:id], errors: existing.errors.full_messages }
+        end
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @ajuste_estoque.errors, status: :unprocessable_entity }
+        novo = AjusteEstoque.new(campos)
+        if novo.save
+          resultado << { id: novo.id, local_id: item[:id] }
+        else
+          resultado << { id: nil, local_id: item[:id], errors: novo.errors.full_messages }
+        end
       end
     end
+    render json: { message: 'Ajustes de estoque sincronizados', ajuste_estoques: resultado }, status: :ok
   end
 
-  # PATCH/PUT /ajuste_estoques/1 or /ajuste_estoques/1.json
   def update
-    respond_to do |format|
-      if @ajuste_estoque.update(ajuste_estoque_params)
-        format.html { redirect_to @ajuste_estoque, notice: "Ajuste estoque was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @ajuste_estoque }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @ajuste_estoque.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /ajuste_estoques/1 or /ajuste_estoques/1.json
-  def destroy
-    @ajuste_estoque.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to ajuste_estoques_path, notice: "Ajuste estoque was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+    if @ajuste_estoque.update(ajuste_estoque_params)
+      render json: @ajuste_estoque, status: :ok
+    else
+      render json: @ajuste_estoque.errors, status: :unprocessable_entity
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_ajuste_estoque
-      @ajuste_estoque = AjusteEstoque.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def ajuste_estoque_params
-      params.expect(ajuste_estoque: [ :usuario_id, :propriedade_id, :observacao, :data, :entrada_saida ])
-    end
+  def set_ajuste_estoque
+    @ajuste_estoque = AjusteEstoque.find(params.expect(:id))
+  end
+
+  def ajuste_estoque_params
+    params.expect(ajuste_estoque: [:usuario_id, :propriedade_id, :observacao, :data, :entrada_saida, :deleted_at])
+  end
 end

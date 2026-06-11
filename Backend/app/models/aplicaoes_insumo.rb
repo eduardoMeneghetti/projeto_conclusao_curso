@@ -1,9 +1,11 @@
 class AplicaoesInsumo < ApplicationRecord
+  self.table_name = 'aplicacoes_insumos'
+
   belongs_to :propriedade
   belongs_to :atividade
   belongs_to :atividade_safra
   belongs_to :atividade_gleba
   belongs_to :usuario
   belongs_to :maquina
-  belongs_to :recomendacoes_agricola
+  belongs_to :recomendacoes_agricola, foreign_key: :recomendacoes_agricolas_id, optional: true
 end

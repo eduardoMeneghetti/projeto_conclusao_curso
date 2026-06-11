@@ -16,21 +16,20 @@ class AtividadesController < ApplicationController
 
     atividades.each do |atividade|
       existing = Atividade.find_by(id: atividade[:server_id])
+      existing ||= Atividade.find_by(descricao: atividade[:descricao])
 
-      if existing 
-        existing.update(
-          descricao: atividade[:descricao],
-          cor: atividade[:cor],
-          ativo: atividade[:ativo]
-        )
-        resultado << { id: existing.id, local_id: atividade[:id]}
+      campos = { descricao: atividade[:descricao], cor: atividade[:cor], ativo: atividade[:ativo] }
+
+      if existing
+        existing.update(campos)
+        resultado << { id: existing.id, local_id: atividade[:id] }
       else
-        novo = Atividade.create(
-          descricao: atividade[:descricao],
-          cor: atividade[:cor],
-          ativo: atividade[:ativo]
-        )
-        resultado << { id: novo.id, local_id: atividade[:id]}
+        novo = Atividade.new(campos)
+        if novo.save
+          resultado << { id: novo.id, local_id: atividade[:id] }
+        else
+          resultado << { id: nil, local_id: atividade[:id], errors: novo.errors.full_messages }
+        end
       end
     end
     render json: { message: 'Atividades sincronizadas ', atividades: resultado}, status: :ok

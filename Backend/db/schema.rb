@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_30_041224) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_235819) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "ajuste_estoques", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "data"
+    t.datetime "deleted_at"
     t.string "entrada_saida", limit: 1
     t.string "observacao"
     t.bigint "propriedade_id", null: false
@@ -53,20 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_041224) do
     t.index ["safra_id"], name: "index_analises_solos_on_safra_id"
   end
 
-  create_table "aplicacoes_itens_insumos", force: :cascade do |t|
-    t.bigint "aplicaoes_insumo_id", null: false
-    t.datetime "created_at", null: false
-    t.decimal "dose_aplic", precision: 10, scale: 2
-    t.bigint "insumo_id", null: false
-    t.bigint "principios_ativo_id", null: false
-    t.decimal "quantidade_aplic", precision: 10, scale: 2
-    t.datetime "updated_at", null: false
-    t.index ["aplicaoes_insumo_id"], name: "index_aplicacoes_itens_insumos_on_aplicaoes_insumo_id"
-    t.index ["insumo_id"], name: "index_aplicacoes_itens_insumos_on_insumo_id"
-    t.index ["principios_ativo_id"], name: "index_aplicacoes_itens_insumos_on_principios_ativo_id"
-  end
-
-  create_table "aplicaoes_insumos", force: :cascade do |t|
+  create_table "aplicacoes_insumos", force: :cascade do |t|
     t.decimal "area_aplic", precision: 10, scale: 2
     t.bigint "atividade_gleba_id", null: false
     t.bigint "atividade_id", null: false
@@ -75,19 +63,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_041224) do
     t.datetime "created_at", null: false
     t.datetime "data_final"
     t.datetime "data_inicio"
+    t.datetime "deleted_at"
     t.bigint "maquina_id", null: false
-    t.string "operador"
+    t.bigint "operador_id", null: false
     t.bigint "propriedade_id", null: false
     t.bigint "recomendacoes_agricolas_id"
     t.datetime "updated_at", null: false
     t.bigint "usuario_id", null: false
-    t.index ["atividade_gleba_id"], name: "index_aplicaoes_insumos_on_atividade_gleba_id"
-    t.index ["atividade_id"], name: "index_aplicaoes_insumos_on_atividade_id"
-    t.index ["atividade_safra_id"], name: "index_aplicaoes_insumos_on_atividade_safra_id"
-    t.index ["maquina_id"], name: "index_aplicaoes_insumos_on_maquina_id"
-    t.index ["propriedade_id"], name: "index_aplicaoes_insumos_on_propriedade_id"
-    t.index ["recomendacoes_agricolas_id"], name: "index_aplicaoes_insumos_on_recomendacoes_agricolas_id"
-    t.index ["usuario_id"], name: "index_aplicaoes_insumos_on_usuario_id"
+    t.index ["atividade_gleba_id"], name: "index_aplicacoes_insumos_on_atividade_gleba_id"
+    t.index ["atividade_id"], name: "index_aplicacoes_insumos_on_atividade_id"
+    t.index ["atividade_safra_id"], name: "index_aplicacoes_insumos_on_atividade_safra_id"
+    t.index ["maquina_id"], name: "index_aplicacoes_insumos_on_maquina_id"
+    t.index ["operador_id"], name: "index_aplicacoes_insumos_on_operador_id"
+    t.index ["propriedade_id"], name: "index_aplicacoes_insumos_on_propriedade_id"
+    t.index ["recomendacoes_agricolas_id"], name: "index_aplicacoes_insumos_on_recomendacoes_agricolas_id"
+    t.index ["usuario_id"], name: "index_aplicacoes_insumos_on_usuario_id"
+  end
+
+  create_table "aplicacoes_itens_insumos", force: :cascade do |t|
+    t.bigint "aplicacoes_insumo_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "deleted_at"
+    t.decimal "dose_aplic", precision: 10, scale: 2
+    t.bigint "insumo_id", null: false
+    t.bigint "principios_ativo_id", null: false
+    t.decimal "quantidade_aplic", precision: 10, scale: 2
+    t.datetime "updated_at", null: false
+    t.index ["aplicacoes_insumo_id"], name: "index_aplicacoes_itens_insumos_on_aplicacoes_insumo_id"
+    t.index ["insumo_id"], name: "index_aplicacoes_itens_insumos_on_insumo_id"
+    t.index ["principios_ativo_id"], name: "index_aplicacoes_itens_insumos_on_principios_ativo_id"
   end
 
   create_table "atividade_glebas", force: :cascade do |t|
@@ -161,6 +165,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_041224) do
     t.decimal "area_hectares", precision: 10, scale: 2
     t.boolean "ativo"
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.string "descricao"
     t.bigint "propriedade_id", null: false
     t.datetime "updated_at", null: false
@@ -187,14 +192,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_041224) do
   end
 
   create_table "movimentacao_estoque_insumos", force: :cascade do |t|
-    t.bigint "ajuste_estoque_id", null: false
+    t.bigint "ajuste_estoque_id"
+    t.bigint "aplicacoes_insumo_id"
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.bigint "insumo_id", null: false
     t.string "origem"
     t.decimal "quantidade", precision: 10, scale: 2
     t.datetime "updated_at", null: false
     t.decimal "valor_unitario", precision: 10, scale: 2
     t.index ["ajuste_estoque_id"], name: "index_movimentacao_estoque_insumos_on_ajuste_estoque_id"
+    t.index ["aplicacoes_insumo_id"], name: "index_movimentacao_estoque_insumos_on_aplicacoes_insumo_id"
     t.index ["insumo_id"], name: "index_movimentacao_estoque_insumos_on_insumo_id"
   end
 
@@ -222,6 +230,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_041224) do
 
   create_table "principios_ativos_nutrientes", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.bigint "nutriente_id", null: false
     t.decimal "percentual", precision: 5, scale: 2
     t.bigint "principios_ativo_id", null: false
@@ -248,6 +257,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_041224) do
     t.boolean "ativo", default: true
     t.datetime "created_at", null: false
     t.datetime "data_recomendacao"
+    t.datetime "deleted_at"
     t.bigint "operador_id", null: false
     t.bigint "recomendante_id", null: false
     t.string "status"
@@ -311,16 +321,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_041224) do
   add_foreign_key "analises_solos", "atividades"
   add_foreign_key "analises_solos", "propriedades"
   add_foreign_key "analises_solos", "safras"
-  add_foreign_key "aplicacoes_itens_insumos", "aplicaoes_insumos"
+  add_foreign_key "aplicacoes_insumos", "atividade_glebas"
+  add_foreign_key "aplicacoes_insumos", "atividade_safras"
+  add_foreign_key "aplicacoes_insumos", "atividades"
+  add_foreign_key "aplicacoes_insumos", "maquinas"
+  add_foreign_key "aplicacoes_insumos", "propriedades"
+  add_foreign_key "aplicacoes_insumos", "recomendacoes_agricolas", column: "recomendacoes_agricolas_id"
+  add_foreign_key "aplicacoes_insumos", "usuarios"
+  add_foreign_key "aplicacoes_insumos", "usuarios", column: "operador_id"
+  add_foreign_key "aplicacoes_itens_insumos", "aplicacoes_insumos"
   add_foreign_key "aplicacoes_itens_insumos", "insumos"
   add_foreign_key "aplicacoes_itens_insumos", "principios_ativos"
-  add_foreign_key "aplicaoes_insumos", "atividade_glebas"
-  add_foreign_key "aplicaoes_insumos", "atividade_safras"
-  add_foreign_key "aplicaoes_insumos", "atividades"
-  add_foreign_key "aplicaoes_insumos", "maquinas"
-  add_foreign_key "aplicaoes_insumos", "propriedades"
-  add_foreign_key "aplicaoes_insumos", "recomendacoes_agricolas", column: "recomendacoes_agricolas_id"
-  add_foreign_key "aplicaoes_insumos", "usuarios"
   add_foreign_key "atividade_glebas", "atividade_safras"
   add_foreign_key "atividade_glebas", "glebas"
   add_foreign_key "atividade_safras", "atividades"
@@ -333,6 +344,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_041224) do
   add_foreign_key "insumos", "principios_ativos", column: "principios_ativos_id"
   add_foreign_key "insumos", "unidades_medidas"
   add_foreign_key "movimentacao_estoque_insumos", "ajuste_estoques"
+  add_foreign_key "movimentacao_estoque_insumos", "aplicacoes_insumos"
   add_foreign_key "movimentacao_estoque_insumos", "insumos"
   add_foreign_key "principios_ativos_nutrientes", "nutrientes"
   add_foreign_key "principios_ativos_nutrientes", "principios_ativos"
