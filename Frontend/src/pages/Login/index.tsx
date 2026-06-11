@@ -43,9 +43,14 @@ export default function Login() {
 
     const { isConnected } = await NetInfo.fetch();
     if (isConnected) {
-      const result = await loginApi(usuario, senha);
-      if (result.success) {
-        console.log('Token gerado com sucesso!');
+      try {
+        const result = await loginApi(usuario, senha);
+        if (result.success) {
+          console.log('Token gerado com sucesso!');
+        }
+      } catch (error) {
+        console.error('Erro ao autenticar na API:', error);
+        Alert.alert('Aviso', 'Não foi possível conectar ao servidor. Login realizado localmente.');
       }
     }
 

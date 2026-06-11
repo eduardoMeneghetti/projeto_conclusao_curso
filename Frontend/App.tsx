@@ -12,20 +12,11 @@ import { SyncProvider } from './src/context/syncContext';
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [nativeReady, setNativeReady] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
 
-
-  // splash NATIVA
   useEffect(() => {
-    setNativeReady(true);
+    SplashScreen.hideAsync();
   }, []);
-
-  useEffect(() => {
-    if (nativeReady) {
-      SplashScreen.hideAsync();
-    }
-  }, [nativeReady]);
 
   if (showSplash) {
     return (
