@@ -84,7 +84,7 @@ export default function HistoricoAnaliseReport() {
                         </View>
                         <Text style={styles.recomend}>
                             {item.gerou_recomendacao === 1
-                                ? '✅ Recomendação gerada'
+                                ? `✅ Recomendação #${item.recomendacao_id} gerada`
                                 : '→ Sem recomendação'}
                         </Text>
                     </View>

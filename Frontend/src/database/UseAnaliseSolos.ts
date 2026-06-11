@@ -11,6 +11,7 @@ export type AnaliseHistorico = {
     fosforo: number | null;
     potassio: number | null;
     gerou_recomendacao: number;
+    recomendacao_id: number | null;
 }
 
 export type UseAnaliseSolo = {
@@ -99,7 +100,8 @@ export function UseAnaliseSolos() {
                 CASE 
                     WHEN ra.id IS NOT NULL THEN 1 
                 ELSE 0 
-                END AS gerou_recomendacao
+                END AS gerou_recomendacao,
+                ra.id AS recomendacao_id
             FROM analises_solos ans
             INNER JOIN analises_solo_resultados asr ON asr.analises_solo_id = ans.id
             INNER JOIN parametros_metricas pm ON pm.id = asr.parametro_medido_id

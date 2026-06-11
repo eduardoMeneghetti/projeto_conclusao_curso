@@ -179,14 +179,6 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       FOREIGN KEY (nutriente_id) REFERENCES nutrientes(id)
     );
 
-    INSERT OR IGNORE INTO principios_ativos_nutrientes (principios_ativo_id, nutriente_id, percentual, created_at, updated_at) 
-    VALUES
-    -- Ureia → N (45%)
-     (1, 1, 45, datetime('now'), datetime('now')),
-    -- Monoamônio Fosfato → N (11%) e P (48%)
-     (2, 2, 48, datetime('now'), datetime('now')),
-    -- Cloreto de Potássio → K (60%)
-     (3, 3, 60, datetime('now'), datetime('now'));
 
     CREATE TABLE IF NOT EXISTS unidades_medidas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -357,21 +349,21 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       FOREIGN KEY (parametros_metrica_id) REFERENCES parametros_metricas(id)
     );
 
-    INSERT OR IGNORE INTO fichamentos (parametros_metrica_id, classificacao, valor_min, valor_max, created_at, updated_at) VALUES
+    INSERT OR IGNORE INTO fichamentos (parametros_metrica_id, classificacao, valor_min, valor_max, created_at, updated_at, is_dirty) VALUES
       --Argila
-      (1, 'Classe 4', 0,    20,   datetime('now'), datetime('now')),
-      (1, 'Classe 3', 21,   40,   datetime('now'), datetime('now')),
-      (1, 'Classe 2', 41,   60,   datetime('now'), datetime('now')),
-      (1, 'Classe 1', 61,   999,  datetime('now'), datetime('now')),
+      (1, 'Classe 4', 0,    20,   datetime('now'), datetime('now'), 0),
+      (1, 'Classe 3', 21,   40,   datetime('now'), datetime('now'), 0),
+      (1, 'Classe 2', 41,   60,   datetime('now'), datetime('now'), 0),
+      (1, 'Classe 1', 61,   999,  datetime('now'), datetime('now'), 0),
       --Matéria Orgânica
-      (2, 'Baixo',   0,    2.5,  datetime('now'), datetime('now')),
-      (2, 'Médio',   2.6,  5.0,  datetime('now'), datetime('now')),
-      (2, 'Alto',    5.1,  999,  datetime('now'), datetime('now')),
+      (2, 'Baixo',   0,    2.5,  datetime('now'), datetime('now'), 0),
+      (2, 'Médio',   2.6,  5.0,  datetime('now'), datetime('now'), 0),
+      (2, 'Alto',    5.1,  999,  datetime('now'), datetime('now'), 0),
       --CTC
-      (3, 'Baixa',      0,    7.5,  datetime('now'), datetime('now')),
-      (3, 'Média',      7.6,  15.0, datetime('now'), datetime('now')),
-      (3, 'Alta',       15.1, 30.0, datetime('now'), datetime('now')),
-      (3, 'Muito alta', 30.1, 999,  datetime('now'), datetime('now'));
+      (3, 'Baixa',      0,    7.5,  datetime('now'), datetime('now'), 0),
+      (3, 'Média',      7.6,  15.0, datetime('now'), datetime('now'), 0),
+      (3, 'Alta',       15.1, 30.0, datetime('now'), datetime('now'), 0),
+      (3, 'Muito alta', 30.1, 999,  datetime('now'), datetime('now'), 0);
 
     CREATE TABLE IF NOT EXISTS analises_solos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

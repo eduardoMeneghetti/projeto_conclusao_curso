@@ -46,7 +46,7 @@ export async function syncSafras(database: SQLiteDatabase) {
             if (response.status === 200) {
                 await database.runAsync(
                     `UPDATE safras
-                    SET synced_at = $synced_at, is_dirty = 1
+                    SET synced_at = $synced_at, is_dirty = 0
                     WHERE id = $id`,
                     {
                         $synced_at: new Date().toISOString().replace('T', ' ').split('.')[0],
@@ -73,7 +73,7 @@ export async function syncSafras(database: SQLiteDatabase) {
             if (data.safras?.[0]) {
                 await database.runAsync(`
                 UPDATE safras
-                SET synced_at = $synced_at, is_dirty = 1, server_id = $server_id
+                SET synced_at = $synced_at, is_dirty = 0, server_id = $server_id
                 WHERE id = $id
                 `, {
                     $synced_at: new Date().toISOString().replace('T', ' ').split('.')[0],

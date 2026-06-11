@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import Routes from './src/routes/index.routes';
 import { NavigationContainer } from '@react-navigation/native';
 import { FabProvider } from './src/context/fabContext';
+import { SyncProvider } from './src/context/syncContext';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -36,11 +37,13 @@ export default function App() {
   }
 
   return (
-    <FabProvider>
-      <NavigationContainer>
-          <Routes />
-      </NavigationContainer>
-    </FabProvider>
+    <SyncProvider>
+      <FabProvider>
+        <NavigationContainer>
+            <Routes />
+        </NavigationContainer>
+      </FabProvider>
+    </SyncProvider>
   );
 }
 
