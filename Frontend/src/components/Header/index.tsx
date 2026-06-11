@@ -3,7 +3,8 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image
+  Image,
+  ActivityIndicator
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "./styles";
@@ -16,6 +17,7 @@ import SelectionModal from "../../components/SelectionModal";
 import NetInfo from '@react-native-community/netinfo';
 import { useSQLiteContext } from 'expo-sqlite';
 import { syncAll } from '../../services/sync';
+import { useSync } from '../../context/syncContext';
 
 type NavigationProps = StackNavigationProp<RootStackParamList,
   'Config',
@@ -39,13 +41,20 @@ export default function Header() {
   }, []);
 
 
+  const { isSyncing, setIsSyncing } = useSync();
+
   async function handleSync() {
+    if (isSyncing) return;
+    setIsSyncing(true);
+    await new Promise(resolve => setTimeout(resolve, 0));
     try {
       await syncAll(database);
       alert('Sincronizado com sucesso!');
     } catch (error) {
       console.error('Erro ao sincronizar:', error);
       alert('Erro ao sincronizar');
+    } finally {
+      setIsSyncing(false);
     }
   }
 
@@ -70,11 +79,14 @@ export default function Header() {
       </View>
 
       <TouchableOpacity
-        disabled={!isConnected}
+        disabled={!isConnected || isSyncing}
         style={{ opacity: isConnected ? 1 : 0.4 }}
         onPress={handleSync}
       >
-        <Image source={require('../../assets/icon/sincronizar.png')} style={styles.image} />
+        {isSyncing
+          ? <ActivityIndicator size={35} color="#3A7D44" />
+          : <Image source={require('../../assets/icon/sincronizar.png')} style={styles.image} />
+        }
       </TouchableOpacity>
 
       <SelectionModal

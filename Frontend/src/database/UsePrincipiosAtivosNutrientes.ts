@@ -124,8 +124,14 @@ export function UsePrincipiosAtivosNutrientes() {
 
     async function deleteNutrientesByPrincipioId(principios_ativo_id: number) {
         try {
+            // registros com server_id: soft-delete para sincronizar a exclusao com o servidor
             await database.runAsync(
-                `DELETE FROM principios_ativos_nutrientes WHERE principios_ativo_id = $principios_ativo_id`,
+                `UPDATE principios_ativos_nutrientes SET deleted_at = datetime('now'), is_dirty = 1, updated_at = datetime('now') WHERE principios_ativo_id = $principios_ativo_id AND server_id IS NOT NULL`,
+                { $principios_ativo_id: principios_ativo_id }
+            );
+            // registros apenas locais (nunca sincronizados): hard-delete
+            await database.runAsync(
+                `DELETE FROM principios_ativos_nutrientes WHERE principios_ativo_id = $principios_ativo_id AND server_id IS NULL`,
                 { $principios_ativo_id: principios_ativo_id }
             );
         } catch (error) {
