@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { View, Text, TouchableOpacity, Modal, Alert } from 'react-native';
 import { styles } from "./styles";
+import Constants from 'expo-constants';
 import MapView, { Marker, Polygon, MapPressEvent } from "react-native-maps";
+
+const isExpoGo = Constants.appOwnership === 'expo';
 import { useNavigation } from "@react-navigation/core";
 import { useFocusEffect } from "@react-navigation/native";
 import { useFab } from "../../context/fabContext";
@@ -225,42 +228,50 @@ export default function Home() {
                 </View>
             )}
 
-            <MapView
-                ref={mapRef}
-                style={styles.map}
-                mapType="hybrid"
-                initialRegion={initialRegion}
-                onPress={handleMapPress}
-            >
-                {glebas.map((gleba) => (
-                    <Polygon
-                        key={gleba.id}
-                        coordinates={gleba.pontos}
-                        fillColor={gleba.cor + '80'}
-                        strokeColor="green"
-                        strokeWidth={1}
-                        tappable
-                        onPress={() => Alert.alert(gleba.descricao)}
-                    />
-                ))}
+            {isExpoGo ? (
+                <MapView
+                    ref={mapRef}
+                    style={styles.map}
+                    mapType="hybrid"
+                    initialRegion={initialRegion}
+                    onPress={handleMapPress}
+                >
+                    {glebas.map((gleba) => (
+                        <Polygon
+                            key={gleba.id}
+                            coordinates={gleba.pontos}
+                            fillColor={gleba.cor + '80'}
+                            strokeColor="green"
+                            strokeWidth={1}
+                            tappable
+                            onPress={() => Alert.alert(gleba.descricao)}
+                        />
+                    ))}
 
-                {pontos.map((ponto, index) => (
-                    <Marker
-                        key={index}
-                        coordinate={ponto}
-                        pinColor={index === 0 ? 'green' : 'red'}
-                    />
-                ))}
+                    {pontos.map((ponto, index) => (
+                        <Marker
+                            key={index}
+                            coordinate={ponto}
+                            pinColor={index === 0 ? 'green' : 'red'}
+                        />
+                    ))}
 
-                {pontos.length >= 3 && (
-                    <Polygon
-                        coordinates={pontos}
-                        fillColor={themes.colors.tertiary}
-                        strokeColor="green"
-                        strokeWidth={2}
-                    />
-                )}
-            </MapView>
+                    {pontos.length >= 3 && (
+                        <Polygon
+                            coordinates={pontos}
+                            fillColor={themes.colors.tertiary}
+                            strokeColor="green"
+                            strokeWidth={2}
+                        />
+                    )}
+                </MapView>
+            ) : (
+                <View style={[styles.map, { alignItems: 'center', justifyContent: 'center', backgroundColor: '#e8e8e8' }]}>
+                    <Text style={{ color: '#666', fontSize: 16, textAlign: 'center', paddingHorizontal: 24 }}>
+                        Mapa não disponível nesta versão.{'\n'}Configure uma chave da API Google Maps para habilitar.
+                    </Text>
+                </View>
+            )}
 
 
             <Modal visible={modalVisible} transparent animationType="slide">
