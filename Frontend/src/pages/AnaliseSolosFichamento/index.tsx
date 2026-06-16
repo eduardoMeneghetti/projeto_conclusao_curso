@@ -58,8 +58,8 @@ export default function AnaliseSolosFichamento() {
             <View style={styles.form}>
 
                 <InputText
-                    title="Argila: "
-                    placeholder="Digite o valor da Argila"
+                    title="Teor de Argila (%):"
+                    placeholder="Ex: 35"
                     isRequired={true}
                     keyboardType="decimal-pad"
                     returnKeyType="done"
@@ -70,8 +70,8 @@ export default function AnaliseSolosFichamento() {
                 />
 
                 <InputText
-                    title="Máterial Orgânico: "
-                    placeholder="Digite o valor do Máterial Orgânico"
+                    title="Matéria Orgânica (%):"
+                    placeholder="Ex: 3.5"
                     isRequired={true}
                     keyboardType="decimal-pad"
                     returnKeyType="done"
@@ -82,8 +82,8 @@ export default function AnaliseSolosFichamento() {
                 />
 
                 <InputText
-                    title="CTC: "
-                    placeholder="Digite o valor do CTC"
+                    title="CTC (cmolc/dm³):"
+                    placeholder="Ex: 12.0"
                     isRequired={true}
                     keyboardType="decimal-pad"
                     returnKeyType="done"

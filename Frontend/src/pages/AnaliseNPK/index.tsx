@@ -85,8 +85,8 @@ export default function AnaliseNPK() {
 
             <View style={styles.form}>
                 <InputText
-                    title="Fósforo (P):"
-                    placeholder="Digite o valor do Fósforo (P)"
+                    title="Fósforo - P (mg/dm³):"
+                    placeholder="Ex: 8.0"
                     isRequired={true}
                     keyboardType="decimal-pad"
                     returnKeyType="done"
@@ -97,8 +97,8 @@ export default function AnaliseNPK() {
                 />
 
                 <InputText
-                    title="Potássio (K):"
-                    placeholder="Digite o valor do Potássio (K)"
+                    title="Potássio - K (mg/dm³):"
+                    placeholder="Ex: 45.0"
                     isRequired={true}
                     keyboardType="decimal-pad"
                     returnKeyType="done"

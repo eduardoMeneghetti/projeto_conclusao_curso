@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
     KeyboardAvoidingView,
     Platform,
+    ScrollView,
     View
 } from 'react-native'
 import { styles } from "./styles";
@@ -162,93 +163,87 @@ export default function UserForm() {
 
     return (
         <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <View style={styles.container}>
+                <TopButton
+                    title="Cadastro de usuário"
+                    onVoltar={() => navigation.navigate('User')}
+                />
+
+                <ScrollView
+                    contentContainerStyle={styles.form}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
                 >
-        <View style={styles.container}>
-            <TopButton
-                title="Cadastro de usuário"
-                onVoltar={
-                    () => { navigation.navigate('User') }
-                }
-            />
-
-            <View style={styles.form}>
-                <InputText
-                    title="Nome Completo:"
-                    isRequired={true}
-                    value={nome}
-                    onChangeText={setNomeCompleto}
-                />
-
-                <InputText
-                    title="Usuário:"
-                    isRequired={true}
-                    value={usuario}
-                    onChangeText={(text) => setUsuario(text.toLowerCase())}
-                />
-
-                <InputText
-                    title="E-mail:"
-                    isRequired={true}
-                    value={email}
-                    onChangeText={(text) => setEmail(text.toLowerCase())}
-                />
-
-                <InputText
-                    title="Senha:"
-                    isRequired={true}
-                    value={senha}
-                    onChangeText={handleSenhaChange}
-                    secureTextEntry={true}
-                    errorMessage={senhaError}
-                />
-
-                <InputText
-                    title="Confirmar senha:"
-                    isRequired={true}
-                    value={confirmarSenha}
-                    onChangeText={handleConfirmarSenhaChange}
-                    secureTextEntry={true}
-                    errorMessage={confirmarSenhaError}
-                />
-
-                <View style={styles.opcoes}>
-                    <ButtonSelect
-                        title="Operador:"
-                        text={operador ? 'Sim' : 'Não'}
-                        onPress={
-                            () => setOperador(!operador)
-                        }
-                        isRequired={false}
+                    <InputText
+                        title="Nome Completo:"
+                        isRequired={true}
+                        value={nome}
+                        onChangeText={setNomeCompleto}
                     />
 
-                    <ButtonSelect
-                        title="Recomendante:"
-                        text={recomendante ? 'Sim' : 'Não'}
-                        onPress={
-                            () => setRecomendante(!recomendante)
-                        }
-                        isRequired={false}
+                    <InputText
+                        title="Usuário:"
+                        isRequired={true}
+                        value={usuario}
+                        onChangeText={(text) => setUsuario(text.toLowerCase())}
                     />
 
+                    <InputText
+                        title="E-mail:"
+                        isRequired={true}
+                        value={email}
+                        onChangeText={(text) => setEmail(text.toLowerCase())}
+                    />
+
+                    <InputText
+                        title="Senha:"
+                        isRequired={true}
+                        value={senha}
+                        onChangeText={handleSenhaChange}
+                        secureTextEntry={true}
+                        errorMessage={senhaError}
+                    />
+
+                    <InputText
+                        title="Confirmar senha:"
+                        isRequired={true}
+                        value={confirmarSenha}
+                        onChangeText={handleConfirmarSenhaChange}
+                        secureTextEntry={true}
+                        errorMessage={confirmarSenhaError}
+                    />
+
+                    <View style={styles.opcoes}>
+                        <ButtonSelect
+                            title="Operador:"
+                            text={operador ? 'Sim' : 'Não'}
+                            onPress={() => setOperador(!operador)}
+                            isRequired={false}
+                        />
+
+                        <ButtonSelect
+                            title="Recomendante:"
+                            text={recomendante ? 'Sim' : 'Não'}
+                            onPress={() => setRecomendante(!recomendante)}
+                            isRequired={false}
+                        />
+                    </View>
+
+                    <ButtonSelect
+                        isRequired={false}
+                        title="Cadastro ativo:"
+                        text={isEditing ? (ativo ? 'Sim' : 'Não') : 'Sim'}
+                        onPress={isEditing ? () => setAtivo(!ativo) : undefined}
+                    />
+                </ScrollView>
+
+                <View style={styles.buttonContainer}>
+                    <Button title="Salvar" onPress={handleSalvar} />
                 </View>
-
-                <ButtonSelect
-                    isRequired={false}
-                    title="Cadastro ativo:"
-                    text={isEditing ? (ativo ? 'Sim' : 'Não') : 'Sim'}
-                    onPress={isEditing ? () => setAtivo(!ativo) : undefined}
-                />
-
             </View>
-
-
-            <Button
-                title="Salvar"
-                onPress={handleSalvar}
-            />
-
-        </View>
         </KeyboardAvoidingView>
     )
 }

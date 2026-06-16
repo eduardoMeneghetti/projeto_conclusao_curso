@@ -23,7 +23,6 @@ function TabNavigator() {
             tabBar={(props) => <CustomTabBar {...props} />}
             screenListeners={{
                 tabPress: () => {
-                    setAction(null);
                     setRequiresHarvest(true);
                 }
             }}

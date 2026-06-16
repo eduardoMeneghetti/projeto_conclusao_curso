@@ -7,12 +7,14 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  keyboardView: {
+    width: '85%',
+    maxHeight: '85%',
+  },
   modalContainer: {
     backgroundColor: themes.colors.menuBar,
     borderRadius: 16,
     padding: 20,
-    width: '85%',
-    maxHeight: '70%',
     shadowColor: themes.colors.black,
     shadowOffset: {
       width: 0,
@@ -91,5 +93,14 @@ export const styles = StyleSheet.create({
   },
   itemTextInactive: {
     color: themes.colors.gray
-  }
+  },
+  searchInput: {
+    backgroundColor: themes.colors.background_input,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 14,
+    color: themes.colors.black,
+    marginVertical: 8,
+  },
 });

@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
-  Image
+  Image,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 }
   from 'react-native';
 import Modal from 'react-native-modal';
@@ -44,6 +47,15 @@ export default function SelectionModal({
 }: SelectionModalProps) {
 
   const [showInactive, setShowInactive] = useState(false);
+  const [busca, setBusca] = useState('');
+
+  useEffect(() => {
+    if (!isVisible) setBusca('');
+  }, [isVisible]);
+
+  const dadosFiltrados = data.filter(item =>
+    item.title.toLowerCase().includes(busca.toLowerCase())
+  );
 
   const renderItem = ({ item }: { item: SelectionItem }) => {
     const isSelected = item.id === selectedId;
@@ -95,6 +107,10 @@ export default function SelectionModal({
       style={styles.modal}
       propagateSwipe
     >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
       <View style={styles.modalContainer}>
         <View style={styles.header}>
           <Text style={styles.title}>{title}</Text>
@@ -120,8 +136,16 @@ export default function SelectionModal({
           )}
         </View>
 
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar..."
+          value={busca}
+          onChangeText={setBusca}
+          placeholderTextColor="#999"
+        />
+
         <FlatList
-          data={data}
+          data={dadosFiltrados}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
         />
@@ -132,6 +156,7 @@ export default function SelectionModal({
           </View>
         )}
       </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
