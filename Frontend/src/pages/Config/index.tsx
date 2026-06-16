@@ -84,7 +84,7 @@ export default function Config() {
                             onPress={onOpen}
                         />
 
-                         {user?.usuario === 'khronos_adm' && (<ButtonSelect
+                        {user?.usuario === 'khronos_adm' && (<ButtonSelect
                             title="Usuários"
                             text="Cadastro de usuários"
                             isRequired={false}
@@ -93,7 +93,7 @@ export default function Config() {
                             }
                         />)}
 
-                       <ButtonSelect
+                        <ButtonSelect
                             title="Atividades"
                             text="Cadastro de atividade"
                             isRequired={false}
@@ -136,16 +136,15 @@ export default function Config() {
                             }
                         />
 
-
-                        <TouchableOpacity
-                            style={styles.sair}
-                            onPress={handleLogout}>
-                            <Image
-                                style={styles.iconSair}
-                                source={require('../../assets/icon/lognOut.png')}
-                            />
-                        </TouchableOpacity>
                     </View>
+
+                    <LineArround />
+
+                    <TouchableOpacity
+                        style={styles.sair}
+                        onPress={handleLogout}>
+                        <Text style={styles.textSair}> Sair</Text>
+                    </TouchableOpacity>
                 </ScrollView>
 
             </View>

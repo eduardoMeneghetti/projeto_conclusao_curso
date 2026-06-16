@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        fontSize: 15,
+        fontSize: 16,
         color: themes.colors.black,
     },
     subtitle: {

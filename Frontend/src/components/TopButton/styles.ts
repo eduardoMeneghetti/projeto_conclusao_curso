@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
     title: {
         padding: '5%',
         textTransform: 'uppercase',
-        fontSize: 16,
+        fontSize: 15,
         textAlign: 'center'
     },
     botoes: {
@@ -35,5 +35,6 @@ export const styles = StyleSheet.create({
     deleteRegistry: {
         color: themes.colors.red,
         fontWeight: 'bold',
+        fontSize: 15
     }
 })

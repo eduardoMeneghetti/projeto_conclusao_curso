@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import {
     View,
     Text,
-    StyleSheet,
     Alert,
     Modal,
     KeyboardAvoidingView,
@@ -12,28 +11,36 @@ import {
 import { styles } from "./styles";
 import { TopButton } from "../../components/TopButton";
 import { useNavigation } from "@react-navigation/native";
-import MapView, { Marker, Polygon } from "react-native-maps";
+import MapView, { Marker, Polygon, MapPressEvent } from "react-native-maps";
 import { usePropriety } from "../../context/PropContext";
 import { useGlebaDatabase } from "../../database/useGlebas";
 import { Ponto } from "../../util/Ponto";
 import { useCidadeDatabase } from "../../database/cityStateDatabase";
 import { themes } from "../../global/themes";
+import { InputText } from "../../components/TextInput";
+import * as turf from '@turf/turf';
 
 type GlebaRenderizada = {
     id: number;
     descricao: string;
     pontos: Ponto[];
+    area: number;
 };
 
 export default function Gleba() {
     const navigation = useNavigation<any>();
     const { selectedPropriety } = usePropriety();
-    const { getGlebasWithLatLong, getGlebaInPropriety, deleteGleba } = useGlebaDatabase();
+    const { createGlebaWithPontos, getGlebasWithLatLong, getGlebaInPropriety, deleteGleba } = useGlebaDatabase();
     const mapRef = useRef<MapView>(null);
     const { getCityStateById } = useCidadeDatabase();
+
     const [glebas, setGlebas] = useState<GlebaRenderizada[]>([]);
     const [pontos, setPontos] = useState<Ponto[]>([]);
-    const [modalVisible, setModalVisible] = useState(false);
+    const [modoDesenho, setModoDesenho] = useState(false);
+    const [nomeGleba, setNomeGleba] = useState('');
+
+    const [modalExcluir, setModalExcluir] = useState(false);
+    const [modalSalvar, setModalSalvar] = useState(false);
     const [glebaSelected, setGlebaSelected] = useState<GlebaRenderizada | null>(null);
 
     const [initialRegion, setInitialRegion] = useState({
@@ -54,7 +61,8 @@ export default function Gleba() {
                 glebasMap.set(row.id, {
                     id: row.id,
                     descricao: row.descricao,
-                    pontos: []
+                    pontos: [],
+                    area: row.area_hectares
                 });
             }
             glebasMap.get(row.id)?.pontos.push({
@@ -104,6 +112,66 @@ export default function Gleba() {
         loadInitialRegion();
     }, [selectedPropriety]);
 
+    function handleMapPress(event: MapPressEvent) {
+        if (!modoDesenho) return;
+
+        const novoPonto = event.nativeEvent.coordinate;
+
+        if (pontos.length >= 3) {
+            const primeiroPonto = pontos[0];
+            const distancia = Math.sqrt(
+                Math.pow(novoPonto.latitude - primeiroPonto.latitude, 2) +
+                Math.pow(novoPonto.longitude - primeiroPonto.longitude, 2)
+            );
+
+            if (distancia < 0.0003) {
+                setModalSalvar(true);
+                return;
+            }
+        }
+
+        setPontos(prev => [...prev, novoPonto]);
+    }
+
+    function calcularAreaHectares(): number {
+        if (pontos.length < 3) return 0;
+
+        const coordenadas = pontos.map(p => [p.longitude, p.latitude]);
+        coordenadas.push(coordenadas[0]);
+
+        const poligono = turf.polygon([coordenadas]);
+        const area = turf.area(poligono);
+
+        return area / 10000;
+    }
+
+    async function handleSalvarGleba() {
+        if (!nomeGleba) return alert('Nome obrigatório');
+        if (!selectedPropriety) return alert('Selecione uma propriedade');
+
+        const areaHectares = calcularAreaHectares();
+
+        try {
+            await createGlebaWithPontos(
+                {
+                    descricao: nomeGleba,
+                    area_hectares: areaHectares,
+                    propriedade_id: selectedPropriety.id
+                },
+                pontos
+            );
+
+            setNomeGleba('');
+            setPontos([]);
+            setModoDesenho(false);
+            setModalSalvar(false);
+            loadGlebas();
+        } catch (error) {
+            console.error('Erro ao salvar gleba:', error);
+            alert('Erro ao salvar gleba');
+        }
+    }
+
     return (
         <View style={styles.container}>
             <TopButton
@@ -111,13 +179,30 @@ export default function Gleba() {
                 onVoltar={() => navigation.navigate('Config')}
             />
 
+            {modoDesenho && (
+                <View style={styles.drawingBar}>
+                    <Text style={styles.drawingText}>
+                        {pontos.length < 3
+                            ? `Marque os pontos da gleba (${pontos.length} pontos)`
+                            : `Toque no 1º ponto para fechar (${pontos.length} pontos)`
+                        }
+                    </Text>
+                    <TouchableOpacity onPress={() => {
+                        setPontos([]);
+                        setModoDesenho(false);
+                    }}>
+                        <Text style={styles.cancelText}>Cancelar</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
             <MapView
                 ref={mapRef}
                 style={styles.map}
                 mapType="hybrid"
                 initialRegion={initialRegion}
+                onPress={handleMapPress}
             >
-
                 {glebas.map((gleba) => (
                     <Polygon
                         key={gleba.id}
@@ -127,8 +212,9 @@ export default function Gleba() {
                         strokeWidth={1}
                         tappable
                         onPress={() => {
+                            if (modoDesenho) return;
                             setGlebaSelected(gleba);
-                            setModalVisible(true);
+                            setModalExcluir(true);
                         }}
                     />
                 ))}
@@ -151,11 +237,40 @@ export default function Gleba() {
                 )}
             </MapView>
 
-            <Modal visible={modalVisible} animationType="slide" transparent>
+            {!modoDesenho && (
+                <TouchableOpacity
+                    style={styles.fab}
+                    onPress={() => {
+                        if (!selectedPropriety) {
+                            Alert.alert('Atenção', 'Selecione uma propriedade antes de criar uma gleba.');
+                            return;
+                        }
+                        setPontos([]);
+                        setModoDesenho(true);
+                    }}
+                >
+                    <Text style={styles.fabText}>+</Text>
+                </TouchableOpacity>
+            )}
+
+
+            <Modal visible={modalExcluir} animationType="slide" transparent>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
+                        <View style={styles.header}>
+                            <Text style={styles.modalTitle}>{`${glebaSelected?.descricao} (${(glebaSelected?.area)?.toFixed(2)} Ha)`}</Text>
 
-                        <Text style={styles.modalTitle}>{glebaSelected?.descricao}</Text>
+                            <TouchableOpacity
+                                onPress={
+                                    () => {
+                                        setModalExcluir(false);
+                                        setGlebaSelected(null);
+                                    }
+                                }
+                            >
+                                <Text style={styles.closeModalText}>fechar</Text>
+                            </TouchableOpacity>
+                        </View>
 
                         <TouchableOpacity
                             style={styles.deleteButton}
@@ -171,9 +286,9 @@ export default function Gleba() {
                                             onPress: async () => {
                                                 if (glebaSelected) {
                                                     await deleteGleba(glebaSelected.id);
-                                                    setModalVisible(false);
+                                                    setModalExcluir(false);
                                                     setGlebaSelected(null);
-                                                    await loadGlebas(); 
+                                                    await loadGlebas();
                                                 }
                                             }
                                         }
@@ -184,20 +299,55 @@ export default function Gleba() {
                             <Text style={styles.deleteText}>Excluir área</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={styles.cancelButton}
-                            onPress={() => {
-                                setModalVisible(false);
-                                setGlebaSelected(null);
-                            }}
-                        >
-                            <Text>Fechar</Text>
-                        </TouchableOpacity>
-
                     </View>
                 </View>
             </Modal>
 
+
+            <Modal visible={modalSalvar} transparent animationType="slide">
+                <View style={styles.modalOverlay}>
+                    <KeyboardAvoidingView
+                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                        style={{ width: '100%' }}
+                    >
+                        <View style={styles.modalContainer}>
+                            <Text style={styles.modalTitle}>Nova gleba</Text>
+
+                            <InputText
+                                title="Descrição:"
+                                isRequired={true}
+                                value={nomeGleba}
+                                onChangeText={setNomeGleba}
+                            />
+
+                            <Text style={styles.areaText}>
+                                Área: {calcularAreaHectares().toFixed(2)} hectares
+                            </Text>
+
+                            <View style={styles.modalButtons}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setModalSalvar(false);
+                                        setPontos([]);
+                                        setModoDesenho(false);
+                                        setNomeGleba('');
+                                    }}
+                                    style={styles.cancelButton}
+                                >
+                                    <Text>cancelar</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    onPress={handleSalvarGleba}
+                                    style={styles.confirmButton}
+                                >
+                                    <Text style={{ color: themes.colors.white, fontWeight: 'bold' }}>Salvar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </KeyboardAvoidingView>
+                </View>
+            </Modal>
         </View>
     );
 }

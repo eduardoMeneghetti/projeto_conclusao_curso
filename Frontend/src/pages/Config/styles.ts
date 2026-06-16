@@ -44,17 +44,22 @@ export const styles = StyleSheet.create({
     },
     sair: {
         marginTop: 15,
-        marginBottom: 15
+        marginBottom: 30
     },
     iconSair: {
         width: 40,
         height: 40
     },
     subTitulo:{
-        fontSize: 16,
+        fontSize: 18,
         padding: 2
     },
     scroll: {
         paddingBottom: 16 
+    },
+    textSair: {
+        color: themes.colors.red,
+        textAlign: 'center',
+        fontSize: 16,
     }
 });

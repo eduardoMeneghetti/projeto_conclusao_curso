@@ -1,50 +1,50 @@
-﻿{
-    "expo":  {
-                 "name":  "Khronos",
-                 "slug":  "Khronos",
-                 "version":  "1.0.0",
-                 "orientation":  "portrait",
-                 "icon":  "./assets/icon.png",
-                 "userInterfaceStyle":  "light",
-                 "newArchEnabled":  true,
-                 "splash":  {
-                                "image":  "./assets/splash-icon.png",
-                                "resizeMode":  "contain",
-                                "backgroundColor":  "#ffffff"
-                            },
-                 "ios":  {
-                             "supportsTablet":  true
-                         },
-                 "android":  {
-                                 "adaptiveIcon":  {
-                                                      "foregroundImage":  "./assets/adaptive-icon.png",
-                                                      "backgroundColor":  "#ffffff"
-                                                  },
-                                 "edgeToEdgeEnabled":  true,
-                                 "predictiveBackGestureEnabled":  false,
-                                 "package":  "com.chimas_edu.Khronos",
-                                 "usesCleartextTraffic":  true
-                             },
-                 "web":  {
-                             "favicon":  "./assets/favicon.png"
-                         },
-                 "plugins":  [
-                                 "expo-sqlite",
-                                 "@react-native-community/datetimepicker",
-                                 [
-                                     "expo-splash-screen",
-                                     {
-                                         "image":  "./assets/splash-icon.png",
-                                         "resizeMode":  "contain",
-                                         "backgroundColor":  "#ffffff"
-                                     }
-                                 ],
-                                 "./plugins/withCleartextTraffic"
-                             ],
-                 "extra":  {
-                               "eas":  {
-                                           "projectId":  "9b4028ab-0372-4bfd-9514-fd14d377d916"
-                                       }
-                           }
-             }
+{
+    "expo": {
+        "name": "Khronos",
+        "slug": "Khronos",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "light",
+        "newArchEnabled": true,
+        "splash": {
+            "image": "./assets/splash-icon.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "ios": {
+            "supportsTablet": true
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/adaptive-icon.png",
+                "backgroundColor": "#ffffff"
+            },
+            "edgeToEdgeEnabled": true,
+            "predictiveBackGestureEnabled": false,
+            "package": "com.chimas_edu.Khronos",
+            "usesCleartextTraffic": true
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
+        "plugins": [
+            "expo-sqlite",
+            "@react-native-community/datetimepicker",
+            [
+                "expo-splash-screen",
+                {
+                    "image": "./assets/splash-icon.png",
+                    "resizeMode": "contain",
+                    "backgroundColor": "#ffffff"
+                }
+            ],
+            "./plugins/withCleartextTraffic"
+        ],
+        "extra": {
+            "eas": {
+                "projectId": "9b4028ab-0372-4bfd-9514-fd14d377d916"
+            }
+        }
+    }
 }

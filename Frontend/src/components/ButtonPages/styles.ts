@@ -18,7 +18,8 @@ export const styles = StyleSheet.create({
     text: {
         fontWeight: 'normal',
         alignItems: 'flex-start',
-        alignContent: 'flex-start'
+        alignContent: 'flex-start',
+        fontSize: 16
     },
     cancel:{
         color: themes.colors.red

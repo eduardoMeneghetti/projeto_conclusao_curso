@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
         paddingBottom: 10,
     },
     title: {
-        fontSize: 14,
+        fontSize: 16,
     },
     required: {
         color: themes.colors.red

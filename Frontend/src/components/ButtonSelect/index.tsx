@@ -17,7 +17,7 @@ export default function ButtonSelect({...rest}: Props) {
     return (
         <View style={styles.container}>
             <View style={styles.titleContainer}>
-                <Text>
+                <Text style={styles.fonte}>
                     {rest.title}
                     {rest.isRequired && <Text style={styles.asterisk}> *</Text>}
                 </Text>
@@ -26,7 +26,7 @@ export default function ButtonSelect({...rest}: Props) {
                 <Image style={styles.image} 
                     source={require('../../assets/icon/menu_select_verde.png')}
                 /> 
-                <Text>
+                <Text style={styles.fonte}>
                     {rest.text}
                 </Text>
             </TouchableOpacity>

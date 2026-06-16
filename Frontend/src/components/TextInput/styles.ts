@@ -8,7 +8,9 @@ export const styles = StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 10,
     },
-    title: {},
+    title: {
+        fontSize: 16
+    },
     inputRow: {
         flexDirection: 'row',      
         alignItems: 'center',
@@ -19,6 +21,7 @@ export const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
         borderBottomColor: 'rgba(0, 0, 0, 0.3)',
         paddingTop: 10,
+        fontSize: 16
     },
     required: {
         color: themes.colors.red

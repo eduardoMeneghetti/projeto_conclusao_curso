@@ -28,10 +28,10 @@ export const styles = StyleSheet.create({
             tintColor: themes.colors.primary,
         },
         text: {
-            fontSize: 12,
+            fontSize: 14,
             marginTop: 2,
             textAlign: 'center',
-            lineHeight: 13,
+            lineHeight: 15,
         },
         textActive: {
             fontWeight: 'bold',
