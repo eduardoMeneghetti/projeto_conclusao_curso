@@ -1,4 +1,3 @@
-// services/syncCidades.ts
 import { SQLiteDatabase } from 'expo-sqlite';
 import { API_URL } from './api';
 import { getToken } from './auth';
@@ -6,55 +5,47 @@ import { getToken } from './auth';
 export async function syncCidades(database: SQLiteDatabase) {
     const token = await getToken();
 
-    const cidades = await database.getAllAsync<{
-        id: number,
-        descricao: string,
-        codigo_ibge: number,
-        latitude: number,
-        longitude: number,
-        estado_id: number,
-    }>(`SELECT * FROM cidades WHERE server_id IS NULL`);
+    const count = await database.getFirstAsync<{ count: number }>(
+        `SELECT COUNT(*) as count FROM cidades WHERE server_id IS NOT NULL`
+    );
 
-    console.log('Cidades para sincronizar:', cidades.length);
-
-    if (!cidades.length) {
-        console.log('Todas as cidades já sincronizadas!');
+    if ((count?.count ?? 0) > 0) {
+        console.log('Cidades já sincronizadas!');
         return;
     }
 
-    const cidadesComServerEstado = await Promise.all(
-        cidades.map(async (cidade) => {
-            const estado = await database.getFirstAsync<{ server_id: number }>(
-                `SELECT server_id FROM estados WHERE id = $id`,
-                { $id: cidade.estado_id }
-            );
-            return {
-                ...cidade,
-                estado_id: estado?.server_id  // 👈 envia o server_id do estado
-            };
-        })
-    );
+    console.log('Buscando cidades do servidor...');
 
-    const response = await fetch(`${API_URL}/cidades/sync`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ cidades: cidadesComServerEstado })
+    const response = await fetch(`${API_URL}/cidades`, {
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
     });
 
     const data = await response.json();
+    const cidades = Array.isArray(data) ? data : data.cidades;
 
-    for (const cidade of data.cidades ?? []) {
+    const now = new Date().toISOString().replace('T', ' ').split('.')[0];
+
+    for (const c of cidades ?? []) {
+        const localEstado = await database.getFirstAsync<{ id: number }>(
+            `SELECT id FROM estados WHERE server_id = $server_id`,
+            { $server_id: c.estado_id }
+        );
+
+        if (!localEstado) continue;
+
         await database.runAsync(
-            `UPDATE cidades
-             SET server_id = $server_id, synced_at = $synced_at, is_dirty = 0
-             WHERE id = $id`,
+            `INSERT OR IGNORE INTO cidades (descricao, codigo_ibge, latitude, longitude, estado_id, server_id, created_at, updated_at, synced_at, is_dirty)
+             VALUES ($descricao, $codigo_ibge, $latitude, $longitude, $estado_id, $server_id, $created_at, $updated_at, $synced_at, 0)`,
             {
-                $server_id: cidade.id,
-                $synced_at: new Date().toISOString().replace('T', ' ').split('.')[0],
-                $id: cidade.local_id
+                $descricao: c.descricao,
+                $codigo_ibge: c.codigo_ibge ?? null,
+                $latitude: c.latitude ?? 0,
+                $longitude: c.longitude ?? 0,
+                $estado_id: localEstado.id,
+                $server_id: c.id,
+                $created_at: c.created_at ?? now,
+                $updated_at: c.updated_at ?? now,
+                $synced_at: now
             }
         );
     }

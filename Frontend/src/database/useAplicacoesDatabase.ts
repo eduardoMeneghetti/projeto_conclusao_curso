@@ -184,14 +184,13 @@ export function UseAplicacoesDatabase() {
 
     }
 
-    async function updateAplicacao(data: Pick<useAplic, "id" | "atividade_safra_id" | "atividade_gleba_id" | "maquina_id" | "operador_id" | "recomendacoes_agricolas_id" | "area_aplic" | "data_inicio" | "data_final">) {
+    async function updateAplicacao(data: Pick<useAplic, "id" | "atividade_safra_id" | "atividade_gleba_id" | "maquina_id" | "operador_id" |  "area_aplic" | "data_inicio" | "data_final">) {
         const sentece = await database.prepareAsync(`
             UPDATE aplicacoes_insumos
             SET atividade_safra_id = $atividade_safra_id,
                 atividade_gleba_id = $atividade_gleba_id,
                 maquina_id = $maquina_id,
                 operador_id = $operador_id,
-                recomendacoes_agricolas_id = $recomendacoes_agricolas_id,
                 area_aplic = $area_aplic,
                 data_inicio = $data_inicio,
                 data_final = $data_final,
@@ -207,7 +206,6 @@ export function UseAplicacoesDatabase() {
                 $atividade_gleba_id: data.atividade_gleba_id,
                 $maquina_id: data.maquina_id,
                 $operador_id: data.operador_id,
-                $recomendacoes_agricolas_id: data.recomendacoes_agricolas_id ?? null,
                 $area_aplic: data.area_aplic,
                 $data_inicio: data.data_inicio,
                 $data_final: data.data_final

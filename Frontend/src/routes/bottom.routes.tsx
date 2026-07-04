@@ -12,7 +12,7 @@ import { GlobalButton } from '../components/GlobalButton';
 const Tab = createBottomTabNavigator();
 
 function TabNavigator() {
-    const { setAction, setRequiresHarvest } = useFab();
+    const { setCurrentScreen } = useFab();
 
     return (
         <Tab.Navigator
@@ -21,11 +21,10 @@ function TabNavigator() {
                 header: () => <Header />,
             }}
             tabBar={(props) => <CustomTabBar {...props} />}
-            screenListeners={{
-                tabPress: () => {
-                    setRequiresHarvest(true);
-                }
-            }}
+            screenListeners={({ route }) => ({
+                focus: () => setCurrentScreen(route.name),
+                blur: () => setCurrentScreen(null),
+            })}
         >
             <Tab.Screen name="Aplicacoes" component={Application} />
             <Tab.Screen name="Recomendacoes" component={Recomendacoes} />

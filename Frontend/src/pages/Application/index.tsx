@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   ScrollView,
@@ -9,7 +9,6 @@ import { styles } from "./styles";
 import { useFab } from "../../context/fabContext";
 import { useNavigation } from "@react-navigation/native";
 import { usePropriety } from "../../context/PropContext";
-import { useAuth } from "../../context/AuthContext";
 import OptionsModal from "../../components/OptionsModal";
 import { CardApplication } from "../../components/CardApplication";
 import { UseAplicacoesDatabase } from "../../database/useAplicacoesDatabase";
@@ -18,10 +17,9 @@ import { RecomendacaoImportItem } from "../../database/useRecommendationDatabase
 import { useRecommendationItensDatabase } from "../../database/useRecommendationItensDatabase";
 
 export default function Application() {
-  const { setAction } = useFab();
+  const { registerScreenFab } = useFab();
   const navigation = useNavigation<any>();
   const { selectedPropriety } = usePropriety();
-  const { user } = useAuth();
 
   const { getAplicacoesAll } = UseAplicacoesDatabase();
   const { getItemsByRecommendationId } = useRecommendationItensDatabase();
@@ -30,12 +28,10 @@ export default function Application() {
   const [modalRecVisible, setModalRecVisible] = useState(false);
   const [aplicacoes, setAplicacoes] = useState<any[]>([]);
 
-  useFocusEffect(
-    useCallback(() => {
-      setAction(() => () => setOptionsVisible(true));
-      return () => setAction(null);
-    }, [navigation])
-  );
+  useEffect(() => {
+    registerScreenFab('Aplicacoes', { action: () => setOptionsVisible(true) });
+    return () => registerScreenFab('Aplicacoes', null);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

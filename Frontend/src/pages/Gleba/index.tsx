@@ -43,7 +43,7 @@ export default function Gleba() {
     const [modalSalvar, setModalSalvar] = useState(false);
     const [glebaSelected, setGlebaSelected] = useState<GlebaRenderizada | null>(null);
 
-    const [initialRegion, setInitialRegion] = useState({
+    const [initialRegion] = useState({
         latitude: -27.6305,
         longitude: -52.2364,
         latitudeDelta: 0.0922,
@@ -224,6 +224,11 @@ export default function Gleba() {
                         key={index}
                         coordinate={ponto}
                         pinColor={index === 0 ? 'green' : 'red'}
+                        onPress={() => {
+                            if (index === 0 && pontos.length >= 3) {
+                                setModalSalvar(true);
+                            }
+                        }}
                     />
                 ))}
 

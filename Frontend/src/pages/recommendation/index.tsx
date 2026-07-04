@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   Alert,
@@ -16,7 +16,7 @@ import { usePropriety } from "../../context/PropContext";
 import { useRecommendationDatabase } from "../../database/useRecommendationDatabase";
 
 export default function Recomendacoes() {
-  const { setAction } = useFab();
+  const { registerScreenFab } = useFab();
   const navigation = useNavigation<any>();
   const { selectedPropriety } = usePropriety();
   const { user } = useAuth();
@@ -26,16 +26,10 @@ export default function Recomendacoes() {
   const [optionsVisible, setOptionsVisible] = useState(false);
   const [recomendacoes, setRecomendacoes] = useState<any[]>([]);
 
-  useFocusEffect(
-    useCallback(() => {
-      setAction(() => () => setOptionsVisible(true));
-
-      return () => {
-        setAction(null);
-        setOptionsVisible(false);
-      };
-    }, [user])
-  );
+  useEffect(() => {
+    registerScreenFab('Recomendacoes', { action: () => setOptionsVisible(true) });
+    return () => registerScreenFab('Recomendacoes', null);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

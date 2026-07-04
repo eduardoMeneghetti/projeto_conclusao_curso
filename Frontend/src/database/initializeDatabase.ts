@@ -1,5 +1,4 @@
 import { type SQLiteDatabase } from 'expo-sqlite'
-import { seedEstadosCidades } from './cityStateDatabase';
 
 export async function initializeDatabase(db: SQLiteDatabase) {
   await db.execAsync(`
@@ -480,6 +479,4 @@ export async function initializeDatabase(db: SQLiteDatabase) {
     );
   `);
 
-  //cria as cidades e estados
-  await seedEstadosCidades(db);
 }

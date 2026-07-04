@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { View, Text, TouchableOpacity, Modal, Alert } from 'react-native';
 import { styles } from "./styles";
 import MapView, { Marker, Polygon, MapPressEvent } from "react-native-maps";
 import { useNavigation } from "@react-navigation/core";
-import { useFocusEffect } from "@react-navigation/native";
 import { useFab } from "../../context/fabContext";
 import { usePropriety } from "../../context/PropContext";
 import { useCidadeDatabase } from "../../database/cityStateDatabase";
@@ -28,7 +27,7 @@ type GlebaRenderizada = {
 };
 
 export default function Home() {
-    const { setAction } = useFab();
+    const { registerScreenFab } = useFab();
     const navigation = useNavigation<any>();
     const { selectedPropriety } = usePropriety();
     const { selectedAtividadeSafraId } = useAuthSelection();
@@ -141,20 +140,15 @@ export default function Home() {
     }, [selectedPropriety]);
 
 
-    useFocusEffect(
-        useCallback(() => {
-            setAction(() => () => {
+    useEffect(() => {
+        registerScreenFab('Home', {
+            action: () => {
                 setPontos([]);
                 setModoDesenho(true);
-            });
-
-            return () => {
-                setAction(null);
-                setPontos([]);
-                setModoDesenho(false);
-            };
-        }, [])
-    );
+            },
+        });
+        return () => registerScreenFab('Home', null);
+    }, []);
 
     function handleMapPress(event: MapPressEvent) {
         if (!modoDesenho) return;
@@ -272,6 +266,11 @@ export default function Home() {
                         key={index}
                         coordinate={ponto}
                         pinColor={index === 0 ? 'green' : 'red'}
+                        onPress={() => {
+                            if (index === 0 && pontos.length >= 3) {
+                                setModalVisible(true);
+                            }
+                        }}
                     />
                 ))}
 

@@ -19,7 +19,7 @@ import { MovimentacaoCard } from "../../components/movimentacaoCard";
 
 
 export default function Stock() {
-  const { setAction, setRequiresHarvest } = useFab();
+  const { registerScreenFab } = useFab();
   const navigation = useNavigation<any>();
   const { selectedPropriety } = usePropriety();
   const { getInsumoAll } = useInsumoDatabase();
@@ -30,18 +30,13 @@ export default function Stock() {
   const [optionsVisible, setOptionsVisible] = useState(false);
   const [movimentacoes, setMovimentacoes] = useState<any[]>([]);
 
-  useFocusEffect(
-    useCallback(() => {
-      setRequiresHarvest(false);
-      setAction(() => () => setOptionsVisible(true));
-
-      return () => {
-        setRequiresHarvest(true);
-        setAction(null);
-        setOptionsVisible(false);
-      };
-    }, [])
-  );
+  useEffect(() => {
+    registerScreenFab('Estoque', {
+      action: () => setOptionsVisible(true),
+      requiresHarvest: false,
+    });
+    return () => registerScreenFab('Estoque', null);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

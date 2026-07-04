@@ -5,43 +5,41 @@ import { getToken } from "./auth";
 export async function syncEstados(database: SQLiteDatabase) {
     const token = await getToken();
 
-    const estados = await database.getAllAsync<{
-        id: number,
-        descricao: string,
-        sigla: string,
-        codigo_ibge: string,
-    }>(`SELECT * FROM estados WHERE server_id IS NULL`);
+    const count = await database.getFirstAsync<{ count: number }>(
+        `SELECT COUNT(*) as count FROM estados WHERE server_id IS NOT NULL`
+    );
 
-    console.log('Estados para sincronizar:', estados.length);
-
-    if (!estados.length) {
-        console.log('Todos os estados já sincronizados!');
+    if ((count?.count ?? 0) > 0) {
+        console.log('Estados já sincronizados!');
         return;
     }
 
-    const response = await fetch(`${API_URL}/estados/sync`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ estados })
+    console.log('Buscando estados do servidor...');
+
+    const response = await fetch(`${API_URL}/estados`, {
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
     });
 
     const data = await response.json();
+    const estados = Array.isArray(data) ? data : data.estados;
 
-    for (const estado of data.estados ?? []) {
+    const now = new Date().toISOString().replace('T', ' ').split('.')[0];
+
+    for (const e of estados ?? []) {
         await database.runAsync(
-            `UPDATE estados
-             SET server_id = $server_id, synced_at = $synced_at, is_dirty = 0
-             WHERE id = $id`,
+            `INSERT OR IGNORE INTO estados (descricao, codigo_ibge, sigla, server_id, created_at, updated_at, synced_at, is_dirty)
+             VALUES ($descricao, $codigo_ibge, $sigla, $server_id, $created_at, $updated_at, $synced_at, 0)`,
             {
-                $server_id: estado.id,
-                $synced_at: new Date().toISOString().replace('T', ' ').split('.')[0],
-                $id: estado.local_id
+                $descricao: e.descricao,
+                $codigo_ibge: e.codigo_ibge,
+                $sigla: e.sigla,
+                $server_id: e.id,
+                $created_at: e.created_at ?? now,
+                $updated_at: e.updated_at ?? now,
+                $synced_at: now
             }
         );
     }
 
-    console.log('Estados sincronizados!');
+    console.log(`Estados sincronizados: ${estados?.length ?? 0}`);
 }

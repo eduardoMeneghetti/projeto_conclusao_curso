@@ -94,7 +94,7 @@ export default function ApplicationNew() {
             atividade_gleba_id: editingAplicacao?.atividade_gleba_id ?? route.params?.atividade_gleba_id,
             area_aplic: editingAplicacao?.area_aplic ?? route.params?.area_aplic,
             maquina_id: editingAplicacao?.maquina_id,
-            recomendacoes_agricolas_id: route.params?.recomendacoes_agricolas_id,
+            recomendacoes_agricolas_id: editingAplicacao?.recomendacoes_agricolas_id ?? route.params?.recomendacoes_agricolas_id,
             initialItens: route.params?.initialItens,
         });
     }
